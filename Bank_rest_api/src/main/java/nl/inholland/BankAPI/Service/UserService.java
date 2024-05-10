@@ -4,6 +4,7 @@ import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Repository.UserRepository;
+import nl.inholland.BankAPI.Security.JwtProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    //private final String jwtProvider;
+    private final JwtProvider jwtProvider;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtProvider jwtProvider) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        //this.jwtProvider = jwtProvider;
+        this.jwtProvider = jwtProvider;
     }
 
     public User createUser(User user) {
@@ -36,12 +37,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    /* public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
+     public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
         User user = userRepository.findUserByUsername(loginRequest.username());
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            return new LoginResponseDTO(user.getUsername(), jwtProvider.createToken(user.getUsername(), user.getRoles()));
+            return new LoginResponseDTO(user.getUsername(), jwtProvider.createToken(user.getUsername(), user.getUserType()));
         } else {
             throw new AuthenticationException("Invalid credentials");
         }
-    }*/
+    }
 }
