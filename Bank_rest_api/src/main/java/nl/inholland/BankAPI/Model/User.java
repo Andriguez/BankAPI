@@ -1,12 +1,18 @@
 package nl.inholland.BankAPI.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
 @NoArgsConstructor
+@Table(name="users")
+@Data
+@SequenceGenerator(name = "USER_SEQ", initialValue = 100001, allocationSize = 10)
 public class User {
 
     @Id
@@ -14,12 +20,15 @@ public class User {
     private long id;
     private String firstName;
     private String lastName;
-    private String email;
+    private String username;
+    private String password;
     private long phoneNumber;
     private long bsnNumber;
-    private UserType userType;
 
-    public String getFirstName() {
+
+    @ElementCollection(fetch = EAGER)
+    private List<UserType> userType;
+    /*public String getFirstName() {
         return firstName;
     }
 
@@ -57,6 +66,7 @@ public class User {
 
     public void setBsnNumber(long bsnNumber) {
         this.bsnNumber = bsnNumber;
+        Why a BSN number for all users?
     }
 
     public UserType getUserType() {
@@ -65,12 +75,13 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
-    }
+    }*/
 
-    public User(String firstName, String lastName, String email, long phoneNumber, long bsnNumber, UserType userType){
+    public User(String firstName, String lastName, String username, String password, long phoneNumber, long bsnNumber, List<UserType> userType){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.username = username;
+        this.password = password;
         this.phoneNumber = phoneNumber;
         this.bsnNumber = bsnNumber;
         this.userType = userType;
