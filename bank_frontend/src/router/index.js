@@ -44,7 +44,7 @@ const router = createRouter({
     },
     {
       path: '/logout',
-      name: 'LogOut',
+      name: 'logout',
       component: HomeView
     },
     
