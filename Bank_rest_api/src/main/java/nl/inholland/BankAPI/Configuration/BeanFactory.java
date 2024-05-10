@@ -11,4 +11,6 @@ public class BeanFactory {
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder(12);
     }
+
+
 }

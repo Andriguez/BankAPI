@@ -16,5 +16,31 @@
         </form>
 </template>
 <script>
+import { useLoginStore } from '@/stores/loginStore'
 
+export default {
+    name: 'LoginForm',
+    
+    data(){
+        return {
+        username : '',
+        password : ''
+    };
+    },
+    methods: {
+        login() {
+            this.loginStore.requestLogin(this.username, this.password)
+            .then(() => {
+                this.$router.replace("/");
+            })
+            .catch ((error)=>{
+                this.errorMessage = error;
+                alert(error);
+            })
+        },
+    },
+    mounted(){
+        this.loginStore = useLoginStore();
+    }
+}
 </script>

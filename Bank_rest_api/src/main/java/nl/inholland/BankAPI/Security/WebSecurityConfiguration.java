@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +26,13 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(config -> {
+            CorsConfiguration corsConfig = new CorsConfiguration();
+            corsConfig.addAllowedOrigin("*"); // Allow requests from any origin, you might want to restrict this in a production environment
+            corsConfig.addAllowedHeader("*"); // Allow all headers
+            corsConfig.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+            config.configurationSource(request -> corsConfig);
+        });
 
         httpSecurity.sessionManagement(
                 session -> session

@@ -8,10 +8,11 @@
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><router-link to="/" class="nav-link px-2 link-body-emphasis text-light">Home</router-link></li>
-          <li><router-link to="/login" class="nav-link px-2 link-body-emphasis text-light">Login</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis text-light">Accounts</router-link></li>
+          <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis text-light">Login</router-link></li>
         </ul>
         
-        <div class="dropdown text-end">
+        <div v-if="isLoggedIn()" class="dropdown text-end">
           <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle text-light" data-bs-toggle="dropdown" aria-expanded="false">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-person-circle" viewBox="0 0 16 16">
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -30,7 +31,29 @@
 </template>
 
 <script>
+import { useLoginStore } from '../stores/loginStore';
+
 export default {
-    name: 'Navigation'
+    name: 'Navigation',
+    data() {
+        return {
+            loginStore: useLoginStore(),
+        };
+    },
+    mounted(){
+        if (!this.loginStore) {
+            console.error('Failed to initialize login store');
+            return;
+        }
+    },
+    methods: {
+        isLoggedIn(){
+            if (!this.loginStore) {
+                return false;
+            }
+            return this.loginStore.isLoggedIn;
+        }
+    }
 }
+
 </script>
