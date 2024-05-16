@@ -50,7 +50,9 @@ public class WebSecurityConfiguration {
         httpSecurity.authorizeHttpRequests(
                 requests ->
                         requests.requestMatchers("/accounts").permitAll()); // convert to authenticated later
-
+        httpSecurity.authorizeHttpRequests(
+                requests ->
+                        requests.requestMatchers("/transactions").permitAll()); // convert to authenticated later
         httpSecurity.addFilterBefore(jwtFilter,
                 UsernamePasswordAuthenticationFilter.class);
 
