@@ -20,11 +20,11 @@ export const useLoginStore = defineStore('login', {
           password: password,
       })
       .then((res)=>{ 
-          axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.jwt;
+          axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.token;
           this.token = res.data.token;
           this.loggedIn = true;
           this.username = res.data.username;
-          localStorage.setItem('jwtToken', res.data.token);
+          localStorage.setItem('jwtToken', this.token);
           localStorage.setItem('username', JSON.stringify(res.data.username));
           console.log(res.data);
           resolve()
