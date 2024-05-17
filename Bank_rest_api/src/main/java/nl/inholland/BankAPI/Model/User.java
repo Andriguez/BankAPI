@@ -25,6 +25,12 @@ public class User {
     private long phoneNumber;
     private long bsnNumber;
 
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Account checkingAccount;
+
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Account savingAccount;
+
 
     @ElementCollection(fetch = EAGER)
     private List<UserType> userType;
@@ -85,5 +91,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.bsnNumber = bsnNumber;
         this.userType = userType;
+        this.checkingAccount = null;
+        this.savingAccount = null;
     }
 }
