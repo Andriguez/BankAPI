@@ -1,15 +1,15 @@
 <template>
-  <header class="p-3 mb-3 border-bottom bg-dark">
+  <header class="p-3 mb-3 border-bottom">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <router-link to="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-
+        <router-link to="/" class="d-flex align-items-center mb-1 mb-lg-0 link-body-emphasis text-decoration-none">
+          <img src="./../assets/logo.png" alt="logo" width="80" height="55">
         </router-link>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><router-link to="/" class="nav-link px-2 link-body-emphasis text-light">Home</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis text-light">Accounts</router-link></li>
-          <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis text-light">Login</router-link></li>
+          <li><router-link to="/" class="nav-link px-2 link-body-emphasis">Home</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis">Accounts</router-link></li>
+          <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>
         </ul>
         
         <div v-if="isLoggedIn()" class="dropdown text-end">
@@ -57,3 +57,16 @@ export default {
 }
 
 </script>
+
+<style>
+header{
+  background-color: #9D9D9D;
+  
+  li{
+    color: black !important;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+}
+</style>
