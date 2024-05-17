@@ -10,18 +10,24 @@
           <li><router-link to="/" class="nav-link px-2 link-body-emphasis">Home</router-link></li>
           <li v-if="isLoggedIn()"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis">Accounts</router-link></li>
           <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
+          <li v-if="isLoggedIn()"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>
+
         </ul>
         
-        <div v-if="isLoggedIn()" class="dropdown text-end">
-          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle text-light" data-bs-toggle="dropdown" aria-expanded="false">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-person-circle" viewBox="0 0 16 16">
+        <div v-if="isLoggedIn()" class="dropstart text-end">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#942EE5" class="bi bi-person-circle" viewBox="0 0 16 16">
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
             </svg>
         </a>
-          <ul class="dropdown-menu text-small">
-            <li><router-link class="dropdown-item" to="/">User Details</router-link></li>
+          <ul class="dropdown-menu dropdown-menu-dark text-small">
+            <li><strong>Nameof User</strong></li>
             <li><hr class="dropdown-divider"></li>
+            <li><router-link class="dropdown-item" to="/">User Details</router-link></li>
             <li><router-link class="dropdown-item" to="/logout">Log out</router-link></li>
           </ul>
         </div>
@@ -62,10 +68,23 @@ export default {
 header{
   background-color: #9D9D9D;
   
-  li{
-    color: black !important;
-    font-size: 20px;
-    font-weight: bold;
+  .nav{
+    li {
+      color: black !important;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    router-link{
+      color: black !important;
+      
+    }
+  
+    li:hover {
+      color: #942EE5 !important;
+      text-decoration: underline;
+    }
+  
   }
 
 }

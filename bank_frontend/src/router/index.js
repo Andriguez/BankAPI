@@ -33,7 +33,7 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register',
-      component: HomeView
+      component: () => import('../views/RegistrationView.vue')
     },
     {
       path: '/error',
