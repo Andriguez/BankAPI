@@ -3,9 +3,7 @@ package nl.inholland.BankAPI.Service;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.Transaction;
 import nl.inholland.BankAPI.Model.TransactionType;
-import nl.inholland.BankAPI.Repository.AccountRepository;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
-import nl.inholland.BankAPI.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

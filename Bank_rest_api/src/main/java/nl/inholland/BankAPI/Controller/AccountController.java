@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/accounts")
@@ -25,20 +26,16 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Account>> getCustomerAccounts(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String iban
     ) {
         List<Account> accounts = new ArrayList<Account>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String j_username = authentication.getName();
         // to complete: get user type from authentication later
         UserType userType = UserType.CUSTOMER;
-        System.out.println("username:");
-        System.out.println(authentication.getName());
-        String j_username = authentication.getName();
-        System.out.println("q_username:");
-        System.out.println(username);
 
         // A customer user can only see her own account.
         if (userType == UserType.CUSTOMER && !j_username.equals(username)) {
