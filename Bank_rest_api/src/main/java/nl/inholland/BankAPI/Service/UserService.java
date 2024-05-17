@@ -24,9 +24,9 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        User existingUser = userRepository.findUserByUsername(user.getUsername());
+        User existingUser = userRepository.findUserByEmail(user.getEmail());
         if (existingUser != null) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new IllegalArgumentException("Email is already taken");
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
@@ -38,9 +38,11 @@ public class UserService {
     }
 
      public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
-        User user = userRepository.findUserByUsername(loginRequest.username());
+        User user = userRepository.findUserByEmail(loginRequest.email());
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            return new LoginResponseDTO(user.getUsername(), jwtProvider.createToken(user.getUsername(), user.getUserType()));
+            String fullName = user.getFirstName() + ' '+ user.getLastName();
+            String usertype = user.getUserType().toString();
+            return new LoginResponseDTO(fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
         } else {
             throw new AuthenticationException("Invalid credentials");
         }

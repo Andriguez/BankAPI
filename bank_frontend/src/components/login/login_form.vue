@@ -2,7 +2,7 @@
         <div class="container d-flex justify-content-center">
     <form>
             <div class="form-floating py-2">
-                <input type="text" class="form-control" id="floatingInput" placeholder="Email" v-model="username">
+                <input type="email" class="form-control" id="floatingInput" placeholder="Email" v-model="email">
                 <label for="floatingInput">Email</label>
             </div>
             <div class="form-floating py-2">
@@ -25,13 +25,13 @@ export default {
     
     data(){
         return {
-        username : '',
+        email : '',
         password : ''
     };
     },
     methods: {
         login() {
-            this.loginStore.requestLogin(this.username, this.password)
+            this.loginStore.requestLogin(this.email, this.password)
             .then(() => {
                 this.$router.replace("/");
             })

@@ -20,7 +20,7 @@ public class User {
     private long id;
     private String firstName;
     private String lastName;
-    private String username;
+    private String email;
     private String password;
     private long phoneNumber;
     private long bsnNumber;
@@ -83,10 +83,10 @@ public class User {
         this.userType = userType;
     }*/
 
-    public User(String firstName, String lastName, String username, String password, long phoneNumber, long bsnNumber, List<UserType> userType){
+    public User(String firstName, String lastName, String email, String password, long phoneNumber, long bsnNumber, List<UserType> userType){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.bsnNumber = bsnNumber;

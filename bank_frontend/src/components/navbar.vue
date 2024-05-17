@@ -8,12 +8,20 @@
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><router-link to="/" class="nav-link px-2 link-body-emphasis">Home</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis">Accounts</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('CUSTOMER')" class="dropdown text-end">
+          <a href="#" class="d-block nav-link link-body-emphasis pt-2 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+            Accounts
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark text-small">
+            <li><router-link class="dropdown-item" to="/accounts">Checking</router-link></li>
+            <li><router-link class="dropdown-item" to="/accounts">Savings</router-link></li>
+          </ul>
+        </li>
           <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
-          <li v-if="isLoggedIn()"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
+          <li v-if="isLoggedIn() && !hasUsertype('GUEST')"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>
 
         </ul>
         
@@ -25,7 +33,7 @@
             </svg>
         </a>
           <ul class="dropdown-menu dropdown-menu-dark text-small">
-            <li><strong>Nameof User</strong></li>
+            <li class="px-3"><strong>{{ loginStore.name }}</strong></li>
             <li><hr class="dropdown-divider"></li>
             <li><router-link class="dropdown-item" to="/">User Details</router-link></li>
             <li><router-link class="dropdown-item" to="/logout">Log out</router-link></li>
@@ -58,6 +66,13 @@ export default {
                 return false;
             }
             return this.loginStore.isLoggedIn;
+        },
+        hasUsertype(usertype){
+          if (this.loginStore.usertype === `[${usertype}]`){
+            return true
+          }
+
+          return false
         }
     }
 }

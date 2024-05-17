@@ -24,13 +24,13 @@ public class ApplicationStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
 
         createUsers();
-        userService.getAllUsers().forEach(user -> System.out.println(user.getUsername()));
+        userService.getAllUsers().forEach(user -> System.out.println(user.getEmail()));
     }
 
     private void createUsers(){
-        User admin = new User("employee", "Doe","admin", "password", 123567890, 123456, List.of(UserType.ADMIN));
-        User guest = new User("Jane", "Doe","guest", "password", 123567890, 143576, List.of(UserType.GUEST));
-        User customer = new User("Jhon", "Doe","customer", "password", 123567890, 163558, List.of(UserType.CUSTOMER));
+        User admin = new User("employee", "Doe","admin@email.com", "password", 123567890, 123456, List.of(UserType.ADMIN));
+        User guest = new User("Jane", "Doe","guest@email.com", "password", 123567890, 143576, List.of(UserType.GUEST));
+        User customer = new User("Jhon", "Doe","customer@email.com", "password", 123567890, 163558, List.of(UserType.CUSTOMER));
 
         userService.createUser(customer);
         userService.createUser(admin);

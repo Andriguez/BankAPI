@@ -3,6 +3,7 @@ package nl.inholland.BankAPI.Security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,12 +24,12 @@ public class JwtProvider {
         this.myUserDetailsService = userDetailsService;
     }
 
-    public String createToken(String username, List<UserType> roles) {
+    public String createToken(String email, List<UserType> roles) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + 3600000);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .claim("auth", roles.stream().map(UserType::name).toList())
                 .issuedAt(now)
                 .expiration(expiration)

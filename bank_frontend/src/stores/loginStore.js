@@ -5,7 +5,8 @@ export const useLoginStore = defineStore('login', {
   state: () => ({
     token: '',
     loggedIn: false,
-    username: ''
+    name: '',
+    usertype: ''
   }),
   getters: {
     jwtToken: (state) => state.token,
@@ -13,19 +14,21 @@ export const useLoginStore = defineStore('login', {
     requestUserData: (state) => state.userData
   },
   actions: {
-    requestLogin( username, password) {
+    requestLogin( email, password) {
       return new Promise((resolve, reject) => {
         axios.post('/login', {
-          username: username,
+          email: email,
           password: password,
       })
       .then((res)=>{ 
           axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.token;
           this.token = res.data.token;
           this.loggedIn = true;
-          this.username = res.data.username;
+          this.name = res.data.name;
+          this.usertype = res.data.usertype;
           localStorage.setItem('jwtToken', this.token);
-          localStorage.setItem('username', JSON.stringify(res.data.username));
+          localStorage.setItem('name', JSON.stringify(res.data.name));
+          localStorage.setItem('usertype', JSON.stringify(res.data.usertype))
           console.log(res.data);
           resolve()
       })
@@ -34,7 +37,9 @@ export const useLoginStore = defineStore('login', {
     },
     logout(){
       localStorage.removeItem('jwtToken');
-      localStorage.removeItem('username')
+      localStorage.removeItem('name')
+      localStorage.removeItem('usertype')
+
       this.loggedIn = false;
 
       delete axios.defaults.headers.common['Authorization'];
@@ -43,11 +48,12 @@ export const useLoginStore = defineStore('login', {
     retriveTokenFromStorage(){
 
       if(localStorage.getItem('jwtToken')){
-        const localUserData = localStorage.getItem('username');
+        const localUserName= localStorage.getItem('name');
+        const localUserType = localStorage.getItem('usertype')
         this.loggedIn = true;
         this.token = localStorage.getItem('jwtToken');
-        this.username = JSON.parse(localUserData);
-        console.log(this.username)
+        this.name = JSON.parse(localUserName);
+        this.usertype = JSON.parse(localUserType)
   
         axios.defaults.headers.common['Authorization'] = "Bearer " + this.token;
         return Promise.resolve('/');
