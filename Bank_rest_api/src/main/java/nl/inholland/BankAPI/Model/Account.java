@@ -1,9 +1,6 @@
 package nl.inholland.BankAPI.Model;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -23,6 +20,17 @@ public class Account {
     private double balance;
     private double absoluteLimit;
     private double dailyLimit;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
+
+    private String username;
+    public long getId() {return id;}
+    public String getUsername() {return username;}
+    public void setUsername(String username){
+        this.username = username;
+    }
 
     public String getIban(){
         return iban;

@@ -19,6 +19,8 @@ public class Transaction {
     private LocalDateTime dateTime;
     private int userInitiating;
 
+    private TransactionType transactionType;
+
     public int getSenderId(){
         return senderId;
     }
@@ -63,5 +65,9 @@ public class Transaction {
         this.dateTime = dateTime;
         this.userInitiating = userInitiating;
 
+    }
+
+    public TransactionType getTransactionType() {
+        return this.transactionType;
     }
 }
