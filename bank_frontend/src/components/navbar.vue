@@ -1,5 +1,5 @@
 <template>
-  <header class="p-3 mb-3 border-bottom">
+  <header v-if="$route.path !== '/atm'" class="p-3 mb-3 border-bottom">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <router-link to="/" class="d-flex align-items-center mb-1 mb-lg-0 link-body-emphasis text-decoration-none">
@@ -68,11 +68,7 @@ export default {
             return this.loginStore.isLoggedIn;
         },
         hasUsertype(usertype){
-          if (this.loginStore.usertype === `[${usertype}]`){
-            return true
-          }
-
-          return false
+          return this.loginStore.hasUsertype(usertype);
         }
     }
 }

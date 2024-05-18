@@ -15,15 +15,14 @@ const router = createRouter({
     {
       path: '/accounts',
       name: 'accounts',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AcountsView.vue'),
-      meta: { requiresAuth: true }    },
+      meta: { requiresAuth: true, requiresCustomer: true }
+    },
     {
       path: '/atm',
       name: 'atm',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/ATMview.vue'),
+      meta: { requiresAuth: true, requiresCustomer: true }
     },
     {
       path: '/login',
@@ -43,7 +42,8 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: HomeView
+      component: HomeView,
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/logout',
@@ -55,6 +55,12 @@ const router = createRouter({
         next('/');
       }
     },
+    {
+      path: '/transfer',
+      name: 'Transfer',
+      component: () => import('../views/LoginView.vue'),
+      meta: { requiresAuth: true }
+    }
     
   ]
 });
@@ -67,13 +73,18 @@ router.beforeEach((to, from, next) => {
   }
 
   if(to.meta.requiresAuth){
-    
+
     if(!loginStore.isLoggedIn){
-      next('/login');
+
+        next({path: '/login',
+        query: { redirect: to.fullPath }})
+
     } else {
-      if(to.meta.requiresAdmin && loginStore.requestUserData.usertype !== 'admin'){
+      if(to.meta.requiresAdmin && !loginStore.hasUsertype('ADMIN')){
         next('/');
 
+      } else if(to.meta.requiresCustomer && !loginStore.hasUsertype('CUSTOMER')) {
+        next('/');
       } else {
         next();
       }

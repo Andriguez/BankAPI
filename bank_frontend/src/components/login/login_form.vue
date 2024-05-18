@@ -33,8 +33,10 @@ export default {
         login() {
             this.loginStore.requestLogin(this.email, this.password)
             .then(() => {
-                this.$router.replace("/");
-            })
+          const redirectPath = this.$route.query.redirect || '/';
+          this.$router.replace(redirectPath);
+        })
+
             .catch ((error)=>{
                 this.errorMessage = error;
                 alert(error);
