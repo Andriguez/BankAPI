@@ -1,5 +1,7 @@
 package nl.inholland.BankAPI.Service;
 
+import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import nl.inholland.BankAPI.Model.User;
@@ -37,6 +39,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserById(long id){
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found."));
+    }
+
      public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
         User user = userRepository.findUserByUsername(loginRequest.username());
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
@@ -45,4 +51,11 @@ public class UserService {
             throw new AuthenticationException("Invalid credentials");
         }
     }
+
+    public void deleteUser(long id){
+        User user = this.getUserById(id);
+        userRepository.deleteById(id);
+    }
+
+
 }
