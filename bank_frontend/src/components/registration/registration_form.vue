@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         register() {
-            this.loginStore.requestLogin(this.username, this.password)
+            this.loginStore.requestLogin(this.email, this.password)
             .then(() => {
                 this.$router.replace("/");
             })
