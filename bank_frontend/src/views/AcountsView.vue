@@ -1,6 +1,6 @@
 <template>
-
-    <h1>Account of user with username: {{ username }}</h1>
+<div class="account_view">
+    <h1 >Account of user with email: {{ email }}</h1>
     <div class="d-flex" v-if="hasAccounts">
         <div class="detailCard">
             <label>Accounts</label>
@@ -15,20 +15,20 @@
     <div class="d-flex" v-if="!hasAccounts">
         <p> you don't have any accounts yet.</p>
     </div>
-
+</div>
 
 </template>
 
 <script>
 import { useLoginStore } from '../stores/loginStore';
-import { getAccountsByUsername } from '../services/accountsService';
+import { getAccountsByEmail } from '../services/accountsService';
 
 export default {
     name: 'Accounts',
     data() {
         return {
             loginStore: useLoginStore(),
-            username: "",
+            email: "",
             jwtToken: "",
             accounts: [],
             hasAccounts: false,
@@ -37,14 +37,14 @@ export default {
         };
     },
     mounted() {
-        this.username = this.loginStore.username;
+        this.email = this.loginStore.name;
         this.jwtToken = this.loginStore.jwtToken;
         this.getAllAccounts();
     },
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsByUsername(this.username, this.jwtToken);
+                let accounts = await getAccountsByEmail(this.email, this.jwtToken);
                 console.log(accounts);
                 console.log(accounts.length);
                 // this.hasAccounts = accounts.length > 0;
@@ -56,3 +56,9 @@ export default {
 };
 
 </script>
+
+<style>
+.container{
+    color: blueviolet;
+}
+</style>
