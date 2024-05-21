@@ -1,5 +1,6 @@
 package nl.inholland.BankAPI.Controller;
 
+import nl.inholland.BankAPI.Model.DTO.UserDTO;
 import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
@@ -26,7 +27,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/{type}")
+    @GetMapping("/type/{type}")
     public ResponseEntity<List<UserOverviewDTO>> getUsersByType(@PathVariable String type){
 
         UserType userType;
@@ -46,5 +47,19 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(userDtos);
     }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+
+        User user;
+        try{
+            user = userService.getUserById(id);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getBsnNumber(), user.getUserType()));
+    }
+
 
 }
