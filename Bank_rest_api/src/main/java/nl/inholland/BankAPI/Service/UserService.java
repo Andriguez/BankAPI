@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public List<User> getUsersByType(List<UserType> userType){
-        return userRepository.findUsersByUserType(userType);
+        return userRepository.findByUserTypeIn(userType);
     }
 
     public User getUserById(long id){

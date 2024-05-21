@@ -8,11 +8,11 @@
     <label for="inputBsn" class="form-label">BSN</label>
     <input type="number" class="form-control" id="inputBsn" readonly>
   </div>
-  <div class="col-4">
+  <div class="col-3">
     <label for="inputFirstName" class="form-label">First Name</label>
     <input type="text" class="form-control" id="inputFirstName" readonly>
   </div>
-  <div class="col-4">
+  <div class="col-3">
     <label for="inputLastName" class="form-label">Last Name</label>
     <input type="text" class="form-control" id="inputLastName" readonly>
   </div>
@@ -20,10 +20,10 @@
     <label for="inputPhone" class="form-label">Phone Number</label>
     <input type="number" class="form-control" id="inputPhone" readonly>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <label for="inputPhone" class="form-label">Absolut Limit</label>
     <input type="number" class="form-control" id="inputPhone">
-  </div><div class="col-md-4">
+  </div><div class="col-md-3">
     <label for="inputPhone" class="form-label">Daily Limit</label>
     <input type="number" class="form-control" id="inputPhone">
   </div>

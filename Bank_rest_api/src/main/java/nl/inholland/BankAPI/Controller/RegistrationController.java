@@ -21,12 +21,14 @@ public class RegistrationController {
         this.uService = userService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<User>> getUsersByType(){
 
-        List<UserType> usertype = List.of(UserType.ADMIN);
+        List<UserType> usertype = List.of(UserType.GUEST);
+        List<User> registrations = uService.getUsersByType(usertype);
 
-        return ResponseEntity.ok(uService.getUsersByType(usertype));
+        System.out.println(registrations);
+        return ResponseEntity.ok(registrations);
     }
 
 
