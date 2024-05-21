@@ -2,23 +2,23 @@
 <form class="row g-3 mx-5 pt-5" style="max-width: 700px;">
   <div class="col-6">
     <label for="inputEmail4" class="form-label">Email</label>
-    <input type="email" class="form-control" id="inputEmail4" readonly>
+    <input type="email" class="form-control" id="inputEmail4" :value="details.email" readonly>
   </div>
   <div class="col-4">
     <label for="inputBsn" class="form-label">BSN</label>
-    <input type="number" class="form-control" id="inputBsn" readonly>
+    <input type="number" class="form-control" id="inputBsn" :value="details.bsnNumber" readonly>
   </div>
   <div class="col-4">
     <label for="inputFirstName" class="form-label">First Name</label>
-    <input type="text" class="form-control" id="inputFirstName" readonly>
+    <input type="text" class="form-control" id="inputFirstName" :value="details.firstName" readonly>
   </div>
   <div class="col-4">
     <label for="inputLastName" class="form-label">Last Name</label>
-    <input type="text" class="form-control" id="inputLastName" readonly>
+    <input type="text" class="form-control" id="inputLastName" :value="details.lastName" readonly>
   </div>
   <div class="col-md-4">
     <label for="inputPhone" class="form-label">Phone Number</label>
-    <input type="number" class="form-control" id="inputPhone" readonly>
+    <input type="number" class="form-control" :value="details.phoneNumber" id="inputPhone" readonly>
   </div>
   <div class="row g-3">
     <label>Current Account</label>
@@ -45,7 +45,15 @@
 
 <script>
 export default {
-    name: 'UsersDetails'
+    name: 'UsersDetails',
+    data(){
+      return {
+        registration: ''
+      }
+    },
+    props: {
+      details: Object
+    },
 }
 </script>
 

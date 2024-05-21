@@ -11,6 +11,7 @@ import { getRegistrations } from '../../../services/userService.js'
        v-for="registration in registrations"
        :key="registration.id"
        :registration="registration"
+       @selectRegistration="setRegistrationId"
       />
 
     </ul>
@@ -33,6 +34,10 @@ export default {
             } catch(error){
                 console.log(error)
             }
+        },
+        setRegistrationId(id){
+        this.$emit('selectRegistration', id);
+    
         }
     },
     mounted(){

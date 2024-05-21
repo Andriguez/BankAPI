@@ -1,11 +1,8 @@
-<script setup>
-import {getUserById} from '@/services/userService'
-</script>
 <template>
 
 <li class="nav-item">
     <!--use class active to display the selected one-->
-        <a href="#" class="nav-link text-white" aria-current="page" @click="getUserById(registration.Id)">
+        <a href="#" class="nav-link text-white" aria-current="page" @click="selectRegistration(registration.Id)">
           {{ registration.firstName }} {{ registration.lastName }}
         </a>
 
@@ -20,13 +17,9 @@ props: {
     registration: Object
 },
 methods: {
-    getUserInfo(id){
-     try{
-        getUserById(id)
-        } catch(error) {
-        console.log(error)
-        }
-}
+    selectRegistration(id){
+        this.$emit('selectRegistration', id);
+    }
 }
 }
 </script>
