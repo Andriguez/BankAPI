@@ -1,5 +1,5 @@
 <template>
-  <header v-if="$route.path !== '/atm'" class="p-3 mb-3 border-bottom">
+  <header v-if="$route.path !== '/atm'" class="p-3 border-bottom">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <router-link to="/" class="d-flex align-items-center mb-1 mb-lg-0 link-body-emphasis text-decoration-none">
@@ -18,7 +18,7 @@
           </ul>
         </li>
           <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>
-          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/registrations" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
           <li v-if="isLoggedIn() && !hasUsertype('GUEST')"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>

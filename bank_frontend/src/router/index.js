@@ -60,6 +60,12 @@ const router = createRouter({
       name: 'Transfer',
       component: () => import('../views/LoginView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/registrations',
+      name: 'Registrations',
+      component: () => import('../views/AdminView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
     
   ]

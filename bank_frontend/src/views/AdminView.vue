@@ -1,9 +1,10 @@
 <script setup>
+import Registations from '../components/admin/registrations/registrations_page.vue'
 </script>
 
 <template>
   
-    <h1>this is the Admin View</h1>
+    <Registations />
 </template>
 
 <script>

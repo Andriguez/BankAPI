@@ -5,6 +5,7 @@ import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import nl.inholland.BankAPI.Model.User;
+import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Repository.UserRepository;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +38,10 @@ public class UserService {
 
     public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    public List<User> getUsersByType(List<UserType> userType){
+        return userRepository.findUsersByUserType(userType);
     }
 
     public User getUserById(long id){
