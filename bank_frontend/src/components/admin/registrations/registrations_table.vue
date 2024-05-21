@@ -1,5 +1,5 @@
 <script setup>
-import RegistrationItem from './registration_item.vue'
+import UsersItem from '../users_item.vue'
 import { getRegistrations } from '../../../services/userService.js'
 </script>
 <template>
@@ -7,10 +7,10 @@ import { getRegistrations } from '../../../services/userService.js'
       <span class="fs-4">Registrations</span>
     <hr>
     <ul class="nav nav-pills flex-column">
-      <RegistrationItem 
+      <UsersItem 
        v-for="registration in registrations"
-       :key = "registration.id"
-       :registration = "registration"
+       :key="registration.id"
+       :registration="registration"
       />
 
     </ul>

@@ -12,7 +12,7 @@
 
 <script>
 export default {
-name: 'RegistrationItem',
+name: 'UsersItem',
 props: {
     registration: Object
 }

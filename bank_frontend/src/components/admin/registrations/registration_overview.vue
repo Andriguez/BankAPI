@@ -15,7 +15,7 @@ import UsersDetails from '../users_details.vue'
 
 <script>
 export default {
-    name: 'UsersOverview'
+    name: 'RegistrationOverview'
 }
 </script>
 
