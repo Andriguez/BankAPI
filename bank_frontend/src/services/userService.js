@@ -2,7 +2,7 @@ import axios from '../axios-auth'
 
 export const getRegistrations = (  ) => {
     return new Promise((resolve, reject) => {
-      axios.get('/users/guest', {
+      axios.get('/users', {
     })
     .then((res)=>{ 
         console.log(res.data);

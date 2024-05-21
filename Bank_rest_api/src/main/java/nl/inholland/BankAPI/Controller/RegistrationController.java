@@ -12,17 +12,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/registrations")
+public class RegistrationController {
 
-    private UserService userService;
+    private UserService uService;
 
-    public UserController(UserService userService){
-        this.userService = userService;
+    public RegistrationController(UserService userService){
+        this.uService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    @GetMapping()
+    public ResponseEntity<List<User>> getUsersByType(){
+
+        List<UserType> usertype = List.of(UserType.ADMIN);
+
+        return ResponseEntity.ok(uService.getUsersByType(usertype));
     }
+
+
+
 }

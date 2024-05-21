@@ -38,3 +38,9 @@ export default {
     name: 'RegistrationOverview'
 }
 </script>
+
+<style>
+label{
+  color: white;
+}
+</style>
