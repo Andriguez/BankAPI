@@ -97,4 +97,9 @@ public class User {
         this.bsnNumber = bsnNumber;
         this.userType = userType;
     }
+
+    public void addAccountToUser(Account checkingAccount, Account savingAccount){
+        this.checkingAccount = checkingAccount;
+        this.savingAccount = savingAccount;
+    }
 }
