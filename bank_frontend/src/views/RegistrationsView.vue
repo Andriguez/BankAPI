@@ -3,7 +3,6 @@ import Registations from '../components/admin/registrations/registrations_page.v
 </script>
 
 <template>
-  
     <Registations />
 </template>
 

@@ -8,12 +8,13 @@ import UsersDetails from '../users_details.vue'
     <UsersDetails/>
   </div>
   <div class="col-12">
-    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Open Account</a>
+    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Edit</a>
+    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Delete</a>
   </div>
 </form>
 </template>
 
-<script>
+<script>    
 export default {
     name: 'UsersOverview'
 }

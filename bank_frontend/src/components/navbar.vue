@@ -19,7 +19,7 @@
         </li>
           <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/registrations" class="nav-link px-2 link-body-emphasis">Registrations</router-link></li>
-          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
+          <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/users" class="nav-link px-2 link-body-emphasis">Users</router-link></li>
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
           <li v-if="isLoggedIn() && !hasUsertype('GUEST')"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>
 

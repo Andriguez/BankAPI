@@ -43,6 +43,12 @@ public class UserService {
     public List<User> getUsersByType(List<UserType> userType){
         return userRepository.findUsersByUserType(userType);
     }
+    public void changeGuestToUser(User guest){
+        User userToChange = this.getUserById(guest.getId());
+        if(userToChange.getUserType().equals(UserType.GUEST)){
+             // userToChange.setUserType(UserType.CUSTOMER);
+        }
+    }
 
     public User getUserById(long id){
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found."));

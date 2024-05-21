@@ -23,6 +23,7 @@ const router = createRouter({
       name: 'atm',
       component: () => import('../views/ATMview.vue'),
       meta: { requiresAuth: true, requiresCustomer: true }
+      
     },
     {
       path: '/login',
@@ -38,12 +39,6 @@ const router = createRouter({
       path: '/error',
       name: 'error',
       component: HomeView
-    },
-    {
-      path: '/admin',
-      name: 'admin',
-      component: () =>import('../views/AdminView.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/logout',
@@ -64,7 +59,13 @@ const router = createRouter({
     {
       path: '/registrations',
       name: 'Registrations',
-      component: () => import('../views/AdminView.vue'),
+      component: () => import('../views/RegistrationsView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/users',
+      name: 'Users',
+      component: () => import('../views/UsersView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true }
     }
     
