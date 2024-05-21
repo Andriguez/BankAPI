@@ -30,7 +30,7 @@ public class ApplicationStarter implements ApplicationRunner {
     private void createUsers(){
         User admin = new User("employee", "Doe","admin@email.com", "password", 123567890, 123456, List.of(UserType.ADMIN));
         User guest = new User("Jane", "Doe","guest@email.com", "password", 123567890, 143576, List.of(UserType.GUEST));
-        User customer = new User("Jhon", "Doe","customer@email.com", "password", 123567890, 163558, List.of(UserType.CUSTOMER));
+        User customer = new User("John", "Doe","customer@email.com", "password", 123567890, 163558, List.of(UserType.CUSTOMER));
 
         userService.createUser(customer);
         userService.createUser(admin);
