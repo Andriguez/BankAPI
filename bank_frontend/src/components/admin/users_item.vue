@@ -15,7 +15,7 @@ import {getUserById} from '../../../services/userService'
 
 <script>
 export default {
-name: 'RegistrationItem',
+name: 'UsersItem',
 props: {
     registration: Object
 },
