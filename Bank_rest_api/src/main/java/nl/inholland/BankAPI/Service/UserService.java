@@ -66,7 +66,7 @@ public class UserService {
     public void changeGuestToUser(User guest){
         User userToChange = this.getUserById(guest.getId());
         if(userToChange.getUserType().equals(UserType.GUEST)){
-             // userToChange.setUserType(UserType.CUSTOMER);
+            userToChange.setUserType(List.of(UserType.CUSTOMER));
         }
     }
 
@@ -87,7 +87,9 @@ public class UserService {
 
     public void deleteUser(long id){
         User user = this.getUserById(id);
-        userRepository.deleteById(id);
+        //instead of deleting user, we just close their accounts
+        user.getCheckingAccount().getIban();
+        user.getSavingAccount().getIban();
     }
 
 

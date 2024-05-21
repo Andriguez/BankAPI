@@ -1,5 +1,12 @@
 package nl.inholland.BankAPI.Model;
 
-public enum AccountStatus {
-    ACTIVE, INACTIVE
+import org.springframework.security.core.GrantedAuthority;
+
+
+public enum AccountStatus implements GrantedAuthority {
+    ACTIVE, INACTIVE;
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }

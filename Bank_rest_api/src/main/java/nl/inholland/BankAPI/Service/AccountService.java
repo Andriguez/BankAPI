@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +71,11 @@ public class AccountService {
     public void editAbsoluteLimit(String accountIban, double newLimit){
         Account account = this.getAccountByIban(accountIban);
         account.setAbsoluteLimit(newLimit);
+    }
+
+    public void closeAccount(String accountIban){
+        Account account = this.getAccountByIban(accountIban);
+        account.setAccountStatus(List.of(AccountStatus.INACTIVE));
+
     }
 }

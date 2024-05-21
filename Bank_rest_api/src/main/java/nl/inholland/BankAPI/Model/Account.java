@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
 @NoArgsConstructor
+@Data
 public class Account {
 
     @Id
@@ -20,6 +22,9 @@ public class Account {
     private double balance;
     private double absoluteLimit;
     private double dailyLimit;
+
+    @ElementCollection(fetch = EAGER)
+    private List<AccountStatus> accountStatus;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -63,6 +68,7 @@ public class Account {
         this.balance = balance;
         this.dailyLimit = dailyLimit;
         this.absoluteLimit = absoluteLimit;
+        this.accountStatus = List.of(AccountStatus.ACTIVE);
     }
 
 }
