@@ -8,7 +8,9 @@ import { getRegistrations } from '../../../services/userService.js'
     <hr>
     <ul class="nav nav-pills flex-column">
       <RegistrationItem 
-       
+       v-for="registration in registrations"
+       :key = "registration.id"
+       :registration = "registration"
       />
 
     </ul>

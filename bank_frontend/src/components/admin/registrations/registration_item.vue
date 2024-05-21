@@ -3,8 +3,7 @@
 <li class="nav-item">
     <!--use class active to display the selected one-->
         <a href="#" class="nav-link text-white" aria-current="page">
-          user's name
-          <span>submitted 22/05/24</span>
+          {{ registration.firstName }} {{ registration.lastName }}
         </a>
 
     </li>

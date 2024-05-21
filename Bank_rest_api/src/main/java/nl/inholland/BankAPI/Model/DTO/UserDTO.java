@@ -5,9 +5,11 @@ import nl.inholland.BankAPI.Model.UserType;
 
 import java.util.List;
 
-public record UserDTO(String firstName, String lastName, String email, long phoneNumber, long bsnNumber, List<UserType> userType) {
+public record UserDTO(Long Id, String firstName, String lastName, String email, long phoneNumber, long bsnNumber, List<UserType> userType) {
     public UserDTO(User user){
-        this(user.getFirstName(),
+        this(
+                user.getId(),
+                user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
                 user.getPhoneNumber(),

@@ -35,7 +35,6 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
         } catch (JwtException e) {
             PrintWriter writer = response.getWriter();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

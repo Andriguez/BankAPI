@@ -1,15 +1,15 @@
 package nl.inholland.BankAPI.Controller;
 
+import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -25,4 +25,26 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @GetMapping("/{type}")
+    public ResponseEntity<List<UserOverviewDTO>> getUsersByType(@PathVariable String type){
+
+        UserType userType;
+
+        try{
+            userType = UserType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        List<UserType> usertype = List.of(userType);
+        List<User> registrations = userService.getUsersByType(usertype);
+
+        List<UserOverviewDTO> userDtos = registrations.stream()
+                .map(user -> new UserOverviewDTO(user.getId(), user.getFirstName(), user.getLastName()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(userDtos);
+    }
+
 }
