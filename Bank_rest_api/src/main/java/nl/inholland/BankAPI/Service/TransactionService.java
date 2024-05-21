@@ -27,57 +27,11 @@ public class TransactionService {
 
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactions(
-            String toFromIban, String toFromIban2, TransactionType transactionType,
+    public List<Transaction> getTransactionsByUserId(
+            long userId, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
             Float minAmount, Float maxAmount, Float exactAmount) {
-        // first we read all transactions and then filter them based on the inputs.
-        List<Transaction> transactions = transactionRepository.findAll();
-        // Each transaction has a sender and a receiver (for internal transfers they might be the same) in the
-        // transaction model, Since we want to filter based on iban, we should the the account id from its iban. We
-        // call getAccountByIban method in accountService.
-        if(toFromIban != null && !toFromIban.isEmpty()) {
-            Account toFromAccount = accountService.getAccountByIban(toFromIban);
-            // if the iban provided does not match an account, wer return null.
-            if (toFromAccount == null) {
-                // if not found, return empty list
-                return new ArrayList<Transaction>();
-            }
-            transactions = transactions.stream()
-                    .filter(transaction -> {
-                        // when filtering a transaction by its iban, we should accept the transaction if its sender
-                        // or receiver has that iban.
-                        if (transaction.getSenderId() == toFromAccount.getId()
-                                || transaction.getReceiverId() == toFromAccount.getId())
-                        {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-            System.out.println("found by to from iban " + toFromIban );
-            System.out.println(transactions.size());
-        }
-        // toFromIban2 is similar to first iban.
-        if(toFromIban2 != null && !toFromIban2.isEmpty()) {
-            Account toFromAccount = accountService.getAccountByIban(toFromIban2);
-            if (toFromAccount == null) {
-                // if not found, return empty list
-                return new ArrayList<Transaction>();
-            }
-            transactions = transactions.stream()
-                    .filter(transaction -> {
-                        if (transaction.getSenderId() == toFromAccount.getId()
-                                || transaction.getReceiverId() == toFromAccount.getId())
-                        {
-                            return true;
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-            System.out.println("found by to from iban 2 " + toFromIban2 );
-            System.out.println(transactions.size());
-        }
+        List<Transaction> transactions = transactionRepository.findBySenderIdOrReceiverId(userId, userId);
         if(transactionType != null) {
             transactions = transactions.stream()
                     .filter(transaction -> transaction.getTransactionType() == transactionType)

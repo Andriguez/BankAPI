@@ -20,7 +20,6 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = userRepository.findUserByEmail(email);
 
         if (user != null){
-
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getEmail())
                     .password(user.getPassword())
@@ -29,6 +28,15 @@ public class MyUserDetailsService implements UserDetailsService {
         }
 
         throw new UsernameNotFoundException("Email not found!");
+    }
 
+    public User loadCompleteUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findUserByEmail(email);
+
+        if (user != null){
+            return user;
+        }
+
+        throw new UsernameNotFoundException("Email not found!");
     }
 }

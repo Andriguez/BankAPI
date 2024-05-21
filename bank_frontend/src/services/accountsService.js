@@ -1,9 +1,9 @@
 import axios from '@/axios-auth.js';
 
-export const getAccountsByEmail = async (email, token) => {
+export const getAccountsOfCustomer = async (token) => {
     try {
-        console.log(email, token);
-        const response = await axios.get(`/accounts?email=${email}`, {
+        console.log(token);
+        const response = await axios.get(`/accounts/myAccounts`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
