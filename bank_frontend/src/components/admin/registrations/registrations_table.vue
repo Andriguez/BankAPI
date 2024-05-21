@@ -26,7 +26,7 @@ export default {
             registrations: []
         }
     },
-};
+
     methods: {
         getAllRegistrations(){
             try{
@@ -45,7 +45,7 @@ export default {
         getRegistrations()
         .then((data) =>{ this.registrations = data })
         .catch((error) => console.log(error));
-    }
+    } }
 
 </script>
 
