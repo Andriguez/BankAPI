@@ -49,6 +49,10 @@ public class WebSecurityConfiguration {
                         requests.requestMatchers("/users").authenticated());
         httpSecurity.authorizeHttpRequests(
                 requests ->
+                        requests.requestMatchers("/users/**").authenticated());
+
+        httpSecurity.authorizeHttpRequests(
+                requests ->
                         requests.requestMatchers("/registrations").authenticated());
         httpSecurity.authorizeHttpRequests(
                 requests ->
