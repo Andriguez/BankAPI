@@ -94,4 +94,9 @@ public class User {
         this.checkingAccount = null;
         this.savingAccount = null;
     }
+
+    public void addAccountToUser(Account checkingAccount, Account savingAccount){
+        this.checkingAccount = checkingAccount;
+        this.savingAccount = savingAccount;
+    }
 }

@@ -26,6 +26,9 @@ public class Account {
     @ElementCollection(fetch = EAGER)
     private List<AccountStatus> accountStatus;
 
+    @ElementCollection(fetch = EAGER)
+    private List<AccountType> accountType;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User owner;
@@ -63,7 +66,7 @@ public class Account {
         this.dailyLimit = dailyLimit;
     }
 
-    public Account(String iban, double balance, double absoluteLimit, double dailyLimit){
+    public Account(String iban, double balance, double absoluteLimit, double dailyLimit, List<AccountType> accountType){
         this.iban = iban;
         this.balance = balance;
         this.dailyLimit = dailyLimit;
