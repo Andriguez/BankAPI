@@ -1,5 +1,6 @@
 package nl.inholland.BankAPI.Controller;
 
+import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
 import nl.inholland.BankAPI.Model.DTO.UserDTO;
 import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,5 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getBsnNumber()));
     }
-
 
 }

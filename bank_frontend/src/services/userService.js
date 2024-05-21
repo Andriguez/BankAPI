@@ -32,3 +32,25 @@ export const getRegistrations = (  ) => {
       })
       .catch((error) => reject(error));
       },)}
+
+      export const requestRegistration = async (userData) => {
+        return new Promise((resolve, reject) => {
+            axios.post('/register', {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                bsnNumber: userData.bsnNumber,
+                phoneNumber: userData.phoneNumber,
+                email: userData.email,
+                password: userData.password,
+            })
+            .then((res) => { 
+                console.log(res.data);
+                resolve(res.data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                reject(error);
+            });
+        });
+    };
+        

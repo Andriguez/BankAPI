@@ -25,6 +25,7 @@ export default {
             registrations: []
         }
     },
+};
     methods: {
         getAllRegistrations(){
             try{
@@ -41,7 +42,6 @@ export default {
         .catch((error) => console.log(error));
     }
 
-}
 </script>
 
 <style>

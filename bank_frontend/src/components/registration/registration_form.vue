@@ -43,37 +43,45 @@
     </main>
 </template>
 <script>
-import { useLoginStore } from '@/stores/loginStore'
+import {requestRegistration} from '../../services/userService';
 
 export default {
     name: 'RegistrationForm',
-    
-    data(){
+    data() {
         return {
-        email : '',
-        password : '',
-        firstname: '',
-        lastname: '',
-        bsn: '',
-        phone: ''
-    };
+            firstname: '',
+            lastname: '',
+            bsn: '',
+            phone: '',
+            email: '',
+            password: ''
+        };
     },
-    methods: {
-        register() {
-            this.loginStore.requestLogin(this.email, this.password)
-            .then(() => {
-                this.$router.replace("/");
-            })
-            .catch ((error)=>{
-                this.errorMessage = error;
-                alert(error);
-            })
-        },
-    },
-    mounted(){
-        this.loginStore = useLoginStore();
+        methods:{
+            async register() {
+            const userData = {
+                firstName: this.firstname,
+                lastName: this.lastname,
+                bsnNumber: this.bsn,
+                phoneNumber: this.phone,
+                email: this.email,
+                password: this.password
+            };
+
+            try {
+                const response = await requestRegistration(userData);
+                console.log(response);
+                alert('Registration successful!');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Registration failed.');
+            }
+        }
+        
+
     }
 }
+    
 </script>
 
 <style>

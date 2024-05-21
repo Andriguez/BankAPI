@@ -56,6 +56,9 @@ public class WebSecurityConfiguration {
                         requests.requestMatchers("/registrations").authenticated());
         httpSecurity.authorizeHttpRequests(
                 requests ->
+                        requests.requestMatchers("/register").permitAll());
+        httpSecurity.authorizeHttpRequests(
+                requests ->
                         requests.requestMatchers("/accounts").permitAll()); // convert to authenticated later
         httpSecurity.authorizeHttpRequests(
                 requests ->

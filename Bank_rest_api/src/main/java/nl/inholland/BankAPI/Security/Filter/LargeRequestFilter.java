@@ -17,7 +17,7 @@ public class LargeRequestFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         int size = servletRequest.getContentLength();
         log.info("Request size: " + size);
-        if (size > 100) {
+        if (size > 1000) {
             log.severe( "request with size " + size + " was rejected");
             throw new ServletException("Request too large");
         } else {

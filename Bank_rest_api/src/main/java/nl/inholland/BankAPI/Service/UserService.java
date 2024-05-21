@@ -4,6 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
+import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
+import nl.inholland.BankAPI.Model.DTO.UserDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Repository.UserRepository;
@@ -35,6 +37,24 @@ public class UserService {
 
         return userRepository.save(user);
     }
+    public User createUserDTO(RegistrationDTO user) {
+        User existingUser = userRepository.findUserByEmail(user.email());
+        if (existingUser != null) {
+            throw new IllegalArgumentException("Email is already taken");
+        }
+        User userToAdd = new User();
+        userToAdd.setFirstName(user.firstName());
+        userToAdd.setLastName(user.lastName());
+        userToAdd.setEmail(user.email());
+        userToAdd.setPhoneNumber(user.phoneNumber());
+        userToAdd.setBsnNumber(user.bsnNumber());
+        userToAdd.setUserType(List.of(UserType.GUEST));
+        userToAdd.setPassword(bCryptPasswordEncoder.encode(user.password()));
+
+        return userRepository.save(userToAdd);
+
+    }
+
 
     public List<User> getAllUsers(){
         return userRepository.findAll();

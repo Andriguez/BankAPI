@@ -16,4 +16,5 @@ app.use(router)
 const loginStore = useLoginStore();
 loginStore.retriveTokenFromStorage();
 
+// const userData
 app.mount('#app')
