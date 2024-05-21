@@ -20,16 +20,15 @@ public class Account {
     private double balance;
     private double absoluteLimit;
     private double dailyLimit;
+    @ElementCollection(fetch = EAGER)
+    private List<AccountType> type;
 
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private String email;
     public long getId() {return id;}
-    public String getEmail() {return email;}
-    public long getUserId() {return userId;}
-    public void setEmail(String email){
-        this.email = email;
-    }
+    //public long getUserId() {return userId;}
 
     public String getIban(){
         return iban;
@@ -57,11 +56,15 @@ public class Account {
         this.dailyLimit = dailyLimit;
     }
 
-    public Account(String iban, double balance, double absoluteLimit, double dailyLimit){
+    public Account(String iban, double balance, double absoluteLimit, double dailyLimit, List<AccountType> type){
         this.iban = iban;
         this.balance = balance;
         this.dailyLimit = dailyLimit;
         this.absoluteLimit = absoluteLimit;
+        this.type = type;
     }
+
+    public void setUser(User user) { this.user = user; }
+
 
 }

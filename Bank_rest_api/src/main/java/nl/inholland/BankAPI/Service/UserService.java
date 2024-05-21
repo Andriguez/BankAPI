@@ -79,6 +79,7 @@ public class UserService {
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             String fullName = user.getFirstName() + ' '+ user.getLastName();
             String usertype = user.getUserType().toString();
+            String userId = String.valueOf(user.getId());
             return new LoginResponseDTO(fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
         } else {
             throw new AuthenticationException("Invalid credentials");
@@ -90,5 +91,11 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public User getUserByEmail(String email){
+        return userRepository.findUserByEmail(email);
+    }
 
+    public void AddAccountToUser(){
+
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.FetchType.EAGER;
@@ -25,11 +26,16 @@ public class User {
     private long phoneNumber;
     private long bsnNumber;
 
-    private long checkingAccount;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Account> accounts;
 
-
-    private long savingAccount;
-
+    public void addAccount(Account account) {
+        if(accounts == null){
+            accounts = new ArrayList<>();
+        }
+        accounts.add(account);
+        account.setUser(this);
+    }
 
     @ElementCollection(fetch = EAGER)
     private List<UserType> userType;
