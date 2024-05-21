@@ -2,8 +2,8 @@
 
 <li class="nav-item">
     <!--use class active to display the selected one-->
-        <a href="#" class="nav-link text-white" aria-current="page" @click="selectRegistration(registration.Id)">
-          {{ registration.firstName }} {{ registration.lastName }}
+        <a href="#" class="nav-link text-white" aria-current="page" @click="selectId(row.Id)">
+          {{ row.firstName }} {{ row.lastName }}
         </a>
 
     </li>
@@ -14,11 +14,11 @@
 export default {
 name: 'UsersItem',
 props: {
-    registration: Object
+    row: Object
 },
 methods: {
-    selectRegistration(id){
-        this.$emit('selectRegistration', id);
+    selectId(id){
+        this.$emit('setId', id);
     }
 }
 }

@@ -9,8 +9,9 @@ import { getUsers } from '../../../services/userService.js'
     <ul class="nav nav-pills flex-column">
       <UsersItem 
        v-for="user in users"
-       :key = "user.id"
-       :registration = "user"
+       :key="user.id"
+       :row="user"
+       @setId="setUserId"
       />
 
     </ul>
@@ -28,11 +29,13 @@ export default {
     methods: {
         getAllUsers(){
             try{
-                registrations = getUsers()
-                console.log(users)
+                users = getUsers()
             } catch(error){
                 console.log(error)
             }
+        },
+        setUserId(id){
+        this.$emit('selectUser', id);
         }
     },
     mounted(){

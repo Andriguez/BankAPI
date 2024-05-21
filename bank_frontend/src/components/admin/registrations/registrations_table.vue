@@ -10,8 +10,8 @@ import { getRegistrations } from '../../../services/userService.js'
       <UsersItem 
        v-for="registration in registrations"
        :key="registration.id"
-       :registration="registration"
-       @selectRegistration="setRegistrationId"
+       :row="registration"
+       @setId="setRegistrationId"
       />
 
     </ul>
