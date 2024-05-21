@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class TransactionController {
     // GetMapping without any inputs means the base API. So, APIs calling /transactions will be handled by the
     // following method.
     @GetMapping
-    // getTransactions can have different Request Params, all f them are optional.
+    // getTransactions can have different Request Params, all of them are optional.
     // The user can filter transactions based on 2 toFromIban (if a customer is calling this API, they should provide
     // their target account iban as a query input. If a customer does not provide the toFromIban, then they don't
     // have permission to view other's transactions.
@@ -65,7 +64,7 @@ public class TransactionController {
         // to complete: get user type from authentication later
         UserType userType = UserType.CUSTOMER;
         // a customer can only see transactions of her own accounts, however, an admin can see all transactions.
-        if (userType == UserType.CUSTOMER) {
+        if (userType == UserType.CUSTOMER) {`
             // isUserAccount checks to see if the requested iban is for the logged in user. We will not show
             // transactions of another account to the user.
             if (!accountService.isUserAccount(j_email, toFromIban)) {

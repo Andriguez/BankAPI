@@ -21,7 +21,6 @@ import java.util.Objects;
 // /accounts.
 @RequestMapping("/accounts")
 public class AccountController {
-
     private AccountService accountService;
 
     public AccountController(AccountService accountService){
@@ -30,9 +29,9 @@ public class AccountController {
 
     // /accounts can have a main route /accounts and many sub-routes such as /accounts/myAccount GetMapping
     // determines which one the following method is for.
-    // GetMapping without nothig corresponds to the main route /accounts
+    // GetMapping without nothing corresponds to the main route /accounts
     @GetMapping
-    // when calling an API, we can pass different queries. For example: /accounts?email=test@gmail.com. It can habe
+    // when calling an API, we can pass different queries. For example: /accounts?email=test@gmail.com. It can have
     // multiple queries. For example /accounts?email=test@gmail.com&iban=someIban
     // Setting queries are optional (since required = false) and if it is not provided, it will be null.
     public ResponseEntity<List<Account>> getCustomerAccounts(
@@ -47,7 +46,7 @@ public class AccountController {
         // to complete: get user type from authentication later
         UserType userType = UserType.CUSTOMER;
 
-        // A customer user can only see her own account. If the user type is customer but she is tring to read
+        // A customer user can only see her own account. If the user type is customer but she is string to read
         // another user's accounts we reutrn an error of UNAUTHORIZED
         if (userType == UserType.CUSTOMER && !j_email.equals(email)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(accounts);
