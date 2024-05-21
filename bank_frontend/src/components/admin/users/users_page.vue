@@ -5,13 +5,28 @@ import UsersOverview from './users_overview.vue'
 
 <template>
     <div class="d-flex">
-        <UsersTable/>
-        <UsersOverview/>
+        <UsersTable @selectUser="setUserId"/>
+        <UsersOverview v-if="userId !== 0" :id="userId"/>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Users'
+    name: 'Users',
+    data(){
+        return{
+            userId: 0
+        }
+    },
+    methods: {
+        setUserId(id){
+            this.userId = 0;
+
+            this.$nextTick(() => {
+                this.userId = id;
+            });
+
+        }
+    }
 }
 </script>

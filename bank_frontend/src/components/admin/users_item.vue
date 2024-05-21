@@ -1,12 +1,9 @@
-<script setup>
-import {getUserById} from '@/services/userService'
-</script>
 <template>
 
 <li class="nav-item">
     <!--use class active to display the selected one-->
-        <a href="#" class="nav-link text-white" aria-current="page" @click="getUserById(registration.Id)">
-          {{ registration.firstName }} {{ registration.lastName }}
+        <a href="#" class="nav-link text-white" aria-current="page" @click="selectId(row.Id)">
+          {{ row.firstName }} {{ row.lastName }}
         </a>
 
     </li>
@@ -17,16 +14,12 @@ import {getUserById} from '@/services/userService'
 export default {
 name: 'UsersItem',
 props: {
-    registration: Object
+    row: Object
 },
 methods: {
-    getUserInfo(id){
-     try{
-        getUserById(id)
-        } catch(error) {
-        console.log(error)
-        }
-}
+    selectId(id){
+        this.$emit('setId', id);
+    }
 }
 }
 </script>

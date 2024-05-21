@@ -5,13 +5,28 @@ import RegistrationOverview from './registration_overview.vue'
 
 <template>
     <div class="d-flex">
-        <RegistrationsTable/>
-        <RegistrationOverview/>
+        <RegistrationsTable @selectRegistration="setRegistrationId"/>
+        <RegistrationOverview v-if="registrationId !== 0" :id="registrationId"/>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Registrations'
+    name: 'Registrations',
+    data(){
+        return{
+            registrationId: 0
+        }
+    },
+    methods: {
+        setRegistrationId(id){
+            this.registrationId = 0;
+
+            this.$nextTick(() => {
+                this.registrationId = id;
+            });
+
+        }
+    }
 }
 </script>
