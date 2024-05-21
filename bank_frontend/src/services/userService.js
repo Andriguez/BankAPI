@@ -13,7 +13,10 @@ export const getRegistrations = (  ) => {
 
     export const getUserById = async (id) => {
       try{
+        const response = await axios.get(`/users/id/${id}`)
 
+          console.log(id)
+          console.log(response.data)
       } catch (error){
         console.log(error)
       }
