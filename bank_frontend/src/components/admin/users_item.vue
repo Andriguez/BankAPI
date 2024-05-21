@@ -1,5 +1,5 @@
 <script setup>
-import {getUserById} from '../../../services/userService'
+import {getUserById} from '@/services/userService'
 </script>
 <template>
 

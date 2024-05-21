@@ -21,3 +21,14 @@ export const getRegistrations = (  ) => {
         console.log(error)
       }
     }
+
+    export const getUsers = (  ) => {
+      return new Promise((resolve, reject) => {
+        axios.get('/users/type/customer', {
+      })
+      .then((res)=>{ 
+          console.log(res.data);
+          resolve(res.data)
+      })
+      .catch((error) => reject(error));
+      },)}
