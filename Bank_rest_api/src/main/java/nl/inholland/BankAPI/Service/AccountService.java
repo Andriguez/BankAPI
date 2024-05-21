@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,5 +78,23 @@ public class AccountService {
         Account account = this.getAccountByIban(accountIban);
         account.setAccountStatus(List.of(AccountStatus.INACTIVE));
 
+    }
+    public String generateIBAN() {
+        String countryCode = "NL";
+        String bankCode = "INHO0";
+        // Generate the check digits (xx) between 00 and 99
+        Random random = new Random();
+        int checkDigits = random.nextInt(100);
+        // Generate the account number (9 digits)
+        long accountNumber = (long) (random.nextDouble() * 1_000_000_000L);
+        // Format the check digits and account number
+        String checkDigitsFormatted = String.format("%02d", checkDigits);
+        String accountNumberFormatted = String.format("%09d", accountNumber);
+        // Combine all parts to create the IBAN
+        return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
+    }
+
+    public Account createAccount(Account account){
+        return this.accountRepository.save(account);
     }
 }
