@@ -21,7 +21,7 @@
 
 <script>
 import { useLoginStore } from '../stores/loginStore';
-import { getAccountsByEmail } from '../services/accountsService';
+import { getAccountsOfCustomer } from '../services/accountsService';
 
 export default {
     name: 'Accounts',
@@ -44,7 +44,7 @@ export default {
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsByEmail(this.email, this.jwtToken);
+                let accounts = await getAccountsOfCustomer(this.jwtToken);
                 console.log(accounts);
                 console.log(accounts.length);
                 // this.hasAccounts = accounts.length > 0;

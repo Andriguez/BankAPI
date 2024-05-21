@@ -1,7 +1,9 @@
 package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
+import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,40 +23,30 @@ import java.util.Objects;
 // /accounts.
 @RequestMapping("/accounts")
 public class AccountController {
-
     private AccountService accountService;
+    private UserService userService;
 
-    public AccountController(AccountService accountService){
+    public AccountController(AccountService accountService, UserService userService){
         this.accountService = accountService;
+        this.userService = userService;
     }
 
     // /accounts can have a main route /accounts and many sub-routes such as /accounts/myAccount GetMapping
     // determines which one the following method is for.
-    // GetMapping without nothig corresponds to the main route /accounts
-    @GetMapping
+    // GetMapping without nothing corresponds to the main route /accounts
+    @GetMapping("/myAccounts")
     // when calling an API, we can pass different queries. For example: /accounts?email=test@gmail.com. It can habe
     // multiple queries. For example /accounts?email=test@gmail.com&iban=someIban
     // Setting queries are optional (since required = false) and if it is not provided, it will be null.
-    public ResponseEntity<List<Account>> getCustomerAccounts(
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String iban
-    ) {
+    public ResponseEntity<List<Account>> getCustomerAccounts() {
         List<Account> accounts = new ArrayList<Account>();
         // read email of the user from JWT. A customer should only be able to see her own accounts. We read the email
         // of the logged in user from jWT information
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String j_email = authentication.getName();
-        // to complete: get user type from authentication later
-        UserType userType = UserType.CUSTOMER;
-
-        // A customer user can only see her own account. If the user type is customer but she is tring to read
-        // another user's accounts we reutrn an error of UNAUTHORIZED
-        if (userType == UserType.CUSTOMER && !j_email.equals(email)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(accounts);
-        }
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = loggedInUser.getId();
         // the getAccounts method in the accountService is responsible for returning the accounts based on the input
         // filters. We will add all the filters we want. Some of them are null in most of cases.
-        accounts = accountService.getAccounts(email, iban);
+        accounts = accountService.getAccountsByUserId(userId);
         return ResponseEntity.status(200).body(accounts);
     }
 }

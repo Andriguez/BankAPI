@@ -44,9 +44,9 @@ public class JwtProvider {
             Claims claims =
                     (Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload());
             String username = claims.getSubject();
-            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+            User userDetails = myUserDetailsService.loadCompleteUserByUsername(username);
 
-            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails, "");
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException(e.getMessage());
         }

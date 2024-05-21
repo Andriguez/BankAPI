@@ -71,4 +71,9 @@ public class AccountService {
         Account account = this.getAccountByIban(accountIban);
         account.setAbsoluteLimit(newLimit);
     }
+
+    public List<Account> getAccountsByUserId(long userId) {
+        List<Account> accounts = accountRepository.findByUserId(userId);
+        return accounts;
+    }
 }

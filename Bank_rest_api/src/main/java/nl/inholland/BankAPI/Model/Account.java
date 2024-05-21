@@ -21,13 +21,12 @@ public class Account {
     private double absoluteLimit;
     private double dailyLimit;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User owner;
+    private long userId;
 
     private String email;
     public long getId() {return id;}
     public String getEmail() {return email;}
+    public long getUserId() {return userId;}
     public void setEmail(String email){
         this.email = email;
     }
