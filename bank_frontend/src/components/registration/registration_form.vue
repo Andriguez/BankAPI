@@ -17,11 +17,11 @@
 
             <div class="container d-flex flex-wrap">
             <div class="form-floating px-2 py-2">
-                <input type="text" class="form-control" id="floatingBSNNumber" placeholder="BSN Number" v-model="bsn">
+                <input type="number" class="form-control" id="floatingBSNNumber" placeholder="BSN Number" v-model="bsn">
                 <label for="floatingPhoneNumber">BSN Number</label>
             </div>
             <div class="form-floating px-2 py-2">
-                <input type="text" class="form-control" id="floatingPhoneNumber" placeholder="Phone Number" v-model="phone">
+                <input type="number" class="form-control" id="floatingPhoneNumber" placeholder="Phone Number" v-model="phone">
                 <label for="floatingPhoneNumber">Phone Number</label>
             </div> </div>
 
@@ -72,6 +72,7 @@ export default {
                 const response = await requestRegistration(userData);
                 console.log(response);
                 alert('Registration successful!');
+                this.$router.replace('/');
             } catch (error) {
                 console.error('Error:', error);
                 alert('Registration failed.');
