@@ -55,7 +55,7 @@ public class AccountController {
     public ResponseEntity<Object> getAccountsByCustomer(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedUser = userService.getUserByEmail(email);
-
-        return ResponseEntity.ok().body(loggedUser.getAccounts());
+        List<Account> accounts = loggedUser.getAccounts();
+        return ResponseEntity.ok().body(accounts);
     }
 }
