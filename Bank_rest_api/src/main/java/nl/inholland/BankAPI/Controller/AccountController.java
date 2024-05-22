@@ -6,6 +6,7 @@ import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,19 +35,27 @@ public class AccountController {
     // /accounts can have a main route /accounts and many sub-routes such as /accounts/myAccount GetMapping
     // determines which one the following method is for.
     // GetMapping without nothing corresponds to the main route /accounts
-    @GetMapping("/myAccounts")
+    //@GetMapping("/myAccounts")
     // when calling an API, we can pass different queries. For example: /accounts?email=test@gmail.com. It can habe
     // multiple queries. For example /accounts?email=test@gmail.com&iban=someIban
     // Setting queries are optional (since required = false) and if it is not provided, it will be null.
-    public ResponseEntity<List<Account>> getCustomerAccounts() {
-        List<Account> accounts = new ArrayList<Account>();
+    //public ResponseEntity<List<Account>> getCustomerAccounts() {
+      //  List<Account> accounts = new ArrayList<Account>();
         // read email of the user from JWT. A customer should only be able to see her own accounts. We read the email
         // of the logged in user from jWT information
-        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = loggedInUser.getId();
+        //User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //long userId = loggedInUser.getId();
         // the getAccounts method in the accountService is responsible for returning the accounts based on the input
         // filters. We will add all the filters we want. Some of them are null in most of cases.
-        accounts = accountService.getAccountsByUserId(userId);
-        return ResponseEntity.status(200).body(accounts);
+        //accounts = accountService.getAccountsByUserId(userId);
+        //return ResponseEntity.status(200).body(accounts);
+    //}
+
+    @GetMapping
+    public ResponseEntity<Object> getAccountsByCustomer(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User loggedUser = userService.getUserByEmail(email);
+
+        return ResponseEntity.ok().body(loggedUser.getAccounts());
     }
 }

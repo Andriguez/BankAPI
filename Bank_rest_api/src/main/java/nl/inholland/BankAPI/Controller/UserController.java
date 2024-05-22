@@ -8,6 +8,7 @@ import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class UserController {
     }
 
     @GetMapping
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }

@@ -1,6 +1,9 @@
 package nl.inholland.BankAPI.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -10,6 +13,8 @@ import static jakarta.persistence.FetchType.EAGER;
 
 
 @Entity
+@Data
+@Table(name="accounts")
 @NoArgsConstructor
 public class Account {
 
@@ -20,16 +25,16 @@ public class Account {
     private double balance;
     private double absoluteLimit;
     private double dailyLimit;
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
 
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
-    private String email;
     public long getId() {return id;}
-    public String getEmail() {return email;}
-    public long getUserId() {return userId;}
-    public void setEmail(String email){
-        this.email = email;
-    }
+    //public long getUserId() {return userId;}
 
     public String getIban(){
         return iban;
@@ -57,11 +62,15 @@ public class Account {
         this.dailyLimit = dailyLimit;
     }
 
-    public Account(String iban, double balance, double absoluteLimit, double dailyLimit){
+    public Account(String iban, double balance, double absoluteLimit, double dailyLimit, AccountType type){
         this.iban = iban;
         this.balance = balance;
         this.dailyLimit = dailyLimit;
         this.absoluteLimit = absoluteLimit;
+        this.type = type;
     }
+
+    public void setUser(User user) { this.user = user; }
+
 
 }

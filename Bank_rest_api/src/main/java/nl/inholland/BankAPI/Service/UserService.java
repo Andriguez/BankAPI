@@ -66,7 +66,7 @@ public class UserService {
     public void changeGuestToUser(User guest){
         User userToChange = this.getUserById(guest.getId());
         if(userToChange.getUserType().equals(UserType.GUEST)){
-             // userToChange.setUserType(UserType.CUSTOMER);
+            userToChange.setUserType(List.of(UserType.CUSTOMER));
         }
     }
 
@@ -79,6 +79,7 @@ public class UserService {
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             String fullName = user.getFirstName() + ' '+ user.getLastName();
             String usertype = user.getUserType().toString();
+            String userId = String.valueOf(user.getId());
             return new LoginResponseDTO(fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
         } else {
             throw new AuthenticationException("Invalid credentials");
@@ -87,8 +88,16 @@ public class UserService {
 
     public void deleteUser(long id){
         User user = this.getUserById(id);
-        userRepository.deleteById(id);
+        //instead of deleting user, we just close their accounts
+        //user.getCheckingAccount().getIban();
+        //user.getSavingAccount().getIban();
     }
 
+    public User getUserByEmail(String email){
+        return userRepository.findUserByEmail(email);
+    }
 
+    public void AddAccountToUser(){
+
+    }
 }
