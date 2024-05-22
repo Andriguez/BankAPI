@@ -33,7 +33,7 @@ public class TransactionController {
 
     // GetMapping without any inputs means the base API. So, APIs calling /transactions will be handled by the
     // following method.
-    @GetMapping
+    @GetMapping //route: /transactions
     // getTransactions can have different Request Params, all of them are optional.
     public ResponseEntity<List<Transaction>> getCustomerTransactions(
             // optional filters to filter transactions
@@ -45,7 +45,6 @@ public class TransactionController {
             @RequestParam(required = false) Float exactAmount
     ) {
         List<Transaction> transactions = new ArrayList<Transaction>();
-        // User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userService.getUserByEmail(email);
         long userId = loggedInUser.getId();

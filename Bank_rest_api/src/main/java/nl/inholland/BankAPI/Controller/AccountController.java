@@ -51,7 +51,7 @@ public class AccountController {
         //return ResponseEntity.status(200).body(accounts);
     //}
 
-    @GetMapping
+    @GetMapping // route: /accounts
     public ResponseEntity<Object> getAccountsByCustomer(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedUser = userService.getUserByEmail(email);
