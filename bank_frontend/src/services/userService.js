@@ -2,7 +2,7 @@ import axios from '../axios-auth'
 
 export const getRegistrations = (  ) => {
     return new Promise((resolve, reject) => {
-      axios.get('/users/type/guest', {
+      axios.get('/users?type=guest', {
     })
     .then((res)=>{ 
         console.log(res.data);
@@ -12,9 +12,9 @@ export const getRegistrations = (  ) => {
     },)}
 
 
-    export const getUsers = (  ) => {
+    export const getUsers = (type) => {
       return new Promise((resolve, reject) => {
-        axios.get('/users/type/customer', {
+        axios.get(`/users?type=${type}`, {
       })
       .then((res)=>{ 
           console.log(res.data);
@@ -25,7 +25,7 @@ export const getRegistrations = (  ) => {
 
       export const getUserById = async (id) => {
         try{
-          const response = await axios.get(`/users/id/${id}`)
+          const response = await axios.get(`/users?id=${id}`)
             console.log(response.data)
             console.log(id)
             return response.data
