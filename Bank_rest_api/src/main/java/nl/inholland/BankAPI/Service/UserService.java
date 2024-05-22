@@ -89,8 +89,8 @@ public class UserService {
     public void deleteUser(long id){
         User user = this.getUserById(id);
         //instead of deleting user, we just close their accounts
-        user.getCheckingAccount().getIban();
-        user.getSavingAccount().getIban();
+        //user.getCheckingAccount().getIban();
+        //user.getSavingAccount().getIban();
     }
 
     public User getUserByEmail(String email){

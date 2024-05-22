@@ -2,11 +2,8 @@ package nl.inholland.BankAPI.Model;
 
 import org.springframework.security.core.GrantedAuthority;
 
-public enum AccountType implements GrantedAuthority {
+public enum AccountType {
     CURRENT, SAVINGS;
-    @Override
-    public String getAuthority() {
-        return name();
-    }
+
 }
 
