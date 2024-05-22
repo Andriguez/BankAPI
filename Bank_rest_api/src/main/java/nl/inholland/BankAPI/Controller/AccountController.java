@@ -1,5 +1,7 @@
 package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
@@ -9,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,5 +56,33 @@ public class AccountController {
         User loggedUser = userService.getUserByEmail(email);
 
         return ResponseEntity.ok().body(loggedUser.getAccounts());
+    }
+
+    @PostMapping(params="userid")
+    public ResponseEntity<List<Account>> setAccountsToUser(@RequestParam Long userid, NewAccountDTO account1, NewAccountDTO account2) {
+
+        User user;
+
+        try {
+            user = userService.getUserById(userid);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        AccountType account1_type = AccountType.valueOf(account1.type().toUpperCase());
+        AccountType account2_type = AccountType.valueOf(account2.type().toUpperCase());
+
+
+        Account account_1 = new Account(accountService.generateIBAN(), 0, account1.absolute(), account1.daily(), account1_type);
+        Account account_2 = new Account(accountService.generateIBAN(), 0, account2.absolute(), account2.daily(), account2_type);
+
+        accountService.createAccount(account_1);
+        accountService.createAccount(account_2);
+
+        user.addAccount(account_1);
+        user.addAccount(account_2);
+
+        return ResponseEntity.ok().body(user.getAccounts());
+
     }
 }
