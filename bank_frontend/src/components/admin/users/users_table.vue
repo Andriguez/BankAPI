@@ -29,7 +29,7 @@ export default {
     methods: {
         getAllUsers(){
             try{
-                users = getUsers()
+                users = getUsers("customers")
             } catch(error){
                 console.log(error)
             }
@@ -39,7 +39,7 @@ export default {
         }
     },
     mounted(){
-        getUsers()
+        getUsers("customer")
         .then((data) =>{ this.users = data })
         .catch((error) => console.log(error));
     }

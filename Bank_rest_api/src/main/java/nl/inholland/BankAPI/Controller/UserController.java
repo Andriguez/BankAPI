@@ -31,8 +31,8 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/type/{type}")
-    public ResponseEntity<List<UserOverviewDTO>> getUsersByType(@PathVariable String type){
+    @GetMapping(params = "type")
+    public ResponseEntity<List<UserOverviewDTO>> getUsersByType(String type){
 
         UserType userType;
 
@@ -52,8 +52,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userDtos);
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+    @GetMapping(params = "id")
+    public ResponseEntity<UserDTO> getUserById(@RequestParam Long id){
 
         User user;
         try{
