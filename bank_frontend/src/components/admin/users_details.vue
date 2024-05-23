@@ -24,36 +24,78 @@
     <label>Current Account</label>
     <div class="col-md-4">
     <label for="inputPhone" class="form-label">Absolute Limit</label>
-    <input type="number" class="form-control" id="inputPhone">
+    <input type="number" class="form-control" id="currentAbsolute" :value="currentAbsolute">
   </div><div class="col-md-4">
     <label for="inputPhone" class="form-label">Daily Limit</label>
-    <input type="number" class="form-control" id="inputPhone">
+    <input type="number" class="form-control" id="currentLimit" :value="currentDaily">
   </div>
   </div>
   <div class="row g-3">
     <label>Savings Account</label>
     <div class="col-md-4">
     <label for="inputPhone" class="form-label">Absolute Limit</label>
-    <input type="number" class="form-control" id="inputPhone">
+    <input type="number" class="form-control" id="savingsAbsolute" :value="savingsAbsolute">
   </div><div class="col-md-4">
     <label for="inputPhone" class="form-label">Daily Limit</label>
-    <input type="number" class="form-control" id="inputPhone">
+    <input type="number" class="form-control" id="savingsLimit" :value="savingsDaily">
   </div>
+  </div>
+  <div v-if="$route.path == '/registrations'" class="col-12">
+    <a class="nav-link p-2" @click="submitAccountsInfo" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Open Account</a>
+  </div>
+
+  <div v-if="$route.path == '/users'" class="col-12">
+    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Edit</a>
+    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Delete</a>
   </div>
 </form>
 </template>
 
 <script>
+import { createAccounts } from '@/services/accountsService';
+
 export default {
     name: 'UsersDetails',
     data(){
       return {
-        registration: ''
+        registration: '',
+        currentAbsolute,
+        savingsAbsolute,
+        currentDaily,
+        savingsDaily
       }
     },
     props: {
-      details: Object
+      details: Object,
+      userId: Number
     },
+    methods: {
+      async submitAccountsInfo(){
+        const currentInfo = {
+          type: 'current',
+          absolute: this.currentAbsolute,
+          daily: this.currentDaily
+        }
+
+        const savingsInfo = {
+          type: 'savings',
+          absolute: this.savingsAbsolute,
+          daily: this.savingsDaily
+        }
+        
+        try{
+          const reponse = await createAccounts(this.userId, currentInfo, savingsInfo);
+
+          console.log(response)
+          this.router.replace('/users')
+
+        } catch (error){
+          console.error(error)
+        }
+        
+  }
+
+    }
 }
 </script>
 

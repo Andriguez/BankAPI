@@ -13,3 +13,21 @@ export const getAccountsOfCustomer = async (token) => {
         throw error.response.data;
     }
 };
+
+export const createAccounts = async (userId, currentData, savingsData) => {
+    try {
+        
+        const data = {
+            account1: currentData,
+            account2: savingsData
+        }
+
+       const response = await axios.post(`accounts?userid=${userId}`, data)
+
+       return response.data
+       
+    } catch (error) {
+        console.error(error)
+        throw error.response.data;
+    }
+}

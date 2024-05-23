@@ -59,7 +59,7 @@ public class AccountController {
     }
 
     @PostMapping(params="userid")
-    public ResponseEntity<List<Account>> setAccountsToUser(@RequestParam Long userid, NewAccountDTO account1, NewAccountDTO account2) {
+    public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, NewAccountDTO account1, NewAccountDTO account2) {
 
         User user;
 
@@ -81,6 +81,8 @@ public class AccountController {
 
         user.addAccount(account_1);
         user.addAccount(account_2);
+
+        userService.changeGuestToUser(user);
 
         return ResponseEntity.ok().body(user.getAccounts());
 
