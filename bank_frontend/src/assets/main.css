@@ -10,4 +10,12 @@ body{
   color: white;
 }
 
+.oneAccount {
+  background-color: #3e3131;
+  border: 1px solid #b21b1b;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: Arial, sans-serif;
+}
 

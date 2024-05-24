@@ -27,9 +27,13 @@ public class ApplicationStarter implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-
-        //createAccounts();
-        //userService.getAllUsers().forEach(user -> System.out.println(user.getEmail() + " - accounts:  " + user.getAccounts()));
+        // createAccounts();
+        userService.getAllUsers().forEach(user -> {
+            System.out.println(user.getEmail() + " - accounts:  ");
+            user.getAccounts().forEach(account -> {
+                System.out.println("iban: " + account.getIban() + " - " + account.getType());
+            });
+        });
     }
 
     private void createUsers(Account current, Account savings){
