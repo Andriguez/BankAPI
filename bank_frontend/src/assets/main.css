@@ -6,18 +6,6 @@ body{
     background-color: black !important;
   }
 
-.account_view {
-  color: black;
-}
-
-.oneAccount {
-  background-color: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 10px;
-  width: 80%;
-}
-
 .amount-btn{
   padding: 7px;
           margin: 5px;

@@ -77,3 +77,17 @@ export default {
 
 </script>
 
+<style>
+.account_view {
+  color: black;
+}
+
+.oneAccount {
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 10px;
+  width: 80%;
+}
+</style>
+

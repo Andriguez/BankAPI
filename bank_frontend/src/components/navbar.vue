@@ -13,7 +13,7 @@
             Accounts
           </a>
           <ul class="dropdown-menu dropdown-menu-dark text-small">
-            <li><router-link class="dropdown-item" to="/transactions">Checking</router-link></li>
+            <li><router-link class="dropdown-item" to="/transactions">Current</router-link></li>
             <li><router-link class="dropdown-item" to="/transactions">Savings</router-link></li>
           </ul>
         </li>
