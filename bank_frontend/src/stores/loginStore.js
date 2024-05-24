@@ -6,7 +6,8 @@ export const useLoginStore = defineStore('login', {
     token: '',
     loggedIn: false,
     name: '',
-    usertype: ''
+    usertype: '',
+    userId: 0
   }),
   getters: {
     jwtToken: (state) => state.token,
@@ -26,9 +27,12 @@ export const useLoginStore = defineStore('login', {
           this.loggedIn = true;
           this.name = res.data.name;
           this.usertype = res.data.usertype;
+          this.userId = res.data.userId;
           localStorage.setItem('jwtToken', this.token);
           localStorage.setItem('name', JSON.stringify(res.data.name));
-          localStorage.setItem('usertype', JSON.stringify(res.data.usertype))
+          localStorage.setItem('usertype', JSON.stringify(res.data.usertype));
+          localStorage.setItem('userid', JSON.stringify(res.data.userId))
+
           console.log(res.data);
           resolve()
       })
@@ -39,6 +43,7 @@ export const useLoginStore = defineStore('login', {
       localStorage.removeItem('jwtToken');
       localStorage.removeItem('name')
       localStorage.removeItem('usertype')
+      localStorage.removeItem('userid')
 
       this.loggedIn = false;
 
@@ -49,11 +54,14 @@ export const useLoginStore = defineStore('login', {
 
       if(localStorage.getItem('jwtToken')){
         const localUserName= localStorage.getItem('name');
-        const localUserType = localStorage.getItem('usertype')
+        const localUserType = localStorage.getItem('usertype');
+        const localUserId = localStorage.getItem('userid')
+
         this.loggedIn = true;
         this.token = localStorage.getItem('jwtToken');
         this.name = JSON.parse(localUserName);
-        this.usertype = JSON.parse(localUserType)
+        this.usertype = JSON.parse(localUserType);
+        this.userId = JSON.parse(localUserId);
   
         axios.defaults.headers.common['Authorization'] = "Bearer " + this.token;
         return Promise.resolve('/');

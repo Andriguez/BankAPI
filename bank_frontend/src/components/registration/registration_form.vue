@@ -7,31 +7,34 @@
     <form>
         <div class="container d-flex flex-wrap">
             <div class="form-floating px-2 py-2">
-                <input type="text" class="form-control" id="floatingFirstName" placeholder="First Name" v-model="firstname">
+                <input type="text" class="form-control" id="floatingFirstName" placeholder="First Name" v-model="firstname" required>
                 <label for="floatingFirstName">First Name</label>
             </div>
             <div class="form-floating px-2 py-2">
-                <input type="text" class="form-control" id="floatingLastName" placeholder="Last Name" v-model="lastname">
+                <input type="text" class="form-control" id="floatingLastName" placeholder="Last Name" v-model="lastname" required>
                 <label for="floatingLastName">Last Name</label>
             </div></div>
 
             <div class="container d-flex flex-wrap">
             <div class="form-floating px-2 py-2">
-                <input type="number" class="form-control" id="floatingBSNNumber" placeholder="BSN Number" v-model="bsn">
+                <input type="number" class="form-control" id="floatingBSNNumber" placeholder="BSN Number" v-model="bsn" required>
                 <label for="floatingPhoneNumber">BSN Number</label>
             </div>
             <div class="form-floating px-2 py-2">
-                <input type="number" class="form-control" id="floatingPhoneNumber" placeholder="Phone Number" v-model="phone">
+                <input type="number" class="form-control" id="floatingPhoneNumber" placeholder="Phone Number" v-model="phone" required>
                 <label for="floatingPhoneNumber">Phone Number</label>
             </div> </div>
 
         <div class="container d-flex flex-wrap">
             <div class="form-floating px-2 py-2">
-                <input type="email" class="form-control" id="floatingInput" placeholder="Email" v-model="email">
+                <input type="email" class="form-control" id="floatingInput" placeholder="Email" v-model="email" required>
                 <label for="floatingInput">Email</label>
+                <div class="invalid-feedback">
+                    Please enter a valid email.
+                </div>
             </div>
             <div class="form-floating px-2 py-2">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password"  v-model="password">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Password"  v-model="password" required>
                 <label for="floatingPassword">Password</label>
             </div> </div>
 
@@ -75,7 +78,7 @@ export default {
                 this.$router.replace('/');
             } catch (error) {
                 console.error('Error:', error);
-                alert('Registration failed.');
+                alert(`Registration failed: ${error.response.data}`);
             }
         }
         

@@ -30,13 +30,36 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        User existingUser = userRepository.findUserByEmail(user.getEmail());
-        if (existingUser != null) {
+        if (existingEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email is already taken");
+        } else if (existingBSN(user.getBsnNumber())){
+            throw new IllegalArgumentException("BSN number is already on our database");
         }
+
+
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    public Boolean existingEmail(String email){
+        User existingUser = userRepository.findUserByEmail(email);
+
+        if(existingUser != null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean existingBSN(Long bsn){
+        User existingUser = userRepository.findUserByBsnNumber(bsn);
+
+        if(existingUser != null) {
+            return true;
+        }
+
+        return false;
     }
     public User createUserDTO(RegistrationDTO user) {
         User existingUser = userRepository.findUserByEmail(user.email());
@@ -83,8 +106,8 @@ public class UserService {
         if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             String fullName = user.getFirstName() + ' '+ user.getLastName();
             String usertype = user.getUserType().toString();
-            String userId = String.valueOf(user.getId());
-            return new LoginResponseDTO(fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
+            Long userId = user.getId();
+            return new LoginResponseDTO(userId, fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
         } else {
             throw new AuthenticationException("Invalid credentials");
         }
