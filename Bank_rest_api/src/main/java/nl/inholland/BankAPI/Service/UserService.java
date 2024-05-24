@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -64,9 +65,12 @@ public class UserService {
         return userRepository.findByUserTypeIn(userType);
     }
     public void changeGuestToUser(User guest){
-        User userToChange = this.getUserById(guest.getId());
-        if(userToChange.getUserType().equals(UserType.GUEST)){
-            userToChange.setUserType(List.of(UserType.CUSTOMER));
+        if (guest.getUserType().contains(UserType.GUEST)) {
+            List<UserType> newUserTypes = new ArrayList<>(guest.getUserType());
+            newUserTypes.remove(UserType.GUEST);
+            newUserTypes.add(UserType.CUSTOMER);
+            guest.setUserType(newUserTypes);
+            userRepository.save(guest);
         }
     }
 
@@ -97,7 +101,8 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public void AddAccountToUser(){
-
+    public void AddAccountToUser(User user, Account account){
+        user.addAccount(account);
+        userRepository.save(user);
     }
 }

@@ -14,8 +14,6 @@ import axios from '../axios-auth'
       export const getUserById = async (id) => {
         try{
           const response = await axios.get(`/users?id=${id}`)
-            console.log(response.data)
-            console.log(id)
             return response.data
         } catch (error){
           console.log(error)

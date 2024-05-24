@@ -1,8 +1,8 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
-import nl.inholland.BankAPI.Model.DTO.UserDTO;
-import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
+import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.*;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.UserService;
@@ -11,8 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,7 +61,45 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getBsnNumber()));
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getBsnNumber(),
+                getAccountInfo(user)));
+    }
+
+    private Map<AccountType, NewAccountDTO> getAccountInfo(User user){
+        double account1Absolute = 0;
+        double account2Absolute = 0;
+        double account1Daily = 0;
+        double account2Daily = 0;
+
+        AccountType account1Type = AccountType.CURRENT;
+        AccountType account2Type = AccountType.SAVINGS;
+
+        if(!user.getAccounts().isEmpty()){
+            account1Absolute = user.getAccounts().get(0).getAbsoluteLimit();
+            account2Absolute = user.getAccounts().get(1).getAbsoluteLimit();
+            account1Daily = user.getAccounts().get(0).getDailyLimit();
+            account2Daily = user.getAccounts().get(1).getDailyLimit();
+
+            account1Type = user.getAccounts().get(0).getType();
+            account2Type = user.getAccounts().get(1).getType();
+
+        }
+
+        NewAccountDTO account1 = new NewAccountDTO(user.getId(), account1Absolute, account1Daily, account1Type);
+        NewAccountDTO account2 = new NewAccountDTO(user.getId(), account2Absolute, account2Daily, account2Type);
+
+
+        Map<AccountType, NewAccountDTO> accounts = new HashMap<>();
+        accounts.put(account1Type, account1);
+        accounts.put(account2Type, account2);
+
+        return accounts;
     }
 
 }

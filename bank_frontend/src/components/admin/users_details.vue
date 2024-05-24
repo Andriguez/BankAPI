@@ -21,23 +21,23 @@
     <input type="number" class="form-control" :value="details.phoneNumber" id="inputPhone" readonly>
   </div>
   <div class="row g-3">
-    <label>Current Account</label>
+    <h4 style="color:white">Current Account</h4>
     <div class="col-md-4">
-    <label for="inputPhone" class="form-label">Absolute Limit</label>
-    <input type="number" class="form-control" id="currentAbsolute" :value="currentAbsolute">
+    <label for="currentAbsolute" class="form-label">Absolute Limit</label>
+    <input type="number" class="form-control" id="currentAbsolute" v-model="currentAbsolute">
   </div><div class="col-md-4">
-    <label for="inputPhone" class="form-label">Daily Limit</label>
-    <input type="number" class="form-control" id="currentLimit" :value="currentDaily">
+    <label for="currentDaily" class="form-label">Daily Limit</label>
+    <input type="number" class="form-control" id="currentDaily" v-model="currentDaily">
   </div>
   </div>
   <div class="row g-3">
-    <label>Savings Account</label>
+    <h4 style="color:white">Savings Account</h4>
     <div class="col-md-4">
-    <label for="inputPhone" class="form-label">Absolute Limit</label>
-    <input type="number" class="form-control" id="savingsAbsolute" :value="savingsAbsolute">
+    <label for="savingsAbsolute" class="form-label">Absolute Limit</label>
+    <input type="number" class="form-control" id="savingsAbsolute" v-model="SavingsAbsolute">
   </div><div class="col-md-4">
-    <label for="inputPhone" class="form-label">Daily Limit</label>
-    <input type="number" class="form-control" id="savingsLimit" :value="savingsDaily">
+    <label for="savingsDaily" class="form-label">Daily Limit</label>
+    <input type="number" class="form-control" id="savingsDaily" v-model="SavingsDaily">
   </div>
   </div>
   <div v-if="$route.path == '/registrations'" class="col-12">
@@ -53,41 +53,43 @@
 
 <script>
 import { createAccounts } from '@/services/accountsService';
+import {getUserById} from '@/services/userService'
+
 
 export default {
     name: 'UsersDetails',
     data(){
       return {
         registration: '',
-        currentAbsolute,
-        savingsAbsolute,
-        currentDaily,
-        savingsDaily
+        details: Object,
+        currentAbsolute: '',
+        currentDaily: '',
+        SavingsAbsolute: '',
+        SavingsDaily: '',
       }
     },
     props: {
-      details: Object,
       userId: Number
     },
     methods: {
       async submitAccountsInfo(){
         const currentInfo = {
-          type: 'current',
           absolute: this.currentAbsolute,
-          daily: this.currentDaily
+          daily: this.currentDaily,
+          type: 'CURRENT'
         }
 
         const savingsInfo = {
-          type: 'savings',
-          absolute: this.savingsAbsolute,
-          daily: this.savingsDaily
+          absolute: this.SavingsAbsolute,
+          daily: this.SavingsDaily,
+          type: 'SAVINGS'
         }
         
         try{
-          const reponse = await createAccounts(this.userId, currentInfo, savingsInfo);
+          const response = await createAccounts(this.userId, currentInfo, savingsInfo);
 
           console.log(response)
-          this.router.replace('/users')
+          this.$router.replace("/users");
 
         } catch (error){
           console.error(error)
@@ -95,6 +97,25 @@ export default {
         
   }
 
+    },
+  async mounted(){
+      try{
+
+    const response = await getUserById(this.userId);
+    this.details = response;
+
+    this.currentAbsolute = response.accountsInfo.CURRENT.absolute;
+    this.currentDaily = response.accountsInfo.CURRENT.daily;
+
+    this.SavingsAbsolute = response.accountsInfo.SAVINGS.absolute;
+    this.SavingsDaily = response.accountsInfo.SAVINGS.daily;
+
+    console.log(response.accountsInfo.CURRENT.absolute)
+    console.log(this.currentAbsolute)
+
+    } catch(error) {
+    console.log(error)
+    }
     }
 }
 </script>

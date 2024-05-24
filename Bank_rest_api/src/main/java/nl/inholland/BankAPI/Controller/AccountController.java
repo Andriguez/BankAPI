@@ -13,10 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 // RequestMapping determines which API calls are handled by this class. For this file, it is APIs which start with
@@ -59,7 +56,7 @@ public class AccountController {
     }
 
     @PostMapping(params="userid")
-    public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, NewAccountDTO account1, NewAccountDTO account2) {
+    public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
 
         User user;
 
@@ -69,20 +66,38 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        AccountType account1_type = AccountType.valueOf(account1.type().toUpperCase());
-        AccountType account2_type = AccountType.valueOf(account2.type().toUpperCase());
+        //AccountType account1_type = AccountType.valueOf(account1.type());
+        //AccountType account2_type = AccountType.valueOf(account2.type().name());
 
+        NewAccountDTO account1 = new NewAccountDTO(
+                user.getId(),
+                (Number) requestData.get("absolute1"),
+                (Number) requestData.get("daily1"),
+                AccountType.valueOf((String)requestData.get("type1"))
+        );
 
-        Account account_1 = new Account(accountService.generateIBAN(), 0, account1.absolute(), account1.daily(), account1_type);
-        Account account_2 = new Account(accountService.generateIBAN(), 0, account2.absolute(), account2.daily(), account2_type);
+        NewAccountDTO account2 = new NewAccountDTO(
+                user.getId(),
+                (Number) requestData.get("absolute2"),
+                (Number) requestData.get("daily2"),
+                AccountType.valueOf((String)requestData.get("type2"))
+        );
+
+        Account account_1 = new Account(accountService.generateIBAN(), 0, account1.absolute().doubleValue(), account1.daily().doubleValue(), account1.type());
+        Account account_2 = new Account(accountService.generateIBAN(), 0, account2.absolute().doubleValue(), account2.daily().doubleValue(), account2.type());
 
         accountService.createAccount(account_1);
         accountService.createAccount(account_2);
 
-        user.addAccount(account_1);
-        user.addAccount(account_2);
+        userService.AddAccountToUser(user, account_1);
+        userService.AddAccountToUser(user, account_2);
 
+        //user.addAccount(account_1);
+        //user.addAccount(account_2);
+
+        //user.setUserType(List.of(UserType.CUSTOMER));
         userService.changeGuestToUser(user);
+
 
         return ResponseEntity.ok().body(user.getAccounts());
 

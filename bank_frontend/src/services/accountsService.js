@@ -16,11 +16,15 @@ export const getAccountsOfCustomer = async (token) => {
 
 export const createAccounts = async (userId, currentData, savingsData) => {
     try {
-        
-        const data = {
-            account1: currentData,
-            account2: savingsData
-        }
+    
+            const data = {
+                absolute1: currentData.absolute,
+                daily1: currentData.daily,
+                type1: currentData.type,
+                absolute2: savingsData.absolute,
+                daily2: savingsData.daily,
+                type2: savingsData.type
+            }
 
        const response = await axios.post(`accounts?userid=${userId}`, data)
 
