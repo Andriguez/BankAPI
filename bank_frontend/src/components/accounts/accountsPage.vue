@@ -20,7 +20,7 @@
         </div>
 
         <div class="container m-4" >
-            <button class="amount-btn mb-4" style="float: right;"><h1>Transfer</h1></button>
+            <button class="amount-btn mb-4" style="float: right;" @click="openTransferPage"><h1>Transfer</h1></button>
         </div>
     </div>
 
@@ -67,6 +67,10 @@ export default {
 
         openAccountTransactions(){
             this.$router.replace('/transactions')
+        },
+
+        openTransferPage(){
+            this.$router.replace('/transfer')
         }
     },
 };
