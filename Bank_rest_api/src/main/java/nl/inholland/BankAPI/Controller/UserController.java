@@ -9,6 +9,7 @@ import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -56,7 +57,12 @@ public class UserController {
 
         User user;
         try{
-            user = userService.getUserById(id);
+            if (id == 0){
+                String email = SecurityContextHolder.getContext().getAuthentication().getName();
+                user = userService.getUserByEmail(email);
+            } else {
+                user = userService.getUserById(id);
+            }
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
