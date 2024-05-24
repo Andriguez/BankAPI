@@ -41,16 +41,5 @@
 </script>
 
 <style>
-.amount-btn{
-   padding: 7px;
-           margin: 5px;
-           background-color: #201F1F;
-           border: solid 3px #47008F;
-           border-radius: 16px;
-           height: 90px !important;
-           width: 250px !important;
 
-           font-size: 52px;
-           color: #6504c6;
-}
 </style>

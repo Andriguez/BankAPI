@@ -13,8 +13,8 @@
             Accounts
           </a>
           <ul class="dropdown-menu dropdown-menu-dark text-small">
-            <li><router-link class="dropdown-item" to="/accounts">Checking</router-link></li>
-            <li><router-link class="dropdown-item" to="/accounts">Savings</router-link></li>
+            <li><router-link class="dropdown-item" to="/transactions">Checking</router-link></li>
+            <li><router-link class="dropdown-item" to="/transactions">Savings</router-link></li>
           </ul>
         </li>
           <li v-if="!isLoggedIn()"><router-link to="/login" class="nav-link px-2 link-body-emphasis">Login</router-link></li>

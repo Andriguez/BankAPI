@@ -7,15 +7,27 @@ body{
   }
 
 .account_view {
-  color: white;
+  color: black;
 }
 
 .oneAccount {
-  background-color: #3e3131;
-  border: 1px solid #b21b1b;
-  border-radius: 4px;
-  padding: 10px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
   margin-bottom: 10px;
-  font-family: Arial, sans-serif;
+  width: 80%;
+}
+
+.amount-btn{
+  padding: 7px;
+          margin: 5px;
+          background-color: #201F1F;
+          border: solid 3px #47008F;
+          border-radius: 16px;
+          height: 90px !important;
+          width: 250px !important;
+
+          font-size: 52px;
+          color: #6504c6;
 }
 
