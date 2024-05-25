@@ -27,11 +27,11 @@ public class TransactionService {
 
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactionsByUserId(
-            long userId, TransactionType transactionType,
+    public List<Transaction> getTransactionsByAccountId(
+            long accountId, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
             Float minAmount, Float maxAmount, Float exactAmount) {
-        List<Transaction> transactions = transactionRepository.findBySenderIdOrReceiverId(userId, userId);
+        List<Transaction> transactions = transactionRepository.findBySenderIdOrReceiverId(accountId, accountId);
         if(transactionType != null) {
             transactions = transactions.stream()
                     .filter(transaction -> transaction.getTransactionType() == transactionType)

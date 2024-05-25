@@ -37,6 +37,7 @@ public class TransactionController {
     // getTransactions can have different Request Params, all of them are optional.
     public ResponseEntity<List<Transaction>> getCustomerTransactions(
             // optional filters to filter transactions
+            @RequestParam(required = false) String accountType,
             @RequestParam(required = false) TransactionType transactionType,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
@@ -47,10 +48,32 @@ public class TransactionController {
         List<Transaction> transactions = new ArrayList<Transaction>();
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userService.getUserByEmail(email);
-        long userId = loggedInUser.getId();
+        if (loggedInUser.getAccounts().size() == 0) {
+            // if customer does not have any accounts, she does not have any transactions too
+            ResponseEntity.status(200).body(transactions);
+        }
+        long accountId = 0;
+        if (accountType.equals("CURRENT")) {
+            for (Account account : loggedInUser.getAccounts()) {
+                if (account.getType() == AccountType.CURRENT) {
+                    System.out.println("iban: " + account.getIban() + " - " + account.getType());
+                    accountId = account.getId();
+                    break;
+                }
+            }
+        }
+        else if (accountType.equals("SAVINGS")) {
+            for (Account account : loggedInUser.getAccounts()) {
+                if (account.getType() == AccountType.SAVINGS) {
+                    System.out.println("iban: " + account.getIban() + " - " + account.getType());
+                    accountId = account.getId();
+                    break;
+                }
+            }
+        }
         // getTransactions method in transactionService gets inputs (some of them might be null) and return
         // transactions that match those filters.
-        transactions = transactionService.getTransactionsByUserId(userId, transactionType, startDate, endDate,
+        transactions = transactionService.getTransactionsByAccountId(accountId, transactionType, startDate, endDate,
                 minAmount, maxAmount, exactAmount);
         return ResponseEntity.status(200).body(transactions);
     }
