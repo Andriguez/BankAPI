@@ -36,7 +36,6 @@ export default {
             loginStore: useLoginStore(),
             name: "",
             role: "",
-            jwtToken: "",
             accounts: [],
             hasAccounts: false,
             totalBalance: 0,
@@ -46,13 +45,12 @@ export default {
     mounted() {
         this.name = this.loginStore.name;
         this.role = this.loginStore.usertype;
-        this.jwtToken = this.loginStore.jwtToken;
         this.getAllAccounts();
     },
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsOfCustomer(this.jwtToken);
+                let accounts = await getAccountsOfCustomer();
                 console.log(accounts);
                 console.log(accounts.length);
                 this.hasAccounts = accounts.length > 0;
