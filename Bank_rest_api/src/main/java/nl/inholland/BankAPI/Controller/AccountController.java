@@ -102,22 +102,18 @@ public class AccountController {
         return ResponseEntity.ok().body(user.getAccounts());
 
     }
-
     @PutMapping(params="userid")
     public ResponseEntity<?> updateAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
         User user;
-
         try {
             user = userService.getUserById(userid);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-
         // Get the accounts of the user
         List<Account> accounts = user.getAccounts();
         Account currentAccount = null;
         Account savingsAccount = null;
-
         // Find the CURRENT and SAVINGS accounts
         for (Account account : accounts) {
             if (account.getType() == AccountType.CURRENT) {
@@ -126,23 +122,18 @@ public class AccountController {
                 savingsAccount = account;
             }
         }
-
         // If either account is missing, return an error
         if (currentAccount == null || savingsAccount == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Both CURRENT and SAVINGS accounts must exist for the user");
         }
-
         // Update the accounts with the new limits
         currentAccount.setAbsoluteLimit(((Number) requestData.get("absolute1")).doubleValue());
         currentAccount.setDailyLimit(((Number) requestData.get("daily1")).doubleValue());
-
         savingsAccount.setAbsoluteLimit(((Number) requestData.get("absolute2")).doubleValue());
         savingsAccount.setDailyLimit(((Number) requestData.get("daily2")).doubleValue());
-
         // Save the updated accounts
         accountService.updateAccount(currentAccount);
         accountService.updateAccount(savingsAccount);
-
         return ResponseEntity.ok().body(user.getAccounts());
     }
 }
