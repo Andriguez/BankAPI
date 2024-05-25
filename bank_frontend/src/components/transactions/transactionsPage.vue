@@ -1,7 +1,7 @@
 <template>
     <div class="transaction_view">
         <div class="container mx-5 mt-5 mb-3" style="color: white;">
-            <span style="font-size: 30px;"> Showing {{ accountType }} account of {{ name }}</span>
+            <span style="font-size: 30px;">{{ account?.type }}</span>
             <br>
             <br>
             <span class="mx-5" style="font-size: 35px;">IBAN → {{ account?.iban }}</span>
@@ -69,7 +69,6 @@ export default {
             loginStore: useLoginStore(),
             name: "customer",
             accountType: "current",
-            jwtToken: "",
             account: null,
             transactions: [],
             hasTransactions: false,
@@ -86,13 +85,12 @@ export default {
     mounted() {
         this.name = this.loginStore.name;
         this.accountType = this.type;
-        this.jwtToken = this.loginStore.jwtToken;
         this.getAllTransactionsWithType();
     },
     methods: {
         async getAllTransactionsWithType() {
             try {
-                let accountsTransactions = await getTransactionOfCustomerByType(this.jwtToken, this.accountType, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
+                let accountsTransactions = await getTransactionOfCustomerByType(this.accountType, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
                 console.log(accountsTransactions);
                 let account = accountsTransactions.account;
                 let transactions = accountsTransactions.transactions;
