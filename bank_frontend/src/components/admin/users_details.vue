@@ -45,14 +45,14 @@
   </div>
 
   <div v-if="$route.path == '/users' && hasUsertype('ADMIN')" class="col-12">
-    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Edit</a>
+    <a class="nav-link p-2" @click="editAccountsInfo" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Edit</a>
     <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Delete</a>
   </div>
 </form>
 </template>
 
 <script>
-import { createAccounts } from '@/services/accountsService';
+import { createAccounts, editAccountsInfo } from '@/services/accountsService';
 import {getUserById} from '@/services/userService'
 import { useLoginStore } from '@/stores/loginStore';
 
@@ -90,6 +90,30 @@ export default {
         
         try{
           const response = await createAccounts(this.userId, currentInfo, savingsInfo);
+
+          console.log(response)
+          this.$router.replace("/users");
+
+        } catch (error){
+          console.error(error)
+        }
+        
+  },
+    async editAccountsInfo(){
+        const currentInfo = {
+          absolute: this.currentAbsolute,
+          daily: this.currentDaily,
+          type: 'CURRENT'
+        }
+
+        const savingsInfo = {
+          absolute: this.SavingsAbsolute,
+          daily: this.SavingsDaily,
+          type: 'SAVINGS'
+        }
+        
+        try{
+          const response = await editAccountsInfo(this.userId, currentInfo, savingsInfo);
 
           console.log(response)
           this.$router.replace("/users");

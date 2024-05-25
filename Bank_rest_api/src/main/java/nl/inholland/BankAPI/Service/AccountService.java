@@ -81,7 +81,14 @@ public class AccountService {
     public void createAccount(Account account){
         accountRepository.save(account);
     }
+    public void updateAccount(Account account){
+            Account accountToChange = this.getAccountByIban(account.getIban());
 
+            accountToChange.setAbsoluteLimit(account.getAbsoluteLimit());
+            accountToChange.setDailyLimit(account.getDailyLimit());
+
+        accountRepository.save(accountToChange);
+    }
     public String generateIBAN() {
         String countryCode = "NL";
         String bankCode = "INHO0";
