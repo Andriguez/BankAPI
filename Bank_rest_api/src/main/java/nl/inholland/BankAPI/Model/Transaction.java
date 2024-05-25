@@ -13,22 +13,22 @@ public class Transaction {
     @Id
     @GeneratedValue
     private long id;
-    private int senderId;
-    private int receiverId;
+    private long senderId;
+    private long receiverId;
     private double amount;
     private LocalDateTime dateTime;
     private int userInitiating;
 
     private TransactionType transactionType;
 
-    public int getSenderId(){
+    public long getSenderId(){
         return senderId;
     }
     public void setSenderId(int senderId){
         this.senderId = senderId;
     }
 
-    public int getReceiverId(){
+    public long getReceiverId(){
         return receiverId;
     }
     public void setReceiverId(int receiverId){
