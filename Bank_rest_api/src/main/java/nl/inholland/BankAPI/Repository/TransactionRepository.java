@@ -12,8 +12,4 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Query("SELECT t FROM Transaction t WHERE t.senderId = :senderId OR t.receiverId = :receiverId")
-    List<Transaction> findBySenderIdOrReceiverId(@Param("senderId") long senderId,
-                                                 @Param("receiverId") long receiverId);
-
 }
