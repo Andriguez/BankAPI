@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Entity
 @Data
@@ -27,6 +29,14 @@ public class Account {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "senderAccount", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Transaction> sentTransactions;
+
+    @OneToMany(mappedBy = "receiverAccount", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Transaction> receivedTransactions;
 
     public long getId() {return id;}
     //public long getUserId() {return userId;}

@@ -1,8 +1,7 @@
 package nl.inholland.BankAPI.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -14,7 +13,15 @@ public class Transaction {
     @GeneratedValue
     private long id;
     private long senderId;
+    @ManyToOne
+    @JoinColumn(name = "sender_account_id")
+    @JsonBackReference
+    private Account senderAccount;
     private long receiverId;
+    @ManyToOne
+    @JoinColumn(name = "receiver_account_id")
+    @JsonBackReference
+    private Account receiverAccount;
     private double amount;
     private LocalDateTime dateTime;
     private int userInitiating;
@@ -27,6 +34,10 @@ public class Transaction {
     public void setSenderId(int senderId){
         this.senderId = senderId;
     }
+    public Account getSenderAccount() {return senderAccount;}
+    public void setSenderAccount(Account senderAccount) {this.senderAccount = senderAccount;}
+    public Account getReceiverAccount() {return receiverAccount;}
+    public void setReceiverAccount(Account receiverAccount) {this.receiverAccount = receiverAccount;}
 
     public long getReceiverId(){
         return receiverId;

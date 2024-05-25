@@ -3,5 +3,6 @@ import TransactionsPage from '@/components/transactions/transactionsPage.vue'
 </script>
 
 <template>
-    <TransactionsPage />
+    <TransactionsPage :type="$route.params.type" />
 </template>
+

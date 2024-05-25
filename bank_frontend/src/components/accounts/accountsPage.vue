@@ -1,9 +1,10 @@
 <template>
-<div class="account_view">
+    <div class="account_view">
         <div class="d-flex" v-if="hasAccounts">
             <div class="container" style="color: black">
                 <h1 class="m-3" style="color: #6504c6">My Accounts</h1>
-                <button class="oneAccount mx-5" v-for="(account, index) in accounts" :key="index" @click="openAccountTransactions">
+                <button class="oneAccount mx-5" v-for="(account, index) in accounts" :key="index"
+                    @click="openAccountTransactions">
                     <p style="float: left; font-size: 22px;">{{ account.type }}</p>
                     <br>
                     <br>
@@ -19,8 +20,10 @@
             <p> you don't have any accounts yet.</p>
         </div>
 
-        <div class="container m-4" >
-            <button class="amount-btn mb-4" style="float: right;" @click="openTransferPage"><h1>Transfer</h1></button>
+        <div class="container m-4">
+            <button class="amount-btn mb-4" style="float: right;" @click="openTransferPage">
+                <h1>Transfer</h1>
+            </button>
         </div>
     </div>
 
@@ -65,11 +68,11 @@ export default {
             }
         },
 
-        openAccountTransactions(){
+        openAccountTransactions() {
             this.$router.replace('/transactions')
         },
 
-        openTransferPage(){
+        openTransferPage() {
             this.$router.replace('/transfer')
         }
     },
@@ -79,15 +82,14 @@ export default {
 
 <style>
 .account_view {
-  color: black;
+    color: black;
 }
 
 .oneAccount {
-  background-color: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 10px;
-  width: 80%;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 10px;
+    width: 80%;
 }
 </style>
-
