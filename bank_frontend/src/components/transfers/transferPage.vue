@@ -9,7 +9,7 @@
 
 <div class="container d-flex m-3">
     <h1 style="font-size: 80px;">€</h1>
-    <input type="number" min="10" step="5" class="amount-btn" placeholder="Amount">
+    <input type="number" min="1" class="amount-btn" placeholder="Amount">
 </div>
 <div class="container my-3" style="color: white;">
     <h2>Transfer from:</h2>
@@ -25,12 +25,13 @@
     <div class="container d-flex">
         <input type="text" class="mx-3" id="fullnameInput" placeholder="Full Name" style="width: 40%; font-size: 25px;" required>
         <input type="text" class="mx-3" id="ibanInput" placeholder="IBAN" style="width: 40%; font-size: 25px;" required>
+        <button class="transfer-btn" style="width: 100px !important; height: 50px !important; font-size: 20px;">Verify</button>
     </div>
 
 </div>
 
 <div class="container m-4 d-flex justify-content-center">
-    <button class="amount-btn"><h1>Transfer</h1></button>
+    <button class="transfer-btn"><h1>Transfer</h1></button>
 </div>
 
 </div>
@@ -41,5 +42,16 @@
 </script>
 
 <style>
+.transfer-btn{
+  padding: 7px;
+          margin: 5px;
+          background-color: #201F1F;
+          border: solid 3px #47008F;
+          border-radius: 16px;
+          height: 90px !important;
+          width: 250px !important;
 
+          font-size: 52px;
+          color: #6504c6;
+}
 </style>

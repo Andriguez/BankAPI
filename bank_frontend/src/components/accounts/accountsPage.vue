@@ -1,9 +1,10 @@
 <template>
-<div class="account_view">
+    <div class="account_view">
         <div class="d-flex" v-if="hasAccounts">
             <div class="container" style="color: black">
                 <h1 class="m-3" style="color: #6504c6">My Accounts</h1>
-                <button class="oneAccount mx-5" v-for="(account, index) in accounts" :key="index" @click="openAccountTransactions">
+                <button class="oneAccount mx-5" v-for="(account, index) in accounts" :key="index"
+                    @click="openAccountTransactions(account.type)">
                     <p style="float: left; font-size: 22px;">{{ account.type }}</p>
                     <br>
                     <br>
@@ -19,8 +20,10 @@
             <p> you don't have any accounts yet.</p>
         </div>
 
-        <div class="container m-4" >
-            <button class="amount-btn mb-4" style="float: right;" @click="openTransferPage"><h1>Transfer</h1></button>
+        <div class="container m-4">
+            <button class="amount-btn mb-4" style="float: right;" @click="openTransferPage">
+                <h1>Transfer</h1>
+            </button>
         </div>
     </div>
 
@@ -36,7 +39,6 @@ export default {
             loginStore: useLoginStore(),
             name: "",
             role: "",
-            jwtToken: "",
             accounts: [],
             hasAccounts: false,
             totalBalance: 0,
@@ -46,13 +48,12 @@ export default {
     mounted() {
         this.name = this.loginStore.name;
         this.role = this.loginStore.usertype;
-        this.jwtToken = this.loginStore.jwtToken;
         this.getAllAccounts();
     },
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsOfCustomer(this.jwtToken);
+                let accounts = await getAccountsOfCustomer();
                 console.log(accounts);
                 console.log(accounts.length);
                 this.hasAccounts = accounts.length > 0;
@@ -65,11 +66,20 @@ export default {
             }
         },
 
-        openAccountTransactions(){
-            this.$router.replace('/transactions')
+        openAccountTransactions(type) {
+
+            let lowercaseType = "";
+
+            if (type === "CURRENT"){
+                lowercaseType = "current";
+            } else if (type === "SAVINGS"){
+                lowercaseType = "savings";
+            }
+
+            this.$router.replace(`/transactions/${lowercaseType}`)
         },
 
-        openTransferPage(){
+        openTransferPage() {
             this.$router.replace('/transfer')
         }
     },
@@ -79,15 +89,14 @@ export default {
 
 <style>
 .account_view {
-  color: black;
+    color: black;
 }
 
 .oneAccount {
-  background-color: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 10px;
-  width: 80%;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 10px;
+    width: 80%;
 }
 </style>
-

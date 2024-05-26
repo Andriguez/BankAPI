@@ -27,11 +27,17 @@ public class TransactionService {
 
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactionsByUserId(
-            long userId, TransactionType transactionType,
+    public List<Transaction> getTransactionsByAccountId(
+            Account account, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
-            Float minAmount, Float maxAmount, Float exactAmount) {
-        List<Transaction> transactions = transactionRepository.findBySenderIdOrReceiverId(userId, userId);
+            Float minAmount, Float maxAmount, Float exactAmount,
+            String iban) {
+        List<Transaction> transactionsSent = account.getSentTransactions();
+        List<Transaction> transactionsReceived = account.getReceivedTransactions();
+
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.addAll(transactionsSent);
+        transactions.addAll(transactionsReceived);
         if(transactionType != null) {
             transactions = transactions.stream()
                     .filter(transaction -> transaction.getTransactionType() == transactionType)
@@ -74,6 +80,23 @@ public class TransactionService {
                     .filter(transaction -> transaction.getAmount() == exactAmount)
                     .collect(Collectors.toList());
             System.out.println("found by equal to " + exactAmount.toString() );
+            System.out.println(transactions.size());
+        }
+        if(iban != null) {
+            transactions = transactions.stream()
+                    .filter(transaction -> {
+                        if (transaction.getSenderAccount().getIban().contains(iban)) {
+                            return true;
+                        }
+                        else if(transaction.getReceiverAccount().getIban().contains(iban)) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+            System.out.println("found by iban to " + iban );
             System.out.println(transactions.size());
         }
         return transactions;

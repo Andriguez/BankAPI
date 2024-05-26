@@ -59,10 +59,13 @@ public class WebSecurityConfiguration {
                         requests.requestMatchers("/register").permitAll());
         httpSecurity.authorizeHttpRequests(
                 requests ->
-                        requests.requestMatchers("/accounts").permitAll()); // convert to authenticated later
+                        requests.requestMatchers("/accounts").authenticated());
         httpSecurity.authorizeHttpRequests(
                 requests ->
-                        requests.requestMatchers("/transactions").permitAll()); // convert to authenticated later
+                        requests.requestMatchers("/transactions").authenticated());
+        httpSecurity.authorizeHttpRequests(
+                requests ->
+                        requests.requestMatchers("/transactions/**").authenticated());
         httpSecurity.addFilterBefore(jwtFilter,
                 UsernamePasswordAuthenticationFilter.class);
 
