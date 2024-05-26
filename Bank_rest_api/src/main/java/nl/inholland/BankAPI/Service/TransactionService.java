@@ -27,7 +27,7 @@ public class TransactionService {
 
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactionsByAccountId(
+    public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
             Float minAmount, Float maxAmount, Float exactAmount,
@@ -39,6 +39,8 @@ public class TransactionService {
         transactions.addAll(transactionsSent);
         transactions.addAll(transactionsReceived);
         if(transactionType != null) {
+            // filter transactions to keep transactions with transactionType (got from method inputs that came from
+            // API call)
             transactions = transactions.stream()
                     .filter(transaction -> transaction.getTransactionType() == transactionType)
                     .collect(Collectors.toList());
@@ -48,7 +50,7 @@ public class TransactionService {
         if(startDate != null) {
             transactions = transactions.stream()
                     // when filtering by time, we should convert the startDate (which is date) to dateTime and we
-                    // should .asStartOfDay to onvert date (received from frontend) to dateTime.
+                    // should .asStartOfDay to convert date (received from frontend) to dateTime.
                     .filter(transaction -> transaction.getDateTime().isAfter(startDate.atStartOfDay()))
                     .collect(Collectors.toList());
             System.out.println("found by after startDate " + startDate.toString() );
