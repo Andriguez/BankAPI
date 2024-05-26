@@ -101,4 +101,16 @@ public class TransactionService {
         }
         return transactions;
     }
+
+    public Object createTransaction(Transaction transaction){
+
+        try{
+            transactionRepository.save(transaction);
+
+            return transaction;
+        } catch (IllegalArgumentException e) {
+            return e;
+        }
+
+    }
 }

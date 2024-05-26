@@ -1,6 +1,8 @@
 package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.TransactionService;
 import nl.inholland.BankAPI.Service.UserService;
@@ -9,11 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class TransactionController {
     private TransactionService transactionService;
     private AccountService accountService;
     private UserService userService;
+
+    private ATMAccount atmAccount;
 
     public TransactionController(TransactionService transactionService, AccountService accountService,
                                  UserService userService){
@@ -80,5 +83,41 @@ public class TransactionController {
                 minAmount, maxAmount, exactAmount, iban);
         customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
         return ResponseEntity.status(200).body(customerTransactionsDTO);
+    }
+    @PostMapping
+    public ResponseEntity<Object> CreateTransaction (@RequestBody TransactionRequestDTO transactionData){
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User loggedUser = userService.getUserByEmail(email);
+
+        Account sender;
+        Account receiver;
+
+        if(isATM(transactionData.sender())){
+            sender = new ATMAccount();
+            receiver = accountService.getAccountByIban(transactionData.receiver());
+        } else if (isATM(transactionData.receiver())){
+            sender = accountService.getAccountByIban(transactionData.sender());
+            receiver = new ATMAccount();
+        } else {
+            sender = accountService.getAccountByIban(transactionData.sender());
+            receiver = accountService.getAccountByIban(transactionData.receiver());
+        }
+
+        TransactionType type = TransactionType.valueOf(transactionData.type());
+
+
+        Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), loggedUser, type);
+        transactionService.createTransaction(transaction);
+
+        return ResponseEntity.ok().body(null);
+    }
+
+    private Boolean isATM(String input){
+        if (input == "NLXXINHOXXXXXXXXXX"){
+            return true;
+        }
+
+        return false;
     }
 }

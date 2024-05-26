@@ -9,7 +9,7 @@
         <div class="container account" v-for="account in userAccounts">
             <h3>{{ account.type }} Account</h3>
             <h5>IBAN: {{ account.iban }} </h5>
-            <h2>€ {{ account.balance }}</h2>
+            <h2 style="color: white;">€ {{ account.balance }}</h2>
         </div>
     </div>
     <button class="back-btn m-3" @click="selectBtn('main')"><span>Go Back</span></button>

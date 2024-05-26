@@ -1,10 +1,11 @@
 <template>
     <div class="container d-flex justify-content-center m-5">
-       <button class="amount-btn"><h3>€10</h3></button>
-       <button class="amount-btn"><h3>€20</h3></button>
-       <button class="amount-btn"><h3>€50</h3></button>
-       <button class="amount-btn"><h3>€100</h3></button>
-       <input type="number" min="10" step="5" class="other-amount-btn" placeholder="Other Amount">
+      <input type="number" min="10" step="5" class="other-amount-btn" placeholder="Other Amount" v-model="amount">
+
+       <button class="amount-btn" @click="selectAmount(10)"><h3>€10</h3></button>
+       <button class="amount-btn" @click="selectAmount(20)"><h3>€20</h3></button>
+       <button class="amount-btn" @click="selectAmount(50)"><h3>€50</h3></button>
+       <button class="amount-btn" @click="selectAmount(100)"><h3>€100</h3></button>
 
 
     </div>
@@ -18,9 +19,17 @@
 export default {
    name: 'ATMamount',
    emits: ['btn-selected'],
+   data(){
+      return {
+         amount: Number,
+      }
+   },
    methods: {
         selectBtn(window){
             this.$emit('btn-selected', window);
+        },
+        selectAmount(selectedAmount){
+            this.amount = selectedAmount;
         }
     }
 }
@@ -81,7 +90,7 @@ export default {
            color: #047616;
 }
 
-.amount-btn:hover{
+.amount-btn:hover, .selected{
    background-color: #8e6daf;
 }
 

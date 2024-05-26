@@ -98,7 +98,6 @@ public class AccountController {
         //user.setUserType(List.of(UserType.CUSTOMER));
         userService.changeGuestToUser(user);
 
-
         return ResponseEntity.ok().body(user.getAccounts());
 
     }

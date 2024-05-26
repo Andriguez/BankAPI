@@ -10,7 +10,10 @@ import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import nl.inholland.BankAPI.Model.Transaction;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -28,8 +31,9 @@ public class ApplicationStarter implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // createAccounts();
+
         userService.getAllUsers().forEach(user -> {
-            System.out.println(user.getEmail() + " - accounts:  ");
+            System.out.println(user.getId() + user.getEmail() + " - accounts:  ");
             user.getAccounts().forEach(account -> {
                 System.out.println("iban: " + account.getIban() + " - " + account.getType());
             });
@@ -52,13 +56,13 @@ public class ApplicationStarter implements ApplicationRunner {
     }
 
     private void createAccounts(){
-        Account current = new Account("NL12INHO0123456789", 1200.00, 100.00, 125.00, AccountType.CURRENT);
-        Account savings = new Account("NL13INHO0123456789", 1500.00, 100.00, 125.00, AccountType.SAVINGS);
+        //Account current = new Account("NL12INHO0123456789", 1200.00, 100.00, 125.00, AccountType.CURRENT);
+        //Account savings = new Account("NL13INHO0123456789", 1500.00, 100.00, 125.00, AccountType.SAVINGS);
 
-        accountService.createAccount(current);
-        accountService.createAccount(savings);
+        //accountService.createAccount(current);
+        //accountService.createAccount(savings);
 
-        createUsers(current,savings);
+        //createUsers(current,savings);
     }
 
 }

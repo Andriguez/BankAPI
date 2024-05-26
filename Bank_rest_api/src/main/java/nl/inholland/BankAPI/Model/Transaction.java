@@ -12,70 +12,53 @@ public class Transaction {
     @Id
     @GeneratedValue
     private long id;
-    private long senderId;
+    //private long senderId;
     @ManyToOne
     @JoinColumn(name = "sender_account_id")
     @JsonBackReference
     private Account senderAccount;
-    private long receiverId;
+    //private long receiverId;
     @ManyToOne
     @JoinColumn(name = "receiver_account_id")
     @JsonBackReference
     private Account receiverAccount;
     private double amount;
     private LocalDateTime dateTime;
-    private int userInitiating;
-
+    @OneToOne
+    @JoinColumn(name = "initiator_id")
+    private User userInitiating;
     private TransactionType transactionType;
 
-    public long getSenderId(){
-        return senderId;
-    }
-    public void setSenderId(int senderId){
-        this.senderId = senderId;
-    }
-    public Account getSenderAccount() {return senderAccount;}
-    public void setSenderAccount(Account senderAccount) {this.senderAccount = senderAccount;}
-    public Account getReceiverAccount() {return receiverAccount;}
-    public void setReceiverAccount(Account receiverAccount) {this.receiverAccount = receiverAccount;}
+    //public long getSenderId(){
+       // return senderId;
+    //}
 
-    public long getReceiverId(){
-        return receiverId;
-    }
-    public void setReceiverId(int receiverId){
-        this.receiverId = receiverId;
-    }
+    public Account getSenderAccount() {return senderAccount;}
+    public Account getReceiverAccount() {return receiverAccount;}
+
+    //public long getReceiverId(){
+      //  return receiverId;
+    //}
+
 
     public double getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
     public LocalDateTime getDateTime(){
         return dateTime;
     }
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public int getUserInitiating() {
+    public User getUserInitiating() {
         return userInitiating;
     }
 
-    public void setUserInitiating(int userInitiating) {
-        this.userInitiating = userInitiating;
-    }
-
-    public Transaction(int senderId, int receiverId, double amount, LocalDateTime dateTime, int userInitiating ){
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+    public Transaction(Account senderAccount, Account receiverAccount, double amount, LocalDateTime dateTime, User userInitiating, TransactionType type ){
+        this.senderAccount = senderAccount;
+        this.receiverAccount = receiverAccount;
         this.amount = amount;
         this.dateTime = dateTime;
         this.userInitiating = userInitiating;
-
+        this.transactionType = type;
     }
 
     public TransactionType getTransactionType() {
