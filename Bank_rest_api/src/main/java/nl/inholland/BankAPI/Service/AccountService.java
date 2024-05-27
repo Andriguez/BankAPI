@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -104,5 +105,9 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
+    public void closeAccount(Account account){
+        Account accountToClose = this.getAccountByIban(account.getIban());
+        accountToClose.setAccountStatus(AccountStatus.valueOf("INACTIVE"));
+    }
 }
 

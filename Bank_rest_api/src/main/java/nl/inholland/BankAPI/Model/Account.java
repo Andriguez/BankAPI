@@ -25,6 +25,9 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
@@ -67,12 +70,14 @@ public class Account {
         this.dailyLimit = dailyLimit;
     }
 
+
     public Account(String iban, double balance, double absoluteLimit, double dailyLimit, AccountType type){
         this.iban = iban;
         this.balance = balance;
         this.dailyLimit = dailyLimit;
         this.absoluteLimit = absoluteLimit;
         this.type = type;
+        this.accountStatus = AccountStatus.valueOf("ACTIVE");
     }
 
     public void setUser(User user) { this.user = user; }
