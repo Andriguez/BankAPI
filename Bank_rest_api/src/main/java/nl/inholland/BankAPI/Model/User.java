@@ -39,6 +39,7 @@ public class User {
         account.setUser(this);
     }
 
+
     @ElementCollection(fetch = EAGER)
     private List<UserType> userType;
     /*public String getFirstName() {

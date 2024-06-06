@@ -68,7 +68,6 @@ export default {
         return {
             loginStore: useLoginStore(),
             name: "customer",
-            jwtToken: "",
             account: null,
             transactions: [],
             hasTransactions: false,
@@ -84,13 +83,12 @@ export default {
     },
     mounted() {
         this.name = this.loginStore.name;
-        this.jwtToken = this.loginStore.jwtToken;
         this.getAllTransactionsWithType();
     },
     methods: {
         async getAllTransactionsWithType() {
             try {
-                let accountsTransactions = await getTransactionOfCustomerByType(this.jwtToken, this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
+                let accountsTransactions = await getTransactionOfCustomerByType(this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
                 console.log(accountsTransactions);
                 let account = accountsTransactions.account;
                 let transactions = accountsTransactions.transactions;

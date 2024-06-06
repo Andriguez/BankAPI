@@ -4,7 +4,7 @@
             <div class="container" style="color: black">
                 <h1 class="m-3" style="color: #6504c6">My Accounts</h1>
                 <button class="oneAccount mx-5" v-for="(account, index) in accounts" :key="index"
-                    @click="openAccountTransactions">
+                    @click="openAccountTransactions(account.type)">
                     <p style="float: left; font-size: 22px;">{{ account.type }}</p>
                     <br>
                     <br>
@@ -39,7 +39,6 @@ export default {
             loginStore: useLoginStore(),
             name: "",
             role: "",
-            jwtToken: "",
             accounts: [],
             hasAccounts: false,
             totalBalance: 0,
@@ -49,13 +48,12 @@ export default {
     mounted() {
         this.name = this.loginStore.name;
         this.role = this.loginStore.usertype;
-        this.jwtToken = this.loginStore.jwtToken;
         this.getAllAccounts();
     },
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsOfCustomer(this.jwtToken);
+                let accounts = await getAccountsOfCustomer();
                 console.log(accounts);
                 console.log(accounts.length);
                 this.hasAccounts = accounts.length > 0;
@@ -68,8 +66,17 @@ export default {
             }
         },
 
-        openAccountTransactions() {
-            this.$router.replace('/transactions')
+        openAccountTransactions(type) {
+
+            let lowercaseType = "";
+
+            if (type === "CURRENT"){
+                lowercaseType = "current";
+            } else if (type === "SAVINGS"){
+                lowercaseType = "savings";
+            }
+
+            this.$router.replace(`/transactions/${lowercaseType}`)
         },
 
         openTransferPage() {
