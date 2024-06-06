@@ -87,6 +87,7 @@ public class TransactionService {
         if(iban != null) {
             transactions = transactions.stream()
                     .filter(transaction -> {
+                        // I check to see if the provided iban filter is in sender account or receiver account iban
                         if (transaction.getSenderAccount().getIban().contains(iban)) {
                             return true;
                         }

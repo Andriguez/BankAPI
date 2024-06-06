@@ -20,8 +20,8 @@ public class AccountService {
     // getAccountByIban filter account matching the given iban. If the iban does not exist, it will return null. If
     // the iban is correct, only one account should be returned, so we return the only element if there is one
     // account.
-    public Account getAccountByIban(String toFromIban) {
-        List<Account> accounts = accountRepository.findAccountsByIban(toFromIban);
+    public Account getAccountByIban(String iban) {
+        List<Account> accounts = accountRepository.findAccountsByIban(iban);
         if(accounts.size() == 1) {
             return accounts.get(0);
         }

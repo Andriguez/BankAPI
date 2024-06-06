@@ -52,6 +52,8 @@ public class TransactionController {
         // find logged in user from her JWT
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userService.getUserByEmail(email);
+        // I want to send info about account and its transactions to the frontend. So, I created a new class that has
+        // account and a list of transactions called CustomerTransactionsDTO
         CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
         if (loggedInUser.getAccounts().size() == 0) {
             // if customer does not have any accounts, she does not have any transactions too
