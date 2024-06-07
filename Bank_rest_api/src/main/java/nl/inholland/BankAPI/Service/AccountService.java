@@ -74,7 +74,8 @@ public class AccountService {
 
     public void closeAccount(Account account){
         Account accountToClose = this.getAccountByIban(account.getIban());
-        accountToClose.setAccountStatus(AccountStatus.valueOf("INACTIVE"));
+        accountToClose.setAccountStatus(AccountStatus.INACTIVE);
+        accountRepository.save(accountToClose);
     }
 }
 

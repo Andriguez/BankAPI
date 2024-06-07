@@ -46,13 +46,13 @@
 
   <div v-if="$route.path == '/users' && hasUsertype('ADMIN')" class="col-12">
     <a class="nav-link p-2" @click="editAccountsInfo" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Edit</a>
-    <a class="nav-link p-2" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Delete</a>
+    <a class="nav-link p-2" @click="closeAccounts" style="font-size: 18px; cursor: pointer; width: 150px; height: 50px; float: right; text-align: center;">Delete</a>
   </div>
 </form>
 </template>
 
 <script>
-import { createAccounts, editAccountsInfo } from '@/services/accountsService';
+import { createAccounts, editAccountsInfo, closeAccounts } from '@/services/accountsService';
 import {getUserById} from '@/services/userService'
 import { useLoginStore } from '@/stores/loginStore';
 
@@ -122,6 +122,17 @@ export default {
           console.error(error)
         }
         
+  },
+  async closeAccounts(){
+    try{
+          const response = await closeAccounts(this.userId);
+
+          console.log(response)
+          this.$router.replace("/accounts");
+
+        } catch (error){
+          console.error(error)
+        }
   },
   hasUsertype(usertype){
           return this.loginStore.hasUsertype(usertype);

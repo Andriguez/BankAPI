@@ -1,4 +1,10 @@
 <template>
+
+<div v-if="hasUsertype('ADMIN')" class="d-flex">
+        <UsersTable @selectUser="setUserId"/>
+        <UsersOverview v-if="userId !== 0" :id="userId"/>
+</div>
+
 <div class="container m-5 px-5 d-flex flex-wrap">
     <div class="container d-flex" style="color: white;">
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-left-right mx-2" viewBox="0 0 16 16">
@@ -37,8 +43,10 @@
 </div>
 </template>
 
-<script>
-
+<script setup>
+import { getAccountsOfCustomer } from '@/services/accountsService';
+import UsersTable from '../admin/users/users_table.vue'
+import { useLoginStore } from '@/stores/loginStore';
 </script>
 
 <style>
@@ -55,3 +63,31 @@
           color: #6504c6;
 }
 </style>
+
+
+
+<script>
+export default {
+    name: 'Users',
+    data(){
+        return{
+            userId: 0,
+            loginStore: useLoginStore(),
+        }
+    },
+    methods: {
+        setUserId(id){
+            this.userId = 0;
+
+            this.$nextTick(() => {
+                this.userId = id;
+            });
+
+        },
+        hasUsertype(usertype){
+          return this.loginStore.hasUsertype(usertype);
+        },
+        
+    }
+}
+</script>

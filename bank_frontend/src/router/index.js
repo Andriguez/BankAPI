@@ -16,7 +16,7 @@ const router = createRouter({
       path: '/accounts',
       name: 'accounts',
       component: () => import('../views/AcountsView.vue'),
-      meta: { requiresAuth: true, requiresCustomer: true }
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/atm',

@@ -37,6 +37,12 @@ public class AccountController {
         List<Account> accounts = loggedUser.getAccounts();
         return ResponseEntity.ok().body(accounts);
     }
+    @GetMapping(params="userid")
+    public ResponseEntity<List<Account>> getAccountsById(@RequestParam Long userid){
+        User neededUser = userService.getUserById(userid);
+        List<Account> neededAccounts = neededUser.getAccounts();
+        return ResponseEntity.ok().body(neededAccounts);
+    }
 
     @PostMapping(params="userid")
     public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
@@ -118,5 +124,19 @@ public class AccountController {
         accountService.updateAccount(currentAccount);
         accountService.updateAccount(savingsAccount);
         return ResponseEntity.ok().body(user.getAccounts());
+    }
+    @DeleteMapping(params="userid")
+    public ResponseEntity<List<Account>> closeAccounts(@RequestParam Long userid){
+        User user;
+            user = userService.getUserById(userid);
+        // Get the accounts of the user
+        List<Account> accounts = user.getAccounts();
+        Account currentAccount = null;
+        Account savingsAccount = null;
+        // Find the CURRENT and SAVINGS accounts
+        for (Account account : accounts) {
+            accountService.closeAccount(account);
+        }
+        return ResponseEntity.ok().body(accounts);
     }
 }
