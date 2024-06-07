@@ -1,9 +1,5 @@
 <template>
-
-<div v-if="hasUsertype('ADMIN')" class="d-flex">
-        <UsersTable @selectUser="setUserId"/>
-        <UsersOverview v-if="userId !== 0" :id="userId"/>
-</div>
+<div class="container d-flex flex-nowrap m-0 p-0" >
 
 <div class="container m-5 px-5 d-flex flex-wrap">
     <div class="container d-flex" style="color: white;">
@@ -20,9 +16,8 @@
 <div class="container my-3" style="color: white;">
     <h2>Transfer from:</h2>
     <div class="container d-flex">
-    <select class="mx-3" aria-label="Default select example" style="width: 60%; height: 50px; font-size: 30px;">
-        <option selected>CURRENT: NL11INHO0365135774 [ €100 ]</option>
-        <option value="1">SAVINGS: NL11INHO0365135774 [ €100 ]</option>
+    <select class="mx-3" aria-label="Default select example" style="width: 100%; height: 50px; font-size: 30px;" v-for="(account, index) in accounts" :key="index">
+        <option selected>{{ account.type }}: {{account.iban}} [ €{{ account.balance }} ]</option>
 </select>
 </div>
 </div>
@@ -41,10 +36,11 @@
 </div>
 
 </div>
+</div>
 </template>
 
 <script setup>
-import { getAccountsOfCustomer } from '@/services/accountsService';
+import { getAccountsById } from '@/services/accountsService';
 import UsersTable from '../admin/users/users_table.vue'
 import { useLoginStore } from '@/stores/loginStore';
 </script>
@@ -68,17 +64,19 @@ import { useLoginStore } from '@/stores/loginStore';
 
 <script>
 export default {
-    name: 'Users',
+    name: 'TransferPage',
     data(){
         return{
-            userId: 0,
+            //userId: Number,
             loginStore: useLoginStore(),
+            accounts: []
         }
+    },
+    props:{
+        userId: Number,
     },
     methods: {
         setUserId(id){
-            this.userId = 0;
-
             this.$nextTick(() => {
                 this.userId = id;
             });
@@ -87,7 +85,22 @@ export default {
         hasUsertype(usertype){
           return this.loginStore.hasUsertype(usertype);
         },
+
         
+    },
+    async mounted(){
+      try{
+        console.log(this.userId);
+
+
+    const response = await getAccountsById(this.userId);
+    this.accounts = response.data;
+    console.log(response)
+
+    } catch(error) {
+        console.log(error)
+        }
     }
+    
 }
 </script>

@@ -1,19 +1,18 @@
 <script setup>
 import UsersTable from '../users/users_table.vue'
-import AccountsOverview from './accounts_overview.vue'
+import TransfersOverview from './transfers_overview.vue'
 </script>
 
 <template>
     <div class="d-flex">
         <UsersTable @selectUser="setUserId"/>
-        <AccountsOverview v-if="userId !== 0" :id="userId"/>
+        <TransfersOverview v-if="userId !== 0" :id="userId"/>
     </div>
-    <AccountsOverview/>
 </template>
 
 <script>
 export default {
-    name: 'AccountsPage',
+    name: 'AdminTransfersPage',
     data(){
         return{
             userId: 0
