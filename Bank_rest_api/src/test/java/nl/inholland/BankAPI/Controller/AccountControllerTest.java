@@ -51,6 +51,8 @@ public class AccountControllerTest {
     @MockBean
     private JwtProvider jwtProvider;
 
+    @InjectMocks
+    private AccountController accountController;
 
     @BeforeEach
     public void setup() {
