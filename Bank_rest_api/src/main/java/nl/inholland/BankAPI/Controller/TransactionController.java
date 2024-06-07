@@ -9,6 +9,7 @@ import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +90,7 @@ public class TransactionController {
         return ResponseEntity.status(200).body(customerTransactionsDTO);
     }
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
     public ResponseEntity<Object> CreateTransaction (@RequestBody TransactionRequestDTO transactionData){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -109,7 +111,6 @@ public class TransactionController {
         }
 
         TransactionType type = TransactionType.valueOf(transactionData.type());
-
 
         Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), loggedUser, type);
         transactionService.createTransaction(transaction);
