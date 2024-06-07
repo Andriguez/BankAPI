@@ -52,14 +52,18 @@ public class TransactionController {
     ) {
         Account customerAccount = null;
         List<Transaction> transactions = new ArrayList<Transaction>();
+        // find logged in user from her JWT
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedInUser = userService.getUserByEmail(email);
+        // I want to send info about account and its transactions to the frontend. So, I created a new class that has
+        // account and a list of transactions called CustomerTransactionsDTO
         CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
         if (loggedInUser.getAccounts().size() == 0) {
             // if customer does not have any accounts, she does not have any transactions too
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         }
         if (accountType.equals("current")) {
+            // if accountType is current, find the "current" account of user.
             for (Account account : loggedInUser.getAccounts()) {
                 if (account.getType() == AccountType.CURRENT) {
                     System.out.println("iban: " + account.getIban() + " - " + account.getType());
@@ -77,9 +81,9 @@ public class TransactionController {
                 }
             }
         }
-        // getTransactions method in transactionService gets inputs (some of them might be null) and return
-        // transactions that match those filters.
-        transactions = transactionService.getTransactionsByAccountId(customerAccount, transactionType, startDate, endDate,
+        // getTransactionsByAccount method in transactionService gets inputs from frontend (some of them might be
+        // null) and pass it to service and return transactions that match those filters.
+        transactions = transactionService.getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
                 minAmount, maxAmount, exactAmount, iban);
         customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
         return ResponseEntity.status(200).body(customerTransactionsDTO);
