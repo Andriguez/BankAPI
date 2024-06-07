@@ -61,6 +61,9 @@ public class Transaction {
         this.dateTime = dateTime;
     }
 
+    public TransactionType getTrancationType() {return transactionType; }
+    public void setTransactionType(TransactionType transactionType) { this.transactionType = transactionType; }
+
     public int getUserInitiating() {
         return userInitiating;
     }
