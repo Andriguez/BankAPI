@@ -28,28 +28,11 @@ public class AccountController {
         this.userService = userService;
     }
 
-    // /accounts can have a main route /accounts and many sub-routes such as /accounts/myAccount GetMapping
-    // determines which one the following method is for.
-    // GetMapping without nothing corresponds to the main route /accounts
-    //@GetMapping("/myAccounts")
-    // when calling an API, we can pass different queries. For example: /accounts?email=test@gmail.com. It can habe
-    // multiple queries. For example /accounts?email=test@gmail.com&iban=someIban
-    // Setting queries are optional (since required = false) and if it is not provided, it will be null.
-    //public ResponseEntity<List<Account>> getCustomerAccounts() {
-      //  List<Account> accounts = new ArrayList<Account>();
-        // read email of the user from JWT. A customer should only be able to see her own accounts. We read the email
-        // of the logged in user from jWT information
-        //User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //long userId = loggedInUser.getId();
-        // the getAccounts method in the accountService is responsible for returning the accounts based on the input
-        // filters. We will add all the filters we want. Some of them are null in most of cases.
-        //accounts = accountService.getAccountsByUserId(userId);
-        //return ResponseEntity.status(200).body(accounts);
-    //}
-
     @GetMapping // route: /accounts
-    public ResponseEntity<Object> getAccountsByCustomer(){
+    public ResponseEntity<List<Account>> getAccountsByCustomer(){
+        // the following line extracts the email of customer from jwt token.
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        // getUserByEmail reads user information from database.
         User loggedUser = userService.getUserByEmail(email);
         List<Account> accounts = loggedUser.getAccounts();
         return ResponseEntity.ok().body(accounts);
