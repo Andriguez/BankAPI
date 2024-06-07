@@ -65,14 +65,14 @@ public class TransactionService {
         }
         if(minAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() > minAmount)
+                    .filter(transaction -> transaction.getAmount() >= minAmount)
                     .collect(Collectors.toList());
             System.out.println("found by bigger than " + minAmount.toString() );
             System.out.println(transactions.size());
         }
         if(maxAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() < maxAmount)
+                    .filter(transaction -> transaction.getAmount() <= maxAmount)
                     .collect(Collectors.toList());
             System.out.println("found by smaller than " + maxAmount.toString() );
             System.out.println(transactions.size());
