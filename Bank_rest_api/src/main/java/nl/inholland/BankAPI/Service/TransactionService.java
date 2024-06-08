@@ -38,6 +38,8 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(transactionsSent);
         transactions.addAll(transactionsReceived);
+        System.out.println("Transaction service called ");
+        System.out.println(transactions.size());
         if(transactionType != null) {
             // filter transactions to keep transactions with transactionType (got from method inputs that came from
             // API call)
