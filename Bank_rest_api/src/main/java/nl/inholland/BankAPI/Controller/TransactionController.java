@@ -47,6 +47,7 @@ public class TransactionController {
             @RequestParam(required = false) Float maxAmount,
             @RequestParam(required = false) String iban
     ) {
+        System.out.println("Transaction controller called ");
         Account customerAccount = null;
         List<Transaction> transactions = new ArrayList<Transaction>();
         // find logged in user from her JWT
