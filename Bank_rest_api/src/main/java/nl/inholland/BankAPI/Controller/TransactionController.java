@@ -59,7 +59,7 @@ public class TransactionController {
             // if customer does not have any accounts, she does not have any transactions too
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         }
-        if (accountType.equals("current")) {
+        if ("current".equals(accountType)) {
             // if accountType is current, find the "current" account of user.
             for (Account account : loggedInUser.getAccounts()) {
                 if (account.getType() == AccountType.CURRENT) {
@@ -69,7 +69,7 @@ public class TransactionController {
                 }
             }
         }
-        else if (accountType.equals("savings")) {
+        else if ("savings".equals(accountType)) {
             for (Account account : loggedInUser.getAccounts()) {
                 if (account.getType() == AccountType.SAVINGS) {
                     System.out.println("iban: " + account.getIban() + " - " + account.getType());
@@ -77,6 +77,9 @@ public class TransactionController {
                     break;
                 }
             }
+        }
+        else {
+            return ResponseEntity.status(200).body(customerTransactionsDTO);
         }
         // getTransactionsByAccount method in transactionService gets inputs from frontend (some of them might be
         // null) and pass it to service and return transactions that match those filters.
