@@ -71,7 +71,7 @@ public class AccountControllerTest {
     public void testGetAccountsByCustomerLoggedUserWithNoAccount() throws Exception {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
-        mockUser.setEmail("test1@example.com");
+        mockUser.setEmail("customer@email.com");
         List<Account> mockAccounts = new ArrayList<>();
         mockUser.setAccounts(mockAccounts);
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
@@ -87,7 +87,7 @@ public class AccountControllerTest {
     public void testGetAccountsByCustomerLoggedUserWithAccount() throws Exception {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
-        mockUser.setEmail("test1@example.com");
+        mockUser.setEmail("customer@email.com");
         Account account1 = new Account();
         account1.setId(1L);
         account1.setType(AccountType.CURRENT);
