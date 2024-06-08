@@ -6,6 +6,7 @@ import nl.inholland.BankAPI.Model.TransactionType;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -28,6 +29,7 @@ public class TransactionServiceTest {
     @Mock
     private UserService userService;
 
+    @InjectMocks
     private TransactionService transactionService;
 
     private Account account;
