@@ -9,29 +9,87 @@
 
 
     </div>
-    <button class="confirm-btn m-3"><span>Confirm</span></button>
+    <button class="confirm-btn m-3" @click="createATMTransaction()"><span>Confirm</span></button>
     <button class="back-btn m-3" @click="selectBtn('main')"><span>Go Back</span></button>
 
 
 </template>
 
 <script>
+import { createTransaction } from '@/services/transactionsService';
+import { useUserAccountStore } from "@/stores/userAccountStore";
+
 export default {
    name: 'ATMamount',
    emits: ['btn-selected'],
    data(){
       return {
          amount: Number,
+         transactionType: '',
+         atmAccount: 'NLXXINHOXXXXXXXXXX',
+         senderAcc: '',
+         receiverAcc: '',
+         
       }
+   },
+   props: {
+      type: String
    },
    methods: {
         selectBtn(window){
-            this.$emit('btn-selected', window);
+            this.$emit('btn-selected', window, '');
         },
         selectAmount(selectedAmount){
             this.amount = selectedAmount;
+        },
+        async createATMTransaction(){
+            try{
+               await this.setAccounts(this.type);
+
+               const transactionData = {
+               sender: this.senderAc,
+               receiver: this.receiverAc,
+               amount: this.amount,
+               type: this.type
+               }
+
+            console.log(transactionData)
+
+            const response = createTransaction(transactionData);
+
+            console.log(response);
+                     } catch(error){
+                        console.error(error)
+                        }
+
+                        this.selectBtn('main')
+            
+        },
+
+      async setAccounts(type){
+         const userAccounts = this.accountStore.userCurrentAccount;
+         //console.log(userAccounts.iban);
+
+            switch(type) {
+               case 'WITHDRAWAL':
+                  this.senderAc = userAccounts.iban,
+                  this.receiverAc = this.atmAccount
+                  break;
+               case 'DEPOSIT':
+                  this.senderAc = this.atmAccount,
+                  this.receiverAc = userAccounts.iban
+                  break;
+               default:
+                  this.sender = '',
+                  this.receiver= ''
+            }
         }
-    }
+      },
+      async mounted(){
+         this.accountStore = await useUserAccountStore();
+         await this.accountStore.getUserAccounts();
+
+      }
 }
 </script>
 

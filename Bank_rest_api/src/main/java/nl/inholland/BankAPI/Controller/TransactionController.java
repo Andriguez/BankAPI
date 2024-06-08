@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 // RequestMapping determines with API calls are handled by this controller.
@@ -93,36 +95,17 @@ public class TransactionController {
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
     public ResponseEntity<Object> CreateTransaction (@RequestBody TransactionRequestDTO transactionData){
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User loggedUser = userService.getUserByEmail(email);
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User loggedUser = userService.getUserByEmail(email);
 
-        Account sender;
-        Account receiver;
+            return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
 
-        if(isATM(transactionData.sender())){
-            sender = new ATMAccount();
-            receiver = accountService.getAccountByIban(transactionData.receiver());
-        } else if (isATM(transactionData.receiver())){
-            sender = accountService.getAccountByIban(transactionData.sender());
-            receiver = new ATMAccount();
-        } else {
-            sender = accountService.getAccountByIban(transactionData.sender());
-            receiver = accountService.getAccountByIban(transactionData.receiver());
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.internalServerError().body(e);
         }
 
-        TransactionType type = TransactionType.valueOf(transactionData.type());
-
-        Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), loggedUser, type);
-        transactionService.createTransaction(transaction);
-
-        return ResponseEntity.ok().body(null);
     }
 
-    private Boolean isATM(String input){
-        if (input == "NLXXINHOXXXXXXXXXX"){
-            return true;
-        }
 
-        return false;
-    }
 }

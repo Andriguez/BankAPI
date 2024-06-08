@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from '@/axios-auth';
+import { useUserAccountStore } from './userAccountStore';
 
 export const useLoginStore = defineStore('login', {
   state: () => ({
@@ -32,6 +33,8 @@ export const useLoginStore = defineStore('login', {
           localStorage.setItem('name', JSON.stringify(res.data.name));
           localStorage.setItem('usertype', JSON.stringify(res.data.usertype));
           localStorage.setItem('userid', JSON.stringify(res.data.userId))
+
+          this.setUserAccounts();
 
           console.log(res.data);
           resolve()
@@ -76,6 +79,9 @@ export const useLoginStore = defineStore('login', {
       }
 
       return false;
+    },
+    async setUserAccounts(){
+      await useUserAccountStore().getUserAccounts()
     }
   },
 })

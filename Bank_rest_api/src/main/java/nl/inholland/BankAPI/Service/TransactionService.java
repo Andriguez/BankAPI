@@ -1,14 +1,17 @@
 package nl.inholland.BankAPI.Service;
 
-import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.Transaction;
-import nl.inholland.BankAPI.Model.TransactionType;
+import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -105,15 +108,52 @@ public class TransactionService {
         return transactions;
     }
 
-    public Object createTransaction(Transaction transaction){
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator){
 
         try{
+            Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
+
+            TransactionType type = TransactionType.valueOf(transactionData.type());
+
+            Transaction transaction = new Transaction(accounts.get("sender"), accounts.get("receiver"), transactionData.amount(), LocalDateTime.now(), initiator, type);
             transactionRepository.save(transaction);
 
-            return transaction;
-        } catch (IllegalArgumentException e) {
-            return e;
+            return new TransactionResponseDTO(transaction);
+
+        } catch(Exception e){
+            throw e;
+        }
+    }
+
+    private Map<String, Account> getTransactionAccounts(String requestSender, String requestReceiver){
+        Map<String, Account> accounts = new HashMap<>();
+
+        Account sender;
+        Account receiver;
+
+        if(isATM(requestSender)){
+            sender = new ATMAccount();
+            receiver = accountService.getAccountByIban(requestReceiver);
+        } else if (isATM(requestReceiver)){
+            sender = accountService.getAccountByIban(requestReceiver);
+            receiver = new ATMAccount();
+        } else {
+            sender = accountService.getAccountByIban(requestSender);
+            receiver = accountService.getAccountByIban(requestReceiver);
         }
 
+        accounts.put("sender", sender);
+        accounts.put("receiver", receiver);
+
+        return accounts;
+
+    }
+
+    private Boolean isATM(String input){
+        if (input == "NLXXINHOXXXXXXXXXX"){
+            return true;
+        }
+
+        return false;
     }
 }

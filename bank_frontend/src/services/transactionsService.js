@@ -29,3 +29,23 @@ export const getTransactionOfCustomerByType = async (accountType, transactionTyp
         throw error.response.data;
     }
 };
+
+export const createTransaction = async (transactionsData) =>{
+    try {
+
+        const data = {
+            sender: transactionsData.sender,
+            receiver: transactionsData.receiver,
+            amount: transactionsData.amount,
+            type: transactionsData.type
+        }
+
+        const response = await axios.post(`/transactions`, data);
+        
+        return response.data;
+
+    } catch (error){
+        console.error(error.response.data);
+        throw error.response.data;
+    }
+}

@@ -9,7 +9,7 @@ import ATMbalance from '../components/atm/atmBalance.vue'
         <ATM @btn-selected="changeWindow" />
     </div>
     <div v-else-if="selectedTab === 'amount'">
-        <ATMamount @btn-selected="changeWindow" />
+        <ATMamount @btn-selected="changeWindow" :type="transactionType"/>
     </div>
     <div v-else-if="selectedTab === 'balance'">
         <ATMbalance @btn-selected="changeWindow" />
@@ -28,12 +28,14 @@ data(){
         return{
             selectedTab: 'main',
             //selectedObject: null
+            transactionType: ''
         }
     },
     methods: {
-        changeWindow(tab){
+        changeWindow(tab, type){
             this.selectedTab = '';
             //this.selectedObject = object;
+            this.transactionType = type;
 
             this.$nextTick(() => {
                 this.selectedTab = tab;

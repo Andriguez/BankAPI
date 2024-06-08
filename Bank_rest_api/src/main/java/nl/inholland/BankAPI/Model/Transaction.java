@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -12,20 +13,19 @@ public class Transaction {
     @Id
     @GeneratedValue
     private long id;
-    //private long senderId;
     @ManyToOne
-    @JoinColumn(name = "sender_account_id")
+    @JoinColumn(name = "sender_account_id", nullable = true)
     @JsonBackReference
     private Account senderAccount;
-    //private long receiverId;
     @ManyToOne
-    @JoinColumn(name = "receiver_account_id")
+    @JoinColumn(name = "receiver_account_id", nullable = true)
     @JsonBackReference
     private Account receiverAccount;
     private double amount;
     private LocalDateTime dateTime;
     @OneToOne
-    @JoinColumn(name = "initiator_id")
+    @JoinColumn(name = "initiator_id", unique = false)
+    @JsonBackReference
     private User userInitiating;
     private TransactionType transactionType;
 
