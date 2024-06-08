@@ -67,6 +67,8 @@ public class Account {
     public void setDailyLimit(double dailyLimit){
         this.dailyLimit = dailyLimit;
     }
+    public AccountType getType() {return this.type;}
+    public void setType(AccountType type) {this.type = type;}
 
     public Account(String iban, double balance, double absoluteLimit, double dailyLimit, AccountType type){
         this.iban = iban;

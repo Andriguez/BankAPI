@@ -22,8 +22,8 @@ import java.util.*;
 // /accounts.
 @RequestMapping("/accounts")
 public class AccountController {
-    private AccountService accountService;
-    private UserService userService;
+    private final AccountService accountService;
+    private final UserService userService;
 
     public AccountController(AccountService accountService, UserService userService){
         this.accountService = accountService;

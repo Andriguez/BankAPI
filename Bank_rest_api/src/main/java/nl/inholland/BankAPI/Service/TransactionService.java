@@ -41,6 +41,8 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(transactionsSent);
         transactions.addAll(transactionsReceived);
+        System.out.println("Transaction service called ");
+        System.out.println(transactions.size());
         if(transactionType != null) {
             // filter transactions to keep transactions with transactionType (got from method inputs that came from
             // API call)
@@ -68,14 +70,14 @@ public class TransactionService {
         }
         if(minAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() > minAmount)
+                    .filter(transaction -> transaction.getAmount() >= minAmount)
                     .collect(Collectors.toList());
             System.out.println("found by bigger than " + minAmount.toString() );
             System.out.println(transactions.size());
         }
         if(maxAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() < maxAmount)
+                    .filter(transaction -> transaction.getAmount() <= maxAmount)
                     .collect(Collectors.toList());
             System.out.println("found by smaller than " + maxAmount.toString() );
             System.out.println(transactions.size());
