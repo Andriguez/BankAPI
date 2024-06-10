@@ -41,10 +41,22 @@ public class AccountController {
         return ResponseEntity.ok().body(accounts1);
     }
     @GetMapping(params="userid")
-    public ResponseEntity<List<Account>> getAccountsById(@RequestParam Long userid){
+    public ResponseEntity<List<Account>> getAccountsById(@RequestParam Long userid) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        // getUserByEmail reads user information from database.
+        User loggedUser = userService.getUserByEmail(email);
         User neededUser = userService.getUserById(userid);
-        List<Account> neededAccounts = neededUser.getAccounts();
-        return ResponseEntity.ok().body(neededAccounts);
+        List<Account> neededAccounts = new ArrayList();
+        if (loggedUser.getUserType().contains(UserType.ADMIN)) {
+            for (Account a : neededUser.getAccounts())
+                if (a.getType() == AccountType.CURRENT) {
+                    neededAccounts.add(a);
+                }
+        }else {
+            neededAccounts = neededUser.getAccounts();
+        }
+            return ResponseEntity.ok().body(neededAccounts);
+
     }
 
     @PostMapping(params="userid")

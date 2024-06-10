@@ -16,9 +16,11 @@
 <div class="container my-3" style="color: white;">
     <h2>Transfer from:</h2>
     <div class="container d-flex">
-    <select class="mx-3" aria-label="Default select example" style="width: 100%; height: 50px; font-size: 30px;" v-for="(account, index) in accounts" :key="index">
-        <option selected>{{ account.type }}: {{account.iban}} [ €{{ account.balance }} ]</option>
-</select>
+    <select class="mx-3" aria-label="Default select example" style="width: 100%; height: 50px; font-size: 30px;">
+        <option v-for="account in accounts" :key="account.iban">{{ account.type }}: {{account.iban}} [ €{{ account.balance }} ]</option>
+    </select>
+    
+    
 </div>
 </div>
 <div class="container my-3" style="color: white;">
@@ -34,6 +36,7 @@
 <div class="container m-4 d-flex justify-content-center">
     <button class="transfer-btn"><h1>Transfer</h1></button>
 </div>
+
 
 </div>
 </div>
@@ -69,19 +72,14 @@ export default {
         return{
             //userId: Number,
             loginStore: useLoginStore(),
-            accounts: []
+            accounts: [],
+            id: Number
         }
     },
     props:{
         userId: Number,
     },
     methods: {
-        setUserId(id){
-            this.$nextTick(() => {
-                this.userId = id;
-            });
-
-        },
         hasUsertype(usertype){
           return this.loginStore.hasUsertype(usertype);
         },
@@ -90,11 +88,17 @@ export default {
     },
     async mounted(){
       try{
-        console.log(this.userId);
+        if(this.hasUsertype('CUSTOMER')){
+            this.id=this.loginStore.userId;
+        }else{
+            this.id=this.userId
+        }
+        console.log(this.id);
+        
 
 
-    const response = await getAccountsById(this.userId);
-    this.accounts = response.data;
+    const response = await getAccountsById(this.id);
+    this.accounts = response;
     console.log(response)
 
     } catch(error) {
