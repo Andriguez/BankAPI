@@ -86,7 +86,7 @@ public class TransactionControllerTest {
         mockMvc.perform(get("/transactions")).andDo(print())
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isEmpty())
-                .andExpect(jsonPath("$.transactions", hasSize(0)));
+                .andExpect(jsonPath("$.transactions").isEmpty());
     }
     public User createUserWithAccounts() {
         // Mock the user and accounts returned by the userService and accountService
@@ -114,7 +114,7 @@ public class TransactionControllerTest {
         mockMvc.perform(get("/transactions")).andDo(print())
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isEmpty())
-                .andExpect(jsonPath("$.transactions", hasSize(0)));
+                .andExpect(jsonPath("$.transactions").isEmpty());
     }
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
@@ -129,7 +129,7 @@ public class TransactionControllerTest {
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isNotEmpty())
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
-                .andExpect(jsonPath("$.transactions", hasSize(0)));
+                .andExpect(jsonPath("$.transactions").isEmpty());
     }
     public List<Transaction> createTransactions() {
         List<Transaction> transactions = new ArrayList<>();

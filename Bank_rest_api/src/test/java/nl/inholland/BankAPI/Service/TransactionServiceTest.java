@@ -116,6 +116,7 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(2, result.size());
         assertEquals(result.get(0).getDateTime().isAfter(localDate.atStartOfDay()), true);
+        assertEquals(result.get(1).getDateTime().isAfter(localDate.atStartOfDay()), true);
     }
     @Test
     void testGetTransactionsByAccountFilterStartDate2() {
