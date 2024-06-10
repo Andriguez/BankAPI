@@ -78,7 +78,7 @@ const router = createRouter({
       path: '/transactions',
       name: 'Transactions',
       component: () => import('@/views/TransactionsView.vue'),
-      meta: {requiresAuth: true, requiresCustomer: true}
+      meta: {requiresAuth: true, requiresAdmin: true}
     },
     {
       path: '/transactions/:type',
