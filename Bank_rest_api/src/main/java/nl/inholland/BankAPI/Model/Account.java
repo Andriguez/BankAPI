@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,8 +35,8 @@ public class Account {
     @JsonManagedReference
     private List<Transaction> sentTransactions;
 
-    @OneToMany(mappedBy = "receiverAccount", cascade = CascadeType.ALL)
-    @JsonManagedReference
+   @OneToMany(mappedBy = "receiverAccount", cascade = CascadeType.ALL)
+   @JsonManagedReference
     private List<Transaction> receivedTransactions;
 
     public long getId() {return id;}
@@ -66,6 +67,8 @@ public class Account {
     public void setDailyLimit(double dailyLimit){
         this.dailyLimit = dailyLimit;
     }
+    public AccountType getType() {return this.type;}
+    public void setType(AccountType type) {this.type = type;}
 
     public Account(String iban, double balance, double absoluteLimit, double dailyLimit, AccountType type){
         this.iban = iban;

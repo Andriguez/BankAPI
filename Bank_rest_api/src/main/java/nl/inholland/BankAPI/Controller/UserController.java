@@ -26,12 +26,13 @@ public class UserController {
     }
 
     @GetMapping
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping(params = "type")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserOverviewDTO>> getUsersByType(String type){
 
         UserType userType;

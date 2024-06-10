@@ -1,6 +1,8 @@
 package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.AccountDTO;
+import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
@@ -20,8 +22,8 @@ import java.util.*;
 // /accounts.
 @RequestMapping("/accounts")
 public class AccountController {
-    private AccountService accountService;
-    private UserService userService;
+    private final AccountService accountService;
+    private final UserService userService;
 
     public AccountController(AccountService accountService, UserService userService){
         this.accountService = accountService;
@@ -29,13 +31,14 @@ public class AccountController {
     }
 
     @GetMapping // route: /accounts
-    public ResponseEntity<List<Account>> getAccountsByCustomer(){
+    public ResponseEntity<Object> getAccountsByCustomer(){
         // the following line extracts the email of customer from jwt token.
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         // getUserByEmail reads user information from database.
         User loggedUser = userService.getUserByEmail(email);
         List<Account> accounts = loggedUser.getAccounts();
-        return ResponseEntity.ok().body(accounts);
+        AccountsDTO accounts1 = new AccountsDTO(accounts);
+        return ResponseEntity.ok().body(accounts1);
     }
 
     @PostMapping(params="userid")
@@ -80,7 +83,6 @@ public class AccountController {
 
         //user.setUserType(List.of(UserType.CUSTOMER));
         userService.changeGuestToUser(user);
-
 
         return ResponseEntity.ok().body(user.getAccounts());
 
