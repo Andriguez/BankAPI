@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,9 +45,15 @@ public class Transaction {
     public double getAmount() {
         return amount;
     }
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
 
     public LocalDateTime getDateTime(){
         return dateTime;
+    }
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
     public User getUserInitiating() {
         return userInitiating;
@@ -63,5 +70,8 @@ public class Transaction {
 
     public TransactionType getTransactionType() {
         return this.transactionType;
+    }
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
     }
 }
