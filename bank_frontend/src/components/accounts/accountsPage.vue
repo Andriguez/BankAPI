@@ -53,12 +53,15 @@ export default {
     methods: {
         async getAllAccounts() {
             try {
-                let accounts = await getAccountsOfCustomer();
-                console.log(accounts);
-                console.log(accounts.length);
-                this.hasAccounts = accounts.length > 0;
-                this.accounts = accounts;
-                accounts.forEach(account => {
+                let response = await getAccountsOfCustomer();
+                console.log(response);
+
+                let accounts = response.accounts;
+
+                this.accounts = Object.values(accounts);
+                this.hasAccounts = this.accounts.length > 0;
+
+                this.accounts.forEach(account => {
                     this.totalBalance += account.balance;
                 })
             } catch (error) {

@@ -31,6 +31,7 @@ public class WebSecurityConfiguration {
             corsConfig.addAllowedOrigin("*"); // Allow requests from any origin, you might want to restrict this in a production environment
             corsConfig.addAllowedHeader("*"); // Allow all headers
             corsConfig.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+
             config.configurationSource(request -> corsConfig);
         });
 
@@ -42,7 +43,7 @@ public class WebSecurityConfiguration {
                         requests.requestMatchers("/login").permitAll());
         httpSecurity.authorizeHttpRequests(
                 requests ->
-                        requests.requestMatchers("/h2-console").permitAll());
+                        requests.requestMatchers("/h2-console/**").permitAll());
 
         httpSecurity.authorizeHttpRequests(
                 requests ->
@@ -66,6 +67,7 @@ public class WebSecurityConfiguration {
         httpSecurity.authorizeHttpRequests(
                 requests ->
                         requests.requestMatchers("/transactions/**").authenticated());
+        httpSecurity.headers(headers -> headers.frameOptions().disable());
         httpSecurity.addFilterBefore(jwtFilter,
                 UsernamePasswordAuthenticationFilter.class);
 

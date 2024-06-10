@@ -1,8 +1,8 @@
 <template>
      <div class="container d-flex justify-content-center m-3">
-        <button class="atm-btn mx-4" @click="selectBtn('amount')"><h3>Withdraw</h3></button>
-        <button class="atm-btn mx-4" @click="selectBtn('amount')"><h3>Deposit</h3></button>
-        <button class="atm-btn mx-4" @click="selectBtn('balance')"><h3>Balance</h3></button>
+        <button class="atm-btn mx-4" @click="selectBtn('amount', 'WITHDRAWAL')"><h3>Withdraw</h3></button>
+        <button class="atm-btn mx-4" @click="selectBtn('amount', 'DEPOSIT')"><h3>Deposit</h3></button>
+        <button class="atm-btn mx-4" @click="selectBtn('balance', '')"><h3>Balance</h3></button>
      </div>
      <button class="exit-btn m-3" @click="$router.replace('/logout')"><h3>exit</h3></button>
 
@@ -13,8 +13,8 @@ export default {
     name: 'ATM',
     emits: ['btn-selected'],
     methods: {
-        selectBtn(window){
-            this.$emit('btn-selected', window);
+        selectBtn(window, type){
+            this.$emit('btn-selected', window, type);
         }
     }
 

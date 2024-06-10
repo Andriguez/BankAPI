@@ -1,14 +1,17 @@
 package nl.inholland.BankAPI.Service;
 
-import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.Transaction;
-import nl.inholland.BankAPI.Model.TransactionType;
+import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -38,6 +41,8 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(transactionsSent);
         transactions.addAll(transactionsReceived);
+        System.out.println("Transaction service called ");
+        System.out.println(transactions.size());
         if(transactionType != null) {
             // filter transactions to keep transactions with transactionType (got from method inputs that came from
             // API call)
@@ -65,14 +70,14 @@ public class TransactionService {
         }
         if(minAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() > minAmount)
+                    .filter(transaction -> transaction.getAmount() >= minAmount)
                     .collect(Collectors.toList());
             System.out.println("found by bigger than " + minAmount.toString() );
             System.out.println(transactions.size());
         }
         if(maxAmount != null) {
             transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() < maxAmount)
+                    .filter(transaction -> transaction.getAmount() <= maxAmount)
                     .collect(Collectors.toList());
             System.out.println("found by smaller than " + maxAmount.toString() );
             System.out.println(transactions.size());
@@ -103,5 +108,54 @@ public class TransactionService {
             System.out.println(transactions.size());
         }
         return transactions;
+    }
+
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator){
+
+        try{
+            Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
+
+            TransactionType type = TransactionType.valueOf(transactionData.type());
+
+            Transaction transaction = new Transaction(accounts.get("sender"), accounts.get("receiver"), transactionData.amount(), LocalDateTime.now(), initiator, type);
+            transactionRepository.save(transaction);
+
+            return new TransactionResponseDTO(transaction);
+
+        } catch(Exception e){
+            throw e;
+        }
+    }
+
+    private Map<String, Account> getTransactionAccounts(String requestSender, String requestReceiver){
+        Map<String, Account> accounts = new HashMap<>();
+
+        Account sender;
+        Account receiver;
+
+        if(isATM(requestSender)){
+            sender = new ATMAccount();
+            receiver = accountService.getAccountByIban(requestReceiver);
+        } else if (isATM(requestReceiver)){
+            sender = accountService.getAccountByIban(requestReceiver);
+            receiver = new ATMAccount();
+        } else {
+            sender = accountService.getAccountByIban(requestSender);
+            receiver = accountService.getAccountByIban(requestReceiver);
+        }
+
+        accounts.put("sender", sender);
+        accounts.put("receiver", receiver);
+
+        return accounts;
+
+    }
+
+    private Boolean isATM(String input){
+        if (input == "NLXXINHOXXXXXXXXXX"){
+            return true;
+        }
+
+        return false;
     }
 }

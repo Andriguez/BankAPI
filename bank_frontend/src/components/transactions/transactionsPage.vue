@@ -43,7 +43,7 @@
                         Receiver: {{ transaction?.receiverAccount?.iban }}
                     </p>
                     <br>
-                    <p style="float: left; font-size: 20px">IBAN: {{ transaction.dateTime }}</p>
+                    <p style="float: left; font-size: 20px">Date: {{ transaction.dateTime }}</p>
                     <p style="float: right; font-size: 23px;">Amount: € {{ transaction.amount }}</p>
                 </button>
             </div>
