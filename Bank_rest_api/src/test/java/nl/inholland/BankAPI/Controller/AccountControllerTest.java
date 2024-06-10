@@ -79,7 +79,7 @@ public class AccountControllerTest {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/accounts")).andDo(print())
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.accounts").isEmpty());
 
     }
     @Test
@@ -102,8 +102,7 @@ public class AccountControllerTest {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/accounts")).andDo(print())
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].type").value(account1.getType().name()))
-                .andExpect(jsonPath("$[1].type").value(account2.getType().name()));
+                .andExpect(jsonPath("$.accounts.CURRENT.type").value("CURRENT"))
+                .andExpect(jsonPath("$.accounts.SAVINGS.type").value("SAVINGS"));
     }
 }
