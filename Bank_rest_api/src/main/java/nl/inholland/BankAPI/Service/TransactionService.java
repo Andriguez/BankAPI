@@ -166,14 +166,13 @@ public class TransactionService {
 
     public Boolean checkLimits(Account account, double amount){
 
-        double totalTransactions = 0;
         if(account == null){
             return true;
         }
 
         //double dailyLimit = account.getDailyLimit();
-        totalTransactions = account.getSentTransactions().stream().filter(transaction -> transaction.getDateTime().toLocalDate().equals(LocalDate.now())).mapToDouble(Transaction::getAmount).sum();
-        System.out.println(totalTransactions + " limit: "+account.getDailyLimit());
+        double totalTransactions = account.getSentTransactions().stream().filter(transaction -> transaction.getDateTime().toLocalDate().equals(LocalDate.now())).mapToDouble(Transaction::getAmount).sum();
+        System.out.println("total transactions: "+totalTransactions + " limit: "+account.getDailyLimit());
 
         if (totalTransactions + amount > account.getDailyLimit()) {
             System.out.println("Daily limit exceeded.");
@@ -181,8 +180,8 @@ public class TransactionService {
         }
 
         double remainingBalance = account.getBalance() - amount;
-        if (account.getAbsoluteLimit() < remainingBalance) {
-            System.out.println("Absolute limit exceeded.");
+        if (remainingBalance < account.getAbsoluteLimit()) {
+            System.out.println("Absolute limit exceeded: " + account.getAbsoluteLimit() + " amount remaining: " + remainingBalance);
             return false; // Violates absolute limit
         }
 
