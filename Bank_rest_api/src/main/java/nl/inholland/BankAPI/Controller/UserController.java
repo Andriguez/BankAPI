@@ -110,11 +110,12 @@ public class UserController {
     }
     // Endpoint to search user by first and last name
     @GetMapping("/search")
-    public User searchUserByName(
-            @RequestParam String firstName,
-            @RequestParam String lastName
-    ) {
-        return userService.findUserByFirstNameAndLastName(firstName, lastName);
+    public ResponseEntity<UserDTO> getUserByFirstNameAndLastName(@RequestParam String firstName, @RequestParam String lastName) {
+        User user = userService.findUserByFirstNameAndLastName(firstName, lastName);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new UserDTO(user));
     }
 
 }
