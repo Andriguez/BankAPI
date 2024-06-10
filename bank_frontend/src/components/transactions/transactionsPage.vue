@@ -109,6 +109,10 @@ export default {
         this.name = this.loginStore.name;
         this.getAllTransactionsWithType();
     },
+    // the following watch says when the type changes call getAllTransactionsWithType.
+    watch: {
+        type: 'getAllTransactionsWithType'  // Watch the 'type' prop and call the method on change
+    },
     methods: {
         async getAllTransactionsWithType() {
             try {
