@@ -128,6 +128,6 @@ public class UserService {
         user.addAccount(account);
         userRepository.save(user);
     }
-
+    public User findUserByFirstNameAndLastName(String firstName, String lastName)
 
 }

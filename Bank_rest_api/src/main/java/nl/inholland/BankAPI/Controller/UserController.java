@@ -107,5 +107,13 @@ public class UserController {
 
         return accounts;
     }
+    // Endpoint to search user by first and last name
+    @GetMapping("/search")
+    public User searchUserByName(
+            @RequestParam String firstName,
+            @RequestParam String lastName
+    ) {
+        return userService.findUserByFirstNameAndLastName(firstName, lastName);
+    }
 
 }
