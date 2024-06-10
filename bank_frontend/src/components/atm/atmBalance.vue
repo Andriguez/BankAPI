@@ -35,7 +35,12 @@ import { getAccountsOfCustomer } from '@/services/accountsService';
         }
     },
     async mounted(){
-        this.userAccounts = await getAccountsOfCustomer();
+        let response = await getAccountsOfCustomer();
+
+        let accounts = response.accounts;
+
+        this.userAccounts = Object.values(accounts);
+
     }
     }
 </script>

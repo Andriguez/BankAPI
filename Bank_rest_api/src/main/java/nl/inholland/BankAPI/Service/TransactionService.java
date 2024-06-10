@@ -4,6 +4,7 @@ import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -110,21 +111,83 @@ public class TransactionService {
         return transactions;
     }
 
-    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator){
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
 
-        try{
+        try {
             Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
+            Account sender = accounts.get("sender");
+            Account receiver = accounts.get("receiver");
 
             TransactionType type = TransactionType.valueOf(transactionData.type());
 
-            Transaction transaction = new Transaction(accounts.get("sender"), accounts.get("receiver"), transactionData.amount(), LocalDateTime.now(), initiator, type);
-            transactionRepository.save(transaction);
+            if (checkLimits(sender, transactionData.amount())) {
+                System.out.println("limits are okay");
 
-            return new TransactionResponseDTO(transaction);
+                Boolean updatedSenderBalance = setAccountBalance(type, "sender", sender, transactionData.amount());
+                Boolean updatedReceiverBalance = setAccountBalance(type, "receiver", receiver, transactionData.amount());
 
-        } catch(Exception e){
+                if (updatedSenderBalance && updatedReceiverBalance) {
+                    Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
+                    transactionRepository.save(transaction);
+                    System.out.println("balances are updated");
+
+                    return new TransactionResponseDTO(transaction);
+                }
+            }
+
+            throw new Exception("Transaction limits are being violated");
+
+        } catch (Exception e) {
             throw e;
         }
+    }
+
+    public Boolean setAccountBalance(TransactionType transactionType, String transactionRole, Account account, double amount){
+        if (account == null) {
+            return true;
+        }
+
+        double balance = account.getBalance();
+        if ("receiver".equals(transactionRole) || TransactionType.DEPOSIT.equals(transactionType)) {
+            balance += amount;
+        } else if ("sender".equals(transactionRole) || TransactionType.WITHDRAWAL.equals(transactionType)) {
+            balance -= amount;
+        }
+
+        if (balance != account.getBalance()) {
+            accountService.updateBalance(account, balance);
+            System.out.println(account.getBalance());
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public Boolean checkLimits(Account account, double amount){
+
+        double totalTransactions = 0;
+        if(account == null){
+            return true;
+        }
+
+        //double dailyLimit = account.getDailyLimit();
+        totalTransactions = account.getSentTransactions().stream().filter(transaction -> transaction.getDateTime().toLocalDate().equals(LocalDate.now())).mapToDouble(Transaction::getAmount).sum();
+        System.out.println(totalTransactions + " limit: "+account.getDailyLimit());
+
+        if (totalTransactions + amount > account.getDailyLimit()) {
+            System.out.println("Daily limit exceeded.");
+            return false; // Exceeds daily limit
+        }
+
+        double remainingBalance = account.getBalance() - amount;
+        if (account.getAbsoluteLimit() < remainingBalance) {
+            System.out.println("Absolute limit exceeded.");
+            return false; // Violates absolute limit
+        }
+
+        return true; // Within limits
+
     }
 
     private Map<String, Account> getTransactionAccounts(String requestSender, String requestReceiver){
@@ -152,7 +215,7 @@ public class TransactionService {
     }
 
     private Boolean isATM(String input){
-        if (input == "NLXXINHOXXXXXXXXXX"){
+        if (input == "NLXXINHOXXXXXXXXXX" || input == null){
             return true;
         }
 

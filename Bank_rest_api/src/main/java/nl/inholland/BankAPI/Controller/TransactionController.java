@@ -103,10 +103,13 @@ public class TransactionController {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedUser = userService.getUserByEmail(email);
 
+
             return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
 
         } catch (IllegalArgumentException e){
-            return ResponseEntity.internalServerError().body(e);
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
