@@ -1,12 +1,12 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -75,6 +75,29 @@ public class AccountService {
             a.setBalance(balance);
             return accountRepository.save(a);
         });
+    }
+
+    public Map<AccountType, NewAccountDTO> getNewAccountInfo(List<Account> accounts, Long userId){
+
+        //returns the accounts as a NewAccountDTO which contains only necessary information without transactions or balance
+        Map<AccountType, NewAccountDTO> accountsMap = new HashMap<>();
+        if(!accounts.isEmpty()){
+            for (Account account : accounts){
+                NewAccountDTO dto = new NewAccountDTO(
+                        userId,
+                        account.getAbsoluteLimit(),
+                        account.getDailyLimit(),
+                        account.getType());
+
+                accountsMap.put(account.getType(), dto);
+            }
+        } else {
+            NewAccountDTO dto1 = new NewAccountDTO(userId, 0, 0, AccountType.CURRENT);
+            NewAccountDTO dto2 = new NewAccountDTO(userId, 0,0,AccountType.SAVINGS);
+            accountsMap.putAll(Map.of(dto1.type(), dto1, dto2.type(), dto2));
+        }
+
+        return accountsMap;
     }
 
 }

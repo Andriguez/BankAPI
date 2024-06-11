@@ -1,7 +1,5 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
-import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Service.UserService;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.naming.AuthenticationException;
 import java.util.regex.Pattern;
 
 @RestController

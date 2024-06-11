@@ -1,8 +1,6 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.DTO.*;
+import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.UserService;
@@ -10,9 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,77 +37,49 @@ public class UserController {
     public ResponseEntity<List<UserOverviewDTO>> getUsersByType(String type){
 
         UserType userType;
-
         try{
             userType = UserType.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        List<UserType> usertype = List.of(userType);
-        List<User> registrations = userService.getUsersByType(usertype);
-
-        List<UserOverviewDTO> userDtos = registrations.stream()
-                .map(user -> new UserOverviewDTO(user.getId(), user.getFirstName(), user.getLastName()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(userDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersOverview(userType));
     }
 
     @GetMapping(params = "id")
-    public ResponseEntity<UserDTO> getUserById(@RequestParam Long id){
+    public ResponseEntity<Object> getUserById(@RequestParam Long id){
 
-        User user;
-        try{
-            if (id == 0){
-                String email = SecurityContextHolder.getContext().getAuthentication().getName();
-                user = userService.getUserByEmail(email);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User loggedUser = userService.getUserByEmail(email);
+
+        User requestedUser;
+        try {
+            if (hasAccess(loggedUser, id)) {
+
+            if (id != 0) {
+                requestedUser = userService.getUserById(id);
             } else {
-                user = userService.getUserById(id);
+                requestedUser = loggedUser;
             }
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDTO(requestedUser));
+        }
+            throw new IllegalArgumentException("user has no access to this data!");
         } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getBsnNumber(),
-                getAccountInfo(user)));
     }
 
-    private Map<AccountType, NewAccountDTO> getAccountInfo(User user){
-        double account1Absolute = 0;
-        double account2Absolute = 0;
-        double account1Daily = 0;
-        double account2Daily = 0;
-
-        AccountType account1Type = AccountType.CURRENT;
-        AccountType account2Type = AccountType.SAVINGS;
-
-        if(!user.getAccounts().isEmpty()){
-            account1Absolute = user.getAccounts().get(0).getAbsoluteLimit();
-            account2Absolute = user.getAccounts().get(1).getAbsoluteLimit();
-            account1Daily = user.getAccounts().get(0).getDailyLimit();
-            account2Daily = user.getAccounts().get(1).getDailyLimit();
-
-            account1Type = user.getAccounts().get(0).getType();
-            account2Type = user.getAccounts().get(1).getType();
-
+    private Boolean hasAccess(User user, Long requestedId){
+        if(user.getUserType().contains(UserType.ADMIN)){
+            return true;
         }
 
-        NewAccountDTO account1 = new NewAccountDTO(user.getId(), account1Absolute, account1Daily, account1Type);
-        NewAccountDTO account2 = new NewAccountDTO(user.getId(), account2Absolute, account2Daily, account2Type);
+        if(requestedId != null && user.getId() == requestedId){
+            return true;
+        }
 
-
-        Map<AccountType, NewAccountDTO> accounts = new HashMap<>();
-        accounts.put(account1Type, account1);
-        accounts.put(account2Type, account2);
-
-        return accounts;
+        return false;
     }
 
 }

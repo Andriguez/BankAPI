@@ -1,21 +1,20 @@
 package nl.inholland.BankAPI.Controller;
+
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.DTO.AccountDTO;
 import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
-import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 // RequestMapping determines which API calls are handled by this class. For this file, it is APIs which start with
@@ -42,6 +41,7 @@ public class AccountController {
     }
 
     @PostMapping(params="userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
 
         User user;
@@ -51,9 +51,6 @@ public class AccountController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-
-        //AccountType account1_type = AccountType.valueOf(account1.type());
-        //AccountType account2_type = AccountType.valueOf(account2.type().name());
 
         NewAccountDTO account1 = new NewAccountDTO(
                 user.getId(),

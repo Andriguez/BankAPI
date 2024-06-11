@@ -2,7 +2,6 @@ package nl.inholland.BankAPI;
 
 import jakarta.transaction.Transactional;
 import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
@@ -10,10 +9,7 @@ import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import nl.inholland.BankAPI.Model.Transaction;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

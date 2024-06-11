@@ -2,10 +2,7 @@ package nl.inholland.BankAPI.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
-import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
-import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
-import nl.inholland.BankAPI.Model.DTO.UserDTO;
+import nl.inholland.BankAPI.Model.DTO.*;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Repository.UserRepository;
@@ -16,17 +13,20 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProvider jwtProvider;
+    private final AccountService accountService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtProvider jwtProvider) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtProvider jwtProvider, AccountService accountService) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtProvider = jwtProvider;
+        this.accountService = accountService;
     }
 
     public User createUser(User user) {
@@ -127,6 +127,26 @@ public class UserService {
     public void AddAccountToUser(User user, Account account){
         user.addAccount(account);
         userRepository.save(user);
+    }
+
+    public UserDTO getUserDTO(User requestedUser){
+        return new UserDTO(
+                requestedUser.getId(),
+                requestedUser.getFirstName(),
+                requestedUser.getLastName(),
+                requestedUser.getEmail(),
+                requestedUser.getPhoneNumber(),
+                requestedUser.getBsnNumber(),
+                accountService.getNewAccountInfo(requestedUser.getAccounts(), requestedUser.getId()));
+    }
+
+    public List<UserOverviewDTO> getUsersOverview(UserType userType){
+
+        List<User> users = getUsersByType(List.of(userType));
+
+        return users.stream()
+                .map(user -> new UserOverviewDTO(user.getId(), user.getFirstName(), user.getLastName()))
+                .collect(Collectors.toList());
     }
 
 
