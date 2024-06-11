@@ -4,7 +4,7 @@ Feature: Login
     Given I have login request with email "customer2@email.com" and password "password"
     When I send login request
     Then I receive login response with status code 200
-    And I receive valid login response
+    Then I receive valid login response
 
 
   Scenario: Successful registration
