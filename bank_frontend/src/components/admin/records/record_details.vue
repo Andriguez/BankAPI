@@ -38,35 +38,10 @@ export default {
     },
     mounted() {
         this.name = this.loginStore.name;
-        this.getAllTransactions();
     },
     methods: {
-        async getAllTransactions() {
-            try {
-                let accountsTransactions = await getTransactionOfCustomerByType(this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
-                console.log(accountsTransactions);
-                let account = accountsTransactions.account;
-                let transactions = accountsTransactions.transactions;
-                console.log(account);
-                console.log(transactions);
-                console.log(transactions.length);
-                this.hasTransactions = transactions.length > 0;
-                this.transactions = transactions;
-                this.account = account;
-            } catch (error) {
-                this.transactions = [];
-            }
-        },
-        async filterTransactions() {
-            console.log(this.transactionType);
-            console.log(this.startDate);
-            console.log(this.endDate);
-            console.log(this.minAmount);
-            console.log(this.exactAmount);
-            console.log(this.maxAmount);
-            console.log(this.iban);
-            this.getAllTransactionsWithType();
-        }
+        
+            
     },
 }
 
