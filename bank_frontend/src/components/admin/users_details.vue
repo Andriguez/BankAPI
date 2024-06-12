@@ -132,11 +132,16 @@ export default {
       try{
 
     if (this.userId == null){
+    if(this.hasUsertype('ADMIN')){
       this.id = 0;
+    } else {
+      this.id = this.loginStore.requestUserData;
+    }
     } else {
       this.id = this.userId
     }
 
+    console.log(this.id)
     const response = await getUserById(this.id);
     this.details = response;
 

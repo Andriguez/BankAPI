@@ -24,8 +24,7 @@ public class TransactionController {
     private AccountService accountService;
     private UserService userService;
 
-    private ATMAccount atmAccount;
-
+    private String ATMIban = "NLXXINHOXXXXXXXXXX";
     public TransactionController(TransactionService transactionService, AccountService accountService,
                                  UserService userService){
         this.transactionService = transactionService;
@@ -98,8 +97,12 @@ public class TransactionController {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedUser = userService.getUserByEmail(email);
 
-
-            return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
+            if(hasAccess(loggedUser, transactionData.sender()) || hasAccess(loggedUser, transactionData.receiver())){
+                return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
+            }
+             else {
+                 throw new Exception("user is not allowed to make this transaction");
+            }
 
         } catch (IllegalArgumentException e){
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -107,6 +110,24 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+    }
+
+    private Boolean hasAccess(User initiator, String iban){
+
+        if(!initiator.getUserType().equals(List.of(UserType.GUEST))){
+            if(initiator.getUserType().equals(List.of(UserType.ADMIN))){
+                return true;
+            }
+
+            if(!ATMIban.equals(iban)){
+                if(initiator.getId() == accountService.getAccountByIban(iban).getUser().getId()){
+                    return true;
+                }
+            }
+        }
+
+
+        return false;
     }
 
 

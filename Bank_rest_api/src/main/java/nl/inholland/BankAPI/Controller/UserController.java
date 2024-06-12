@@ -51,16 +51,12 @@ public class UserController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User loggedUser = userService.getUserByEmail(email);
 
-        User requestedUser;
         try {
             if (hasAccess(loggedUser, id)) {
 
-            if (id != 0) {
-                requestedUser = userService.getUserById(id);
-            } else {
-                requestedUser = loggedUser;
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDTO(requestedUser));
+                User requestedUser = (id != 0) ? userService.getUserById(id) : loggedUser;
+
+                return ResponseEntity.status(HttpStatus.OK).body(userService.getUserDTO(requestedUser));
         }
             throw new IllegalArgumentException("user has no access to this data!");
         } catch (IllegalArgumentException e){
