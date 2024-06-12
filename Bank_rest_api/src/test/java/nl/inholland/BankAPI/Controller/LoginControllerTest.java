@@ -89,7 +89,7 @@ public class LoginControllerTest {
                             .content("{\"email\":\"john.doe@example.com\",\"password\":\"wrongpassword\"}"))
                     .andDo(print())
                     .andExpect(status().isUnauthorized())
-                    .andExpect(content().string("Invalid credentials"));
+                    .andExpect(content().string("The provided email and/or username are incorrect"));
         }
     }
 
