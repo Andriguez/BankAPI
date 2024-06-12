@@ -33,12 +33,10 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -311,4 +309,45 @@ public class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sender.balance").value(500));
     }
+
+    @Test
+    @WithMockUser(username = "customer@example.com", authorities = {"CUSTOMER"})
+    public void testCreateTransactionWithInvalidAccess() throws Exception {
+        User mockUser = new User();
+        mockUser.setEmail("customer@example.com");
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
+
+        // Setup mock accounts
+        Account unauthorizedSenderAccount = new Account();
+        unauthorizedSenderAccount.setId(1L);
+        unauthorizedSenderAccount.setBalance(500.0);
+        unauthorizedSenderAccount.setDailyLimit(1000.0);
+        unauthorizedSenderAccount.setAbsoluteLimit(0.0);
+        unauthorizedSenderAccount.setUser(mockUser);
+
+        Account unauthorizedReceiverAccount = new Account();
+        unauthorizedReceiverAccount.setId(2L);
+        unauthorizedReceiverAccount.setBalance(200.0);
+        unauthorizedReceiverAccount.setDailyLimit(1000.0);
+        unauthorizedReceiverAccount.setAbsoluteLimit(0.0);
+
+        // Setup mock transaction request
+        TransactionRequestDTO transactionRequest = new TransactionRequestDTO("unauthorizedSender", "unauthorizedReceiver", 100, "TRANSFER");
+
+        // Mock the service calls
+        when(userService.getUserByEmail("customer@example.com")).thenReturn(mockUser);
+        when(accountService.getAccountByIban("unauthorizedSender")).thenReturn(unauthorizedSenderAccount);
+        when(accountService.getAccountByIban("unauthorizedReceiver")).thenReturn(unauthorizedReceiverAccount);
+        doThrow(new Exception("User is not allowed to make this transaction"))
+                .when(transactionService).createTransaction(any(TransactionRequestDTO.class), eq(mockUser));
+
+        // Perform the POST request
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sender\":\"unauthorizedSender\",\"receiver\":\"unauthorizedReceiver\",\"amount\":100.0,\"type\":\"TRANSFER\"}"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("User is not allowed to make this transaction"));
+    }
 }
+
