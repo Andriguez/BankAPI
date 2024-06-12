@@ -3,6 +3,7 @@ package nl.inholland.BankAPI.Service;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
+import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,11 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
+    public void closeAccount(Account account){
+        Account accountToClose = this.getAccountByIban(account.getIban());
+        accountToClose.setAccountStatus(AccountStatus.INACTIVE);
+        accountRepository.save(accountToClose);
+    }
     public Optional<Account> updateBalance(Account account, double balance){
         return accountRepository.findById(account.getId()).map(a -> {
             a.setBalance(balance);
