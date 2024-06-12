@@ -125,7 +125,7 @@ public class TransactionService {
                 Boolean updatedSenderBalance = setAccountBalance(type, "sender", sender, transactionData.amount());
                 Boolean updatedReceiverBalance = setAccountBalance(type, "receiver", receiver, transactionData.amount());
 
-                if (updatedSenderBalance && updatedReceiverBalance) {
+                if (updatedSenderBalance & updatedReceiverBalance) {
                     Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
                     transactionRepository.save(transaction);
                     System.out.println("balances are updated");
