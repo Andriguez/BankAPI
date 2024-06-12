@@ -75,7 +75,7 @@ export default {
             //userId: Number,
             loginStore: useLoginStore(),
             accounts: [],
-            id: Number
+            id: Number,
         }
     },
     props:{
