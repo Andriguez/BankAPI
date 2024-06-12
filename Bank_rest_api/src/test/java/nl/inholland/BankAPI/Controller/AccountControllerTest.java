@@ -3,6 +3,7 @@ package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.User;
+import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
@@ -25,8 +26,7 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -66,14 +66,15 @@ public class AccountControllerTest {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
         mockUser.setEmail("customer@email.com");
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
         List<Account> mockAccounts = new ArrayList<>();
         mockUser.setAccounts(mockAccounts);
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/accounts")).andDo(print())
-                .andExpect(status().is(200))
-                .andExpect(jsonPath("$.accounts").isEmpty());
+                .andExpect(status().is(400))
+                .andExpect(content().string("this user has no accounts"));
 
     }
     @Test
@@ -84,10 +85,13 @@ public class AccountControllerTest {
         mockUser.setEmail("customer@email.com");
         Account account1 = new Account();
         account1.setId(1L);
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
         account1.setType(AccountType.CURRENT);
+        account1.setUser(mockUser);
         Account account2 = new Account();
         account2.setId(2L);
         account2.setType(AccountType.SAVINGS);
+        account2.setUser(mockUser);
         List<Account> mockAccounts = Arrays.asList(account1, account2);
         mockUser.setAccounts(mockAccounts);
 

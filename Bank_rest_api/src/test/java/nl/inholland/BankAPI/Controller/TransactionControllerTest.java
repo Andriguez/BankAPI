@@ -1,6 +1,8 @@
 package nl.inholland.BankAPI.Controller;
 
 import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.TransactionService;
@@ -13,9 +15,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -194,4 +202,107 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions", hasSize(3)));
     }
+
+
+
+    ///ANDY's Tests
+/*
+    @Test
+    @WithMockUser(username = "customer@email.com", authorities = {"CUSTOMER"})
+    public void testCreateTransactionAsCustomer() throws Exception {
+        // Setup mock user
+        User mockUser = new User();
+        mockUser.setEmail("customer@email.com");
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
+
+        // Setup mock accounts
+        Account senderAccount = new Account();
+        senderAccount.setId(1L);
+        senderAccount.setBalance(500.0);
+        senderAccount.setDailyLimit(1000.0);
+        senderAccount.setAbsoluteLimit(10.0);
+        senderAccount.setUser(mockUser);
+
+        Account receiverAccount = new Account();
+        receiverAccount.setId(2L);
+        receiverAccount.setBalance(200.0);
+        receiverAccount.setDailyLimit(1000.0);
+        receiverAccount.setAbsoluteLimit(10.0);
+
+
+        // Setup mock transaction request
+        TransactionRequestDTO transactionRequest = new TransactionRequestDTO("senderAccount", "receiverAccount", 100, "WITHDRAWAL");
+        Transaction transaction = new Transaction(senderAccount, receiverAccount, transactionRequest.amount(), LocalDateTime.now(), mockUser, TransactionType.WITHDRAWAL);
+
+        // Setup mock transaction response
+        TransactionResponseDTO transactionResponse = new TransactionResponseDTO(transaction);
+
+        when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
+        when(accountService.getAccountByIban("senderAccount")).thenReturn(senderAccount);
+        when(accountService.getAccountByIban("receiverAccount")).thenReturn(null);
+        when(transactionService.createTransaction(transactionRequest, mockUser))
+                .thenReturn(transactionResponse);
+
+        // Perform the POST request
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sender\":\"senderAccount\",\"receiver\":\"receiverAccount\",\"amount\":100.0,\"type\":\"WITHDRAWAL\"}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
+    }
+
+
+    @Test
+    @WithMockUser(username = "admin@example.com", authorities = {"ADMIN", "CUSTOMER"})
+    public void testCreateTransactionAsAdmin() throws Exception {
+        // Setup mock user
+        User mockUser = new User();
+        mockUser.setEmail("admin@example.com");
+        mockUser.setUserType(List.of(UserType.ADMIN));
+
+        // Setup mock accounts
+        Account senderAccount = new Account();
+        senderAccount.setId(1L);
+        senderAccount.setBalance(500.0);
+        senderAccount.setDailyLimit(1000.0);
+        senderAccount.setAbsoluteLimit(0.0);
+        senderAccount.setIban("senderAccount");
+
+        Account receiverAccount = new Account();
+        receiverAccount.setId(2L);
+        receiverAccount.setBalance(200.0);
+        receiverAccount.setDailyLimit(1000.0);
+        receiverAccount.setAbsoluteLimit(0.0);
+        receiverAccount.setIban("receiverAccount");
+
+        // Setup mock transaction request
+        TransactionRequestDTO transactionRequest = new TransactionRequestDTO("senderAccount", "receiverAccount", 100, "TRANSFER");
+
+        // Setup mock transaction response
+        Transaction transaction = new Transaction(senderAccount, receiverAccount, transactionRequest.amount(), LocalDateTime.now(), mockUser, TransactionType.TRANSFER);
+        TransactionResponseDTO transactionResponse = new TransactionResponseDTO(transaction);
+
+        // Ensure the mock user is returned
+        when(userService.getUserByEmail("admin@example.com")).thenReturn(mockUser);
+
+        // Ensure the mock accounts are returned
+        when(accountService.getAccountByIban("senderAccount")).thenReturn(senderAccount);
+        when(accountService.getAccountByIban("receiverAccount")).thenReturn(receiverAccount);
+
+        // Ensure the transaction creation returns the expected response
+        when(transactionService.createTransaction(any(TransactionRequestDTO.class), eq(mockUser))).thenReturn(transactionResponse);
+
+        // Mock hasAccess method in TransactionService
+        when(accountService.getAccountByIban("senderAccount")).thenReturn(senderAccount);
+        when(accountService.getAccountByIban("receiverAccount")).thenReturn(receiverAccount);
+
+        // Perform the POST request
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sender\":\"senderAccount\",\"receiver\":\"receiverAccount\",\"amount\":100.0,\"type\":\"TRANSFER\"}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"));
+    }*/
 }
