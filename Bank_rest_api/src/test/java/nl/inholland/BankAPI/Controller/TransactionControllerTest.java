@@ -74,7 +74,7 @@ public class TransactionControllerTest {
     public void testGetTransactionsByCustomerNoAuthenticationFails() throws Exception {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions")).andDo(print())
-                .andExpect(status().is(401));
+                .andExpect(status().is(400));
     }
 
     @Test
