@@ -100,5 +100,27 @@ public class AccountService {
         return accountsMap;
     }
 
+    public List<Account> createAccounts(List<NewAccountDTO> accountsData){
+
+        List<Account> createdAccounts = new ArrayList<>();
+        accountsData.forEach(
+                accountDTO -> {
+
+                   Account account = new Account(
+                           generateIBAN(),
+                           0,
+                           accountDTO.absolute().doubleValue(),
+                           accountDTO.daily().doubleValue(),
+                           accountDTO.type());
+
+                    createdAccounts.add(accountRepository.save(account));
+                }
+        );
+
+        return createdAccounts;
+    }
+
+
+
 }
 

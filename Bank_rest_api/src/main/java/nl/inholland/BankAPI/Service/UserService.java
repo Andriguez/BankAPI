@@ -88,6 +88,7 @@ public class UserService {
         return userRepository.findByUserTypeIn(userType);
     }
     public void changeGuestToUser(User guest){
+
         if (guest.getUserType().contains(UserType.GUEST)) {
             List<UserType> newUserTypes = new ArrayList<>(guest.getUserType());
             newUserTypes.remove(UserType.GUEST);
@@ -95,6 +96,7 @@ public class UserService {
             guest.setUserType(newUserTypes);
             userRepository.save(guest);
         }
+
     }
 
     public User getUserById(long id){
@@ -125,8 +127,9 @@ public class UserService {
     }
 
     public void AddAccountToUser(User user, Account account){
-        user.addAccount(account);
-        userRepository.save(user);
+            user.addAccount(account);
+            userRepository.save(user);
+
     }
 
     public UserDTO getUserDTO(User requestedUser){
