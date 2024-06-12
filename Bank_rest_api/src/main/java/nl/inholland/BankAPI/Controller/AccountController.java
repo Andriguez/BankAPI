@@ -54,12 +54,10 @@ public class AccountController {
         }
     }
     @GetMapping(params="userid")
-    public ResponseEntity<List<Account>> getAccountsById(@RequestParam Long userid) {
+    public ResponseEntity<Object> getAccountsById(@RequestParam Long userid) {
 
         User neededUser = userService.getUserById(userid);
-        List<Account> neededAccounts = new ArrayList();
-
-            neededAccounts = neededUser.getAccounts();
+        List<Account> neededAccounts = neededUser.getAccounts();
 
             return ResponseEntity.ok().body(neededAccounts);
 
