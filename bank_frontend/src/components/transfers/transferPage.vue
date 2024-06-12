@@ -1,4 +1,6 @@
 <template>
+<div class="container d-flex flex-nowrap m-0 p-0" >
+
 <div class="container m-5 px-5 d-flex flex-wrap">
     <div class="container d-flex" style="color: white;">
 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-left-right mx-2" viewBox="0 0 16 16">
@@ -14,10 +16,13 @@
 <div class="container my-3" style="color: white;">
     <h2>Transfer from:</h2>
     <div class="container d-flex">
-    <select class="mx-3" aria-label="Default select example" style="width: 60%; height: 50px; font-size: 30px;">
-        <option selected>CURRENT: NL11INHO0365135774 [ €100 ]</option>
-        <option value="1">SAVINGS: NL11INHO0365135774 [ €100 ]</option>
-</select>
+    <select class="mx-3" aria-label="Default select example" style="width: 100%; height: 50px; font-size: 30px;">
+        <option v-for="account in accounts" >
+            {{ account.type }}: {{ account.iban }} [ €{{ account.balance }} ]
+        </option>
+    </select>
+    
+    
 </div>
 </div>
 <div class="container my-3" style="color: white;">
@@ -34,11 +39,15 @@
     <button class="transfer-btn"><h1>Transfer</h1></button>
 </div>
 
+
+</div>
 </div>
 </template>
 
-<script>
-
+<script setup>
+import { getAccountsById } from '@/services/accountsService';
+import UsersTable from '../admin/users/users_table.vue'
+import { useLoginStore } from '@/stores/loginStore';
 </script>
 
 <style>
@@ -55,3 +64,49 @@
           color: #6504c6;
 }
 </style>
+
+
+
+<script>
+export default {
+    name: 'TransferPage',
+    data(){
+        return{
+            //userId: Number,
+            loginStore: useLoginStore(),
+            accounts: [],
+            id: Number,
+        }
+    },
+    props:{
+        userId: Number,
+    },
+    methods: {
+        hasUsertype(usertype){
+          return this.loginStore.hasUsertype(usertype);
+        },
+
+        
+    },
+    async mounted(){
+      try{
+        if(this.hasUsertype('CUSTOMER')){
+            this.id=this.loginStore.userId;
+        }else{
+            this.id=this.userId
+        }
+        console.log(this.id);
+        
+
+
+    const response = await getAccountsById(this.id);
+    this.accounts = response;
+    console.log(response)
+
+    } catch(error) {
+        console.log(error)
+        }
+    }
+    
+}
+</script>
