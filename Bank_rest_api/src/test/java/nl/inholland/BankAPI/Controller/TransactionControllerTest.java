@@ -20,6 +20,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 
 import java.time.LocalDate;
@@ -61,9 +63,13 @@ public class TransactionControllerTest {
 
     private List<Transaction> transactions;
 
+    @Autowired
+    WebApplicationContext webApplicationContext;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
     @Test
@@ -206,7 +212,7 @@ public class TransactionControllerTest {
 
 
     ///ANDY's Tests
-/*
+
     @Test
     @WithMockUser(username = "customer@email.com", authorities = {"CUSTOMER"})
     public void testCreateTransactionAsCustomer() throws Exception {
@@ -249,7 +255,7 @@ public class TransactionControllerTest {
                         .content("{\"sender\":\"senderAccount\",\"receiver\":\"receiverAccount\",\"amount\":100.0,\"type\":\"WITHDRAWAL\"}"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"));
+                .andExpect(jsonPath("$.amount").value(100));
     }
 
 
@@ -303,6 +309,6 @@ public class TransactionControllerTest {
                         .content("{\"sender\":\"senderAccount\",\"receiver\":\"receiverAccount\",\"amount\":100.0,\"type\":\"TRANSFER\"}"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"));
-    }*/
+                .andExpect(jsonPath("$.sender.balance").value(500));
+    }
 }
