@@ -235,4 +235,37 @@ public class TransactionService {
             throw e;
         }
     }
+
+    public List<Transaction> getAdminInitiatedTransactions(){
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction t:transactionRepository.findAll()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
+
+    public List<Transaction> getUserInitiatedTransactions(){
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction t:transactionRepository.findAll()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
+
+    public List<Transaction> getATMInitiatedTransactions(){
+
+        //todo
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        String initiatingIban;
+        for (Transaction t:transactionRepository.findAll()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
 }

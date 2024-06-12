@@ -61,7 +61,6 @@
     const response = await getAccountsById(this.id);
     this.accounts = response;
     console.log(this.accounts)
-
     } catch(error) {
     console.log(error)
     }

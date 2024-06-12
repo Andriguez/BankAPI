@@ -17,7 +17,9 @@
     <h2>Transfer from:</h2>
     <div class="container d-flex">
     <select class="mx-3" aria-label="Default select example" style="width: 100%; height: 50px; font-size: 30px;">
-        <option v-for="account in accounts" :key="account.iban">{{ account.type }}: {{account.iban}} [ €{{ account.balance }} ]</option>
+        <option v-for="account in accounts" >
+            {{ account.type }}: {{ account.iban }} [ €{{ account.balance }} ]
+        </option>
     </select>
     
     
