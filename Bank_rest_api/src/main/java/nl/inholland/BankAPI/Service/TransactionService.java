@@ -158,4 +158,19 @@ public class TransactionService {
 
         return false;
     }
+
+    public List<Transaction> getTransactionByUserId(long id){
+        try {
+            List<Transaction> filteredTransactions = new ArrayList<>();
+            User neededUser = userService.getUserById(id);
+            for (Transaction t: transactionRepository.findAll()) {
+                if(t.getUserInitiating() == neededUser){
+                    filteredTransactions.add(t);
+                }
+            }
+            return filteredTransactions;
+        }catch (Exception e){
+            throw e;
+        }
+    }
 }
