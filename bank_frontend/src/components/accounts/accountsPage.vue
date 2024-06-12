@@ -55,7 +55,7 @@ export default {
             try {
                 let response = await getAccountsOfCustomer();
                 console.log(response);
-
+                
                 let accounts = response.accounts;
 
                 this.accounts = Object.values(accounts);

@@ -3,6 +3,7 @@ import axios from '@/axios-auth.js';
 export const getAccountsOfCustomer = async () => {
     try {
         const response = await axios.get(`/accounts`);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         throw error.response.data;

@@ -5,10 +5,9 @@ import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -77,5 +76,12 @@ public class AccountService {
         accountToClose.setAccountStatus(AccountStatus.INACTIVE);
         accountRepository.save(accountToClose);
     }
+    public Optional<Account> updateBalance(Account account, double balance){
+        return accountRepository.findById(account.getId()).map(a -> {
+            a.setBalance(balance);
+            return accountRepository.save(a);
+        });
+    }
+
 }
 

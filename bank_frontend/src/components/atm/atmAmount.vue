@@ -55,11 +55,12 @@ export default {
 
             console.log(transactionData)
 
-            const response = createTransaction(transactionData);
+            const response = await createTransaction(transactionData);
 
             console.log(response);
                      } catch(error){
-                        console.error(error)
+                        console.error(error);
+                        alert(error);
                         }
 
                         this.selectBtn('main')
