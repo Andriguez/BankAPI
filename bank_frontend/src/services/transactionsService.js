@@ -49,3 +49,12 @@ export const createTransaction = async (transactionsData) =>{
         throw error.response.data;
     }
 }
+
+export const filterTransaction = async (userId,condition)=>{
+    try{
+        const response = await axios.get(`/transactions?id=${userId}&condition=${condition}`)
+          return response.data
+      } catch (error){
+        console.log(error)
+      }
+}
