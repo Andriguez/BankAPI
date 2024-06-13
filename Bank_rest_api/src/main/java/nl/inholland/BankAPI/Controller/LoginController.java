@@ -3,10 +3,9 @@ package nl.inholland.BankAPI.Controller;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import nl.inholland.BankAPI.Service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
 
@@ -22,5 +21,11 @@ public class LoginController {
     @PostMapping
     public LoginResponseDTO login(@RequestBody LoginRequestDTO request) throws AuthenticationException {
         return userService.login(request);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The provided email and/or username are incorrect");
     }
 }

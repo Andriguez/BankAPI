@@ -1,12 +1,13 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
+import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -70,12 +71,62 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
+    public void closeAccount(Account account){
+        Account accountToClose = this.getAccountByIban(account.getIban());
+        accountToClose.setAccountStatus(AccountStatus.INACTIVE);
+        accountRepository.save(accountToClose);
+    }
     public Optional<Account> updateBalance(Account account, double balance){
         return accountRepository.findById(account.getId()).map(a -> {
             a.setBalance(balance);
             return accountRepository.save(a);
         });
     }
+
+    public Map<AccountType, NewAccountDTO> getNewAccountInfo(List<Account> accounts, Long userId){
+
+        //returns the accounts as a NewAccountDTO which contains only necessary information without transactions or balance
+        Map<AccountType, NewAccountDTO> accountsMap = new HashMap<>();
+        if(!accounts.isEmpty()){
+            for (Account account : accounts){
+                NewAccountDTO dto = new NewAccountDTO(
+                        userId,
+                        account.getAbsoluteLimit(),
+                        account.getDailyLimit(),
+                        account.getType());
+
+                accountsMap.put(account.getType(), dto);
+            }
+        } else {
+            NewAccountDTO dto1 = new NewAccountDTO(userId, 0, 0, AccountType.CURRENT);
+            NewAccountDTO dto2 = new NewAccountDTO(userId, 0,0,AccountType.SAVINGS);
+            accountsMap.putAll(Map.of(dto1.type(), dto1, dto2.type(), dto2));
+        }
+
+        return accountsMap;
+    }
+
+    public List<Account> createAccounts(List<NewAccountDTO> accountsData){
+
+        List<Account> createdAccounts = new ArrayList<>();
+        accountsData.forEach(
+                accountDTO -> {
+
+                   Account account = new Account(
+                           generateIBAN(),
+                           0,
+                           accountDTO.absolute().doubleValue(),
+                           accountDTO.daily().doubleValue(),
+                           accountDTO.type());
+
+                    createdAccounts.add(accountRepository.save(account));
+                }
+        );
+
+        return createdAccounts;
+    }
+
+
 
 }
 

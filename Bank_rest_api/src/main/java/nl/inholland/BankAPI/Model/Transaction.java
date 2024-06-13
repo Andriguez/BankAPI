@@ -1,11 +1,9 @@
 package nl.inholland.BankAPI.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 @Entity

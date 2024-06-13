@@ -1,9 +1,9 @@
 <script setup>
-import AccountsPage from "@/components/accounts/accountsPage.vue"
+import AccountsPage from "@/components/admin/accounts/accounts_page.vue"
 </script>
 
 <template>
-    <AccountsPage />
+    <AccountsPage/>
 </template>
 
 <style>

@@ -4,7 +4,6 @@ import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -219,5 +218,74 @@ public class TransactionService {
         }
 
         return false;
+    }
+
+    public List<Transaction> getTransactionByUserId(long id){
+        try {
+            List<Transaction> filteredTransactions = new ArrayList<>();
+            User neededUser = userService.getUserById(id);
+            for (Transaction t:getAllTransactions()) {
+                if(t.getUserInitiating() == neededUser){
+                    filteredTransactions.add(t);
+                }
+            }
+            return filteredTransactions;
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    public List<Transaction> getAdminInitiatedTransactions(){
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction t:getAllTransactions()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
+
+    public List<Transaction> getUserInitiatedTransactions(){
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction t:getAllTransactions()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
+
+    public List<Transaction> getATMInitiatedTransactions(){
+
+        //todo
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        String initiatingIban;
+        for (Transaction t:getAllTransactions()) {
+            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+                filteredTransactions.add(t);
+            }
+        }
+        return filteredTransactions;
+    }
+
+    public List<Transaction> getAllTransactions(){
+        return transactionRepository.findAll();
+    }
+
+    public void filterTransactions(int condition, long id){
+        switch (condition){
+            //case 0 = all transactions
+            case 0: getAllTransactions(); break;
+            //case 1 = get transactions by userId
+            case 1: getTransactionByUserId(id); break;
+            //case 2 = ATM transactions
+            case 2: getATMInitiatedTransactions(); break;
+            //case 3 = user initiated transactions
+            case 3: getUserInitiatedTransactions(); break;
+
+            //case 4= get admin initiated transactions();
+            case 4: getAdminInitiatedTransactions(); break;
+            default: break;
+        }
     }
 }

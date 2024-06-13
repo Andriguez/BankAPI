@@ -39,7 +39,7 @@ export default {
 
             .catch ((error)=>{
                 this.errorMessage = error;
-                alert(error);
+                alert(error.response.data);
             })
         },
     },

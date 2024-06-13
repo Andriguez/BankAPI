@@ -1,7 +1,7 @@
 package nl.inholland.BankAPI.Controller;
+
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.DTO.AccountDTO;
 import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
@@ -11,11 +11,12 @@ import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 // RequestMapping determines which API calls are handled by this class. For this file, it is APIs which start with
@@ -37,55 +38,72 @@ public class AccountController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         // getUserByEmail reads user information from database.
         User loggedUser = userService.getUserByEmail(email);
-        List<Account> accounts = loggedUser.getAccounts();
-        AccountsDTO accounts1 = new AccountsDTO(accounts);
-        return ResponseEntity.ok().body(accounts1);
+
+        try{
+            List<Account> accounts = loggedUser.getAccounts();
+
+            if (!accounts.isEmpty()){
+            if(loggedUser.getUserType().equals(List.of(UserType.ADMIN)) || loggedUser.getId() == accounts.get(0).getUser().getId()){
+                return ResponseEntity.ok().body(new AccountsDTO(loggedUser.getAccounts()));
+
+            } else {
+                throw new IllegalArgumentException("User is not allowed to access this data!");
+            }
+            } throw new IllegalArgumentException ("this user has no accounts");
+        } catch(IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping(params="userid")
+    public ResponseEntity<Object> getAccountsById(@RequestParam Long userid) {
+
+        User neededUser = userService.getUserById(userid);
+        List<Account> neededAccounts = neededUser.getAccounts();
+
+            return ResponseEntity.ok().body(neededAccounts);
+
     }
 
     @PostMapping(params="userid")
-    public ResponseEntity<List<Account>> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Object> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
 
         User user;
 
         try {
+
             user = userService.getUserById(userid);
+            if(user == null){
+                throw new IllegalArgumentException("Incorrect user Id");
+            }
+
+            if(requestData.isEmpty()){
+                throw new IllegalArgumentException("No input has been received");
+            }
+
+            List<NewAccountDTO> accountsData = List.of(
+                    new NewAccountDTO(
+                        user.getId(),
+                        (Number) requestData.get("absolute1"),
+                        (Number) requestData.get("daily1"),
+                        AccountType.valueOf((String)requestData.get("type1"))),
+                    new NewAccountDTO(
+                        user.getId(),
+                        (Number) requestData.get("absolute2"),
+                        (Number) requestData.get("daily2"),
+                        AccountType.valueOf((String)requestData.get("type2"))
+            ));
+
+            List<Account> accounts = accountService.createAccounts(accountsData);
+            accounts.forEach(account -> userService.AddAccountToUser(user, account));
+
+            userService.changeGuestToUser(user);
+
+            return ResponseEntity.ok().body(new AccountsDTO(accounts));
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        //AccountType account1_type = AccountType.valueOf(account1.type());
-        //AccountType account2_type = AccountType.valueOf(account2.type().name());
-
-        NewAccountDTO account1 = new NewAccountDTO(
-                user.getId(),
-                (Number) requestData.get("absolute1"),
-                (Number) requestData.get("daily1"),
-                AccountType.valueOf((String)requestData.get("type1"))
-        );
-
-        NewAccountDTO account2 = new NewAccountDTO(
-                user.getId(),
-                (Number) requestData.get("absolute2"),
-                (Number) requestData.get("daily2"),
-                AccountType.valueOf((String)requestData.get("type2"))
-        );
-
-        Account account_1 = new Account(accountService.generateIBAN(), 0, account1.absolute().doubleValue(), account1.daily().doubleValue(), account1.type());
-        Account account_2 = new Account(accountService.generateIBAN(), 0, account2.absolute().doubleValue(), account2.daily().doubleValue(), account2.type());
-
-        accountService.createAccount(account_1);
-        accountService.createAccount(account_2);
-
-        userService.AddAccountToUser(user, account_1);
-        userService.AddAccountToUser(user, account_2);
-
-        //user.addAccount(account_1);
-        //user.addAccount(account_2);
-
-        //user.setUserType(List.of(UserType.CUSTOMER));
-        userService.changeGuestToUser(user);
-
-        return ResponseEntity.ok().body(user.getAccounts());
 
     }
     @PutMapping(params="userid")
@@ -121,5 +139,19 @@ public class AccountController {
         accountService.updateAccount(currentAccount);
         accountService.updateAccount(savingsAccount);
         return ResponseEntity.ok().body(user.getAccounts());
+    }
+    @DeleteMapping(params="userid")
+    public ResponseEntity<List<Account>> closeAccounts(@RequestParam Long userid){
+        User user;
+            user = userService.getUserById(userid);
+        // Get the accounts of the user
+        List<Account> accounts = user.getAccounts();
+        Account currentAccount = null;
+        Account savingsAccount = null;
+        // Find the CURRENT and SAVINGS accounts
+        for (Account account : accounts) {
+            accountService.closeAccount(account);
+        }
+        return ResponseEntity.ok().body(accounts);
     }
 }

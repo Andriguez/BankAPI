@@ -13,7 +13,7 @@ export const useLoginStore = defineStore('login', {
   getters: {
     jwtToken: (state) => state.token,
     isLoggedIn: (state) => state.loggedIn,
-    requestUserData: (state) => state.userData,
+    requestUserData: (state) => state.userId,
   },
   actions: {
     requestLogin( email, password) {
