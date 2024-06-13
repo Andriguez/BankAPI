@@ -36,10 +36,10 @@ public class TransactionController {
     // following method.
     @GetMapping //route: /transactions
     // getTransactions can have different Request Params, all of them are optional.
-    // public ResponseEntity<CustomerTransactionsDTO> getCustomerTransactions
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
     public ResponseEntity<Object> getCustomerTransactions(
             // optional filters to filter transactions
+            @RequestParam(required = false) Long userId, // for admin to read a userId.
             @RequestParam(required = false) String accountType,
             @RequestParam(required = false) TransactionType transactionType,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
@@ -47,50 +47,38 @@ public class TransactionController {
             @RequestParam(required = false) Float minAmount,
             @RequestParam(required = false) Float exactAmount,
             @RequestParam(required = false) Float maxAmount,
-            @RequestParam(required = false) String iban
-    ) {
+            @RequestParam(required = false) String iban) {
 
         try{
-            System.out.println("Transaction controller called ");
-            Account customerAccount = null;
-            List<Transaction> transactions = new ArrayList<Transaction>();
             // find logged in user from her JWT
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedInUser = userService.getUserByEmail(email);
-            // I want to send info about account and its transactions to the frontend. So, I created a new class that has
-            // account and a list of transactions called CustomerTransactionsDTO
-            CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
-            if (loggedInUser.getAccounts().size() == 0) {
-                // if customer does not have any accounts, she does not have any transactions too
-                return ResponseEntity.status(200).body(customerTransactionsDTO);
+            // this method can be called by a user or by admin. If it is called by admin, userId should be present.
+            User userToFindTransactions;
+            if (accountType == null) {
+                return ResponseEntity.badRequest().body("accountType should be present");
             }
-            if ("current".equals(accountType)) {
-                // if accountType is current, find the "current" account of user.
-                for (Account account : loggedInUser.getAccounts()) {
-                    if (account.getType() == AccountType.CURRENT) {
-                        System.out.println("iban: " + account.getIban() + " - " + account.getType());
-                        customerAccount = account;
-                        break;
-                    }
-                }
+            accountType = accountType.toUpperCase();
+            if (!accountType.equals(AccountType.CURRENT.toString()) && !accountType.equals(AccountType.SAVINGS.toString())) {
+                return ResponseEntity.badRequest().body("accountType should be either CURRENT or SAVINGS");
             }
-            else if ("savings".equals(accountType)) {
-                for (Account account : loggedInUser.getAccounts()) {
-                    if (account.getType() == AccountType.SAVINGS) {
-                        System.out.println("iban: " + account.getIban() + " - " + account.getType());
-                        customerAccount = account;
-                        break;
-                    }
+            if (loggedInUser.getUserType().contains(UserType.ADMIN)) {
+                if(userId == null) {
+                    return ResponseEntity.badRequest().body("userId should be present for admin");
                 }
+                userToFindTransactions = userService.getUserById(userId);
             }
             else {
-                return ResponseEntity.status(200).body(customerTransactionsDTO);
+                userToFindTransactions = loggedInUser;
             }
-            // getTransactionsByAccount method in transactionService gets inputs from frontend (some of them might be
-            // null) and pass it to service and return transactions that match those filters.
-            transactions = transactionService.getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
-                    minAmount, maxAmount, exactAmount, iban);
-            customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
+
+            // getUserTransactions method in transactionService gets transactions of the user based on the given
+            // filters.
+            // I want to send info about account and its transactions to the frontend. So, I created a new class that has
+            // account and a list of transactions called CustomerTransactionsDTO
+            CustomerTransactionsDTO customerTransactionsDTO =
+              transactionService.getUserTransactions(userToFindTransactions, accountType, transactionType, startDate,
+                      endDate, minAmount, maxAmount, exactAmount, iban);
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

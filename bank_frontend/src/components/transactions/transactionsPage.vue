@@ -70,6 +70,11 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination-controls">
+                <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+                <span>Page {{ currentPage }}</span>
+                <button @click="nextPage">Next</button>
+            </div>
 
 
             <p class="text-danger errorMsg">{{ errorMsg }}</p>
@@ -95,6 +100,7 @@ export default {
             account: null,
             transactions: [],
             hasTransactions: false,
+            currentPage: 1,
             transactionType: null,
             startDate: null,
             endDate: null,
@@ -117,12 +123,8 @@ export default {
         async getAllTransactionsWithType() {
             try {
                 let accountsTransactions = await getTransactionOfCustomerByType(this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban);
-                console.log(accountsTransactions);
                 let account = accountsTransactions.account;
                 let transactions = accountsTransactions.transactions;
-                console.log(account);
-                console.log(transactions);
-                console.log(transactions.length);
                 this.hasTransactions = transactions.length > 0;
                 this.transactions = transactions;
                 this.account = account;
@@ -139,14 +141,17 @@ export default {
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         },
+        nextPage() {
+            this.currentPage++;
+            // this.fetchTransactions(this.currentPage);
+        },
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                // this.fetchTransactions(this.currentPage);
+            }
+        },
         async filterTransactions() {
-            console.log(this.transactionType);
-            console.log(this.startDate);
-            console.log(this.endDate);
-            console.log(this.minAmount);
-            console.log(this.exactAmount);
-            console.log(this.maxAmount);
-            console.log(this.iban);
             this.getAllTransactionsWithType();
         }
     },
