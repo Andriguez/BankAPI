@@ -32,8 +32,7 @@ public class AccountController {
     }
 
     @GetMapping // route: /accounts
-    //public ResponseEntity<Object> getAccountsByCustomer(){
-    public ResponseEntity<AccountsDTO> getAccountsByCustomer(){
+    public ResponseEntity<Object> getAccountsByCustomer(){
         // the following line extracts the email of customer from jwt token.
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         // getUserByEmail reads user information from database.
