@@ -36,6 +36,8 @@ public class TransactionController {
     // following method.
     @GetMapping //route: /transactions
     // getTransactions can have different Request Params, all of them are optional.
+    // public ResponseEntity<CustomerTransactionsDTO> getCustomerTransactions
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
     public ResponseEntity<Object> getCustomerTransactions(
             // optional filters to filter transactions
             @RequestParam(required = false) String accountType,
