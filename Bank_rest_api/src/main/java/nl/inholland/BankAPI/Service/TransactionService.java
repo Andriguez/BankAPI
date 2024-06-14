@@ -246,7 +246,12 @@ public class TransactionService {
         }
     }
 
-    public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType, TransactionType transactionType, LocalDate startDate, LocalDate endDate, Float minAmount, Float maxAmount, Float exactAmount, String iban) {
+    public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,
+                                                       TransactionType transactionType, LocalDate startDate,
+                                                       LocalDate endDate, Float minAmount, Float maxAmount,
+                                                       Float exactAmount, String iban, Integer skip, Integer limit) {
+        System.out.println("limit:"+limit);
+        System.out.println("skip:"+skip);
         Account customerAccount = null;
         List<Transaction> transactions = new ArrayList<Transaction>();
         // I want to send info about account and its transactions to the frontend. So, I created a new class that has
@@ -269,7 +274,7 @@ public class TransactionService {
             return customerTransactionsDTO;
         }
         transactions = getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
-                minAmount, maxAmount, exactAmount, iban);
+                minAmount, maxAmount, exactAmount, iban, skip, limit);
         customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
         return customerTransactionsDTO;
     }
