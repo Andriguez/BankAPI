@@ -1,3 +1,4 @@
+//moved to transactionStore. Delete it later.
 import axios from '@/axios-auth.js';
 export const getTransactionOfCustomerByType = async (accountType, transactionType=null, startDate=null, endDate=null, minAmount=null, exactAmount=null, maxAmount=null, iban=null, limit=null, skip = null) => {
     try {

@@ -84,6 +84,7 @@
 
 <script>
 import { useLoginStore } from '@/stores/loginStore';
+import { useTransactionStore } from '@/stores/transactionStore';
 import { getTransactionOfCustomerByType } from '@/services/transactionsService';
 import { formatDate } from '@/services/helpers';
 export default {
@@ -92,6 +93,7 @@ export default {
     data() {
         return {
             loginStore: useLoginStore(),
+            transactionStore: useTransactionStore(),
             name: "customer",
             account: null,
             transactions: [],
@@ -122,11 +124,9 @@ export default {
             try {
                 this.skip = (this.currentPage - 1) * this.pageSize;
                 this.limit = this.pageSize;
-                let accountsTransactions = await getTransactionOfCustomerByType(this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban, this.limit, this.skip);
-                let account = accountsTransactions.account;
-                let transactions = accountsTransactions.transactions;
-                this.transactions = transactions;
-                this.account = account;
+                await this.transactionStore.getTransactionOfCustomerByType(this.type, this.transactionType, this.startDate, this.endDate, this.minAmount, this.exactAmount, this.maxAmount, this.iban, this.limit, this.skip);
+                this.account = this.transactionStore.getAccountInfo;
+                this.transactions = this.transactionStore.getTransactionsList;                
             } catch (error) {
                 this.transactions = [];
             }
