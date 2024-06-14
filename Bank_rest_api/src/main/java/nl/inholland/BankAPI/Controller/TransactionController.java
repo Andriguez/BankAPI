@@ -47,7 +47,9 @@ public class TransactionController {
             @RequestParam(required = false) Float minAmount,
             @RequestParam(required = false) Float exactAmount,
             @RequestParam(required = false) Float maxAmount,
-            @RequestParam(required = false) String iban) {
+            @RequestParam(required = false) String iban,
+            @RequestParam(required = false) Integer skip,
+            @RequestParam(required = false) Integer limit) {
 
         try{
             // find logged in user from her JWT
@@ -78,7 +80,7 @@ public class TransactionController {
             // account and a list of transactions called CustomerTransactionsDTO
             CustomerTransactionsDTO customerTransactionsDTO =
               transactionService.getUserTransactions(userToFindTransactions, accountType, transactionType, startDate,
-                      endDate, minAmount, maxAmount, exactAmount, iban);
+                      endDate, minAmount, maxAmount, exactAmount, iban, skip, limit);
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

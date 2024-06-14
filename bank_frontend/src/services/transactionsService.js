@@ -1,5 +1,5 @@
 import axios from '@/axios-auth.js';
-export const getTransactionOfCustomerByType = async (accountType, transactionType=null, startDate=null, endDate=null, minAmount=null, exactAmount=null, maxAmount=null, iban=null) => {
+export const getTransactionOfCustomerByType = async (accountType, transactionType=null, startDate=null, endDate=null, minAmount=null, exactAmount=null, maxAmount=null, iban=null, limit=null, skip = null) => {
     try {
         let query = `accountType=${accountType}`;
         if(transactionType == "TRANSFER" || transactionType == "DEPOSIT" || transactionType == "WITHDRAWAL") {
@@ -22,6 +22,12 @@ export const getTransactionOfCustomerByType = async (accountType, transactionTyp
         }
         if(iban != null) {
             query = `${query}&iban=${iban}`;
+        }
+        if(limit != null) {
+            query = `${query}&limit=${limit}`;
+        }
+        if(skip != null) {
+            query = `${query}&skip=${skip}`;
         }
         const response = await axios.get(`/transactions?${query}`);
         return response.data;
