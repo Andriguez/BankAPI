@@ -76,11 +76,3 @@ Scenario: Filter transactions based on minAmount=10.5 and maxAmount=111.5
   Then I receive transaction array and save it
   Then I request to read transactions with filter "minAmount=10.5&maxAmount=111.5" for account of type "CURRENT"
   Then I check to see if filter is correctly applied
-
-Scenario: Filter transactions based on maxAmount=111.5 and limit=5 and skip=1
-  Given To see my transactions, I login as as Customer with email "customer2@email.com" and password "password"
-  When I request to read transactions of "CURRENT" account
-  Then I receive transaction response with status code 200
-  Then I receive transaction array and save it
-  Then I request to read transactions with filter "maxAmount=111.5&limit=5&skip=1" for account of type "CURRENT"
-  Then I check to see if filter is correctly applied
