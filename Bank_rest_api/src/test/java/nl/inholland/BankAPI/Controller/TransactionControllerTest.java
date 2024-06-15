@@ -122,7 +122,7 @@ public class TransactionControllerTest {
         mockUser.setAccounts(mockAccounts);
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
         List<Transaction> transactions = new ArrayList<>();
-        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(null,
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO((Account) null,
                 transactions);
         when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
                 null, null, null, null,
