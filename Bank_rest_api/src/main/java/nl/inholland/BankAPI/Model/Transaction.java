@@ -14,11 +14,12 @@ public class Transaction {
     private long id;
     @ManyToOne
     @JoinColumn(name = "sender_account_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference(value = "sentTransactions")
     private Account senderAccount;
     @ManyToOne
     @JoinColumn(name = "receiver_account_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference(value = "receivedTransactions")
+
     private Account receiverAccount;
     private double amount;
     private LocalDateTime dateTime;

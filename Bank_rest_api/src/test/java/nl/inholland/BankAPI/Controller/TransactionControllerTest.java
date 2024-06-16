@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Controller;
 
 import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Security.JwtProvider;
@@ -33,12 +34,10 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -76,37 +75,27 @@ public class TransactionControllerTest {
     public void testGetTransactionsByCustomerNoAuthenticationFails() throws Exception {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions")).andDo(print())
-                .andExpect(status().is(401));
+                .andExpect(status().is(400));
     }
 
-    @Test
-    @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
-    public void testGetTransactionsCustomerLoggedUserWithNoAccount() throws Exception {
-        // Mock the user and accounts returned by the userService and accountService
-        User mockUser = new User();
-        mockUser.setEmail("customer@email.com");
-        List<Account> mockAccounts = new ArrayList<>();
-        mockUser.setAccounts(mockAccounts);
-        when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
-
-        // Perform the GET request and verify the response
-        mockMvc.perform(get("/transactions")).andDo(print())
-                .andExpect(status().is(200))
-                .andExpect(jsonPath("$.account").isEmpty())
-                .andExpect(jsonPath("$.transactions").isEmpty());
-    }
     public User createUserWithAccounts() {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
         mockUser.setEmail("customer@email.com");
         Account account1 = new Account();
+        List<Transaction> listTransactions = new ArrayList<>();
+        account1.setReceivedTransactions(listTransactions);
+        account1.setSentTransactions(listTransactions);
         account1.setId(1L);
         account1.setType(AccountType.CURRENT);
         Account account2 = new Account();
         account2.setId(2L);
+        account2.setReceivedTransactions(listTransactions);
+        account2.setSentTransactions(listTransactions);
         account2.setType(AccountType.SAVINGS);
         List<Account> mockAccounts = Arrays.asList(account1, account2);
         mockUser.setAccounts(mockAccounts);
+        mockUser.setUserType(Arrays.asList(UserType.CUSTOMER));
         return mockUser;
     }
     @Test
@@ -119,6 +108,28 @@ public class TransactionControllerTest {
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions")).andDo(print())
+                .andExpect(status().is(400))
+                .andExpect(content().string("accountType should be present"));
+    }
+    @Test
+    @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
+    public void testGetTransactionsCustomerLoggedUserWithNoAccount() throws Exception {
+        // Mock the user and accounts returned by the userService and accountService
+        User mockUser = new User();
+        mockUser.setEmail("customer@email.com");
+        mockUser.setUserType(Arrays.asList(UserType.CUSTOMER));
+        List<Account> mockAccounts = new ArrayList<>();
+        mockUser.setAccounts(mockAccounts);
+        when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
+        List<Transaction> transactions = new ArrayList<>();
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO((Account) null,
+                transactions);
+        when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
+                null, null, null, null,
+                null, null, null, null)).thenReturn(customerTransactionsDTO);
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(get("/transactions?accountType=current")).andDo(print())
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isEmpty())
                 .andExpect(jsonPath("$.transactions").isEmpty());
@@ -130,6 +141,12 @@ public class TransactionControllerTest {
         User mockUser = createUserWithAccounts();
 
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
+        List<Transaction> transactions = new ArrayList<>();
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(mockUser.getAccounts().get(0),
+                transactions);
+        when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
+                null, null, null, null,
+                null, null, null, null)).thenReturn(customerTransactionsDTO);
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions?accountType=current")).andDo(print())
@@ -168,8 +185,11 @@ public class TransactionControllerTest {
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
 
         List<Transaction> transactions = createTransactions();
-        when(transactionService.getTransactionsByAccount(
-                mockUser.getAccounts().get(0),null,null,null,null,null,null,null)).thenReturn(transactions);
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(mockUser.getAccounts().get(0),
+                transactions);
+        when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
+                null, null, null, null,
+                null, null, null, null)).thenReturn(customerTransactionsDTO);
 
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions?accountType=current")).andDo(print())
@@ -184,9 +204,12 @@ public class TransactionControllerTest {
         User mockUser = createUserWithAccounts();
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
         List<Transaction> transactions = createTransactions();
-        when(transactionService.getTransactionsByAccount(
-                mockUser.getAccounts().get(0),null,
-                null,null, Float.valueOf(50), Float.valueOf(350),null,null)).thenReturn(transactions);
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(mockUser.getAccounts().get(0),
+                transactions);
+        when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
+                null, null, 50f, 350f,
+                null, null, null, null)).thenReturn(customerTransactionsDTO);
+
         mockMvc.perform(get("/transactions?accountType=current&minAmount=50&maxAmount=350")).andDo(print())
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isNotEmpty())
@@ -199,9 +222,12 @@ public class TransactionControllerTest {
         User mockUser = createUserWithAccounts();
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
         List<Transaction> transactions = createTransactions();
-        when(transactionService.getTransactionsByAccount(
-                mockUser.getAccounts().get(0),null,
-                LocalDate.of(2022, 1, 1),LocalDate.of(2024,11,11), null, null,null,null)).thenReturn(transactions);
+        CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(mockUser.getAccounts().get(0),
+                transactions);
+        when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
+                LocalDate.of(2022, 1, 1),LocalDate.of(2024,11,11), null, null,
+                null, null, null, null)).thenReturn(customerTransactionsDTO);
+
         mockMvc.perform(get("/transactions?accountType=current&startDate=2022-01-01&endDate=2024-11-11")).andDo(print())
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.account").isNotEmpty())
@@ -311,4 +337,45 @@ public class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sender.balance").value(500));
     }
+
+    @Test
+    @WithMockUser(username = "customer@example.com", authorities = {"CUSTOMER"})
+    public void testCreateTransactionWithInvalidAccess() throws Exception {
+        User mockUser = new User();
+        mockUser.setEmail("customer@example.com");
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
+
+        // Setup mock accounts
+        Account unauthorizedSenderAccount = new Account();
+        unauthorizedSenderAccount.setId(1L);
+        unauthorizedSenderAccount.setBalance(500.0);
+        unauthorizedSenderAccount.setDailyLimit(1000.0);
+        unauthorizedSenderAccount.setAbsoluteLimit(0.0);
+        unauthorizedSenderAccount.setUser(mockUser);
+
+        Account unauthorizedReceiverAccount = new Account();
+        unauthorizedReceiverAccount.setId(2L);
+        unauthorizedReceiverAccount.setBalance(200.0);
+        unauthorizedReceiverAccount.setDailyLimit(1000.0);
+        unauthorizedReceiverAccount.setAbsoluteLimit(0.0);
+
+        // Setup mock transaction request
+        TransactionRequestDTO transactionRequest = new TransactionRequestDTO("unauthorizedSender", "unauthorizedReceiver", 100, "TRANSFER");
+
+        // Mock the service calls
+        when(userService.getUserByEmail("customer@example.com")).thenReturn(mockUser);
+        when(accountService.getAccountByIban("unauthorizedSender")).thenReturn(unauthorizedSenderAccount);
+        when(accountService.getAccountByIban("unauthorizedReceiver")).thenReturn(unauthorizedReceiverAccount);
+        doThrow(new Exception("User is not allowed to make this transaction"))
+                .when(transactionService).createTransaction(any(TransactionRequestDTO.class), eq(mockUser));
+
+        // Perform the POST request
+        mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sender\":\"unauthorizedSender\",\"receiver\":\"unauthorizedReceiver\",\"amount\":100.0,\"type\":\"TRANSFER\"}"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("User is not allowed to make this transaction"));
+    }
 }
+

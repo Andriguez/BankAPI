@@ -41,25 +41,22 @@ public class AccountController {
         try{
             List<Account> accounts = loggedUser.getAccounts();
 
-            if (!accounts.isEmpty()){
-            if(loggedUser.getUserType().equals(List.of(UserType.ADMIN)) || loggedUser.getId() == accounts.get(0).getUser().getId()){
-                return ResponseEntity.ok().body(new AccountsDTO(loggedUser.getAccounts()));
-
-            } else {
-                throw new IllegalArgumentException("User is not allowed to access this data!");
-            }
+            if (!accounts.isEmpty()) {
+                if(loggedUser.getUserType().equals(List.of(UserType.ADMIN)) || loggedUser.getId() == accounts.get(0).getUser().getId()) {
+                    return ResponseEntity.ok().body(new AccountsDTO(loggedUser.getAccounts()));
+                } else {
+                    throw new IllegalArgumentException("User is not allowed to access this data!");
+                }
             } throw new IllegalArgumentException ("this user has no accounts");
         } catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @GetMapping(params="userid")
-    public ResponseEntity<List<Account>> getAccountsById(@RequestParam Long userid) {
+    public ResponseEntity<Object> getAccountsById(@RequestParam Long userid) {
 
         User neededUser = userService.getUserById(userid);
-        List<Account> neededAccounts = new ArrayList();
-
-            neededAccounts = neededUser.getAccounts();
+        List<Account> neededAccounts = neededUser.getAccounts();
 
             return ResponseEntity.ok().body(neededAccounts);
 
