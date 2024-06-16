@@ -177,8 +177,8 @@ public class TransactionService {
         return false;
     }
 
-    public List<Transaction> getTransactionByUserId(long id){
-        try {
+    public List<Transaction> getTransactionByUserId(long id, Integer skip, Integer limit){
+
             List<Transaction> filteredTransactions = new ArrayList<>();
             User neededUser = userService.getUserById(id);
             for (Transaction t:transactionRepository.findAll()) {
@@ -186,38 +186,31 @@ public class TransactionService {
                     filteredTransactions.add(t);
                 }
             }
-            return filteredTransactions;
-        }catch (Exception e){
-            throw e;
-        }
+        return filteredTransactions.stream()
+                .skip(skip != null ? skip : 0)
+                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .collect(Collectors.toList());
     }
 
-    public List<TransactionResponseDTO> getAdminInitiatedTransactions() {
+
+    public List<Transaction> getAdminInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t : transactionRepository.findAll()) {
+        for (Transaction t : getAllTransactions()) {
             if (t.getUserInitiating().getUserType().equals(UserType.ADMIN)) {
                 filteredTransactions.add(t);
             }
         }
-        List<TransactionResponseDTO> transactionResponseDTOs = filteredTransactions.stream()
-                .map(TransactionResponseDTO::new)
-                .collect(Collectors.toList());
-
-        return transactionResponseDTOs;
+        return filteredTransactions;
     }
 
-    public List<TransactionResponseDTO> getUserInitiatedTransactions() {
+    public List<Transaction> getUserInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t : transactionRepository.findAll()) {
-            if (t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)) {
+        for (Transaction t : getAllTransactions()) {
+            if (t.getUserInitiating().getUserType().equals(List.of(UserType.CUSTOMER))) {
                 filteredTransactions.add(t);
             }
         }
-        List<TransactionResponseDTO> transactionResponseDTOs = filteredTransactions.stream()
-                .map(TransactionResponseDTO::new)
-                .collect(Collectors.toList());
-
-        return transactionResponseDTOs;
+        return filteredTransactions;
     }
 
     public List<Transaction> getATMInitiatedTransactions(){
@@ -233,31 +226,27 @@ public class TransactionService {
         return filteredTransactions;
     }
 
-    public List<TransactionResponseDTO> getAllTransactions() {
-        List<Transaction> allTransactions = transactionRepository.findAll();
-
-        List<TransactionResponseDTO> transactionResponseDTOs = allTransactions.stream()
-                .map(TransactionResponseDTO::new)
-                .collect(Collectors.toList());
-
-        return transactionResponseDTOs;
+    public List<Transaction> getAllTransactions() {
+        return transactionRepository.findAll();
     }
 
-    public List<TransactionResponseDTO> filterTransactions(int condition, long id){
+    public List<Transaction> filterTransactions(String condition,Integer skip, Integer limit){
+        List<Transaction> filteredTransactions = new ArrayList<>();
         switch (condition){
-            //case 0 = all transactions
-            case 0: getAllTransactions(); break;
-            //case 1 = get transactions by userId
-            case 1: getTransactionByUserId(id); break;
-            //case 2 = ATM transactions
-            case 2: getATMInitiatedTransactions(); break;
-            //case 3 = user initiated transactions
-            case 3: getUserInitiatedTransactions(); break;
-            //case 4= get admin initiated transactions();
-            case 4: getAdminInitiatedTransactions(); break;
+            //case ALL = all transactions
+            case "ALL": filteredTransactions = getAllTransactions();break;
+            //case ATM = ATM transactions
+            case "ATM": filteredTransactions = getATMInitiatedTransactions();break;
+            //case ADMIN= get admin initiated transactions();
+            case "ADMIN": filteredTransactions = getAdminInitiatedTransactions();break;
+            //case CUSTOMER = user initiated transactions
+            case "CUSTOMER": filteredTransactions = getUserInitiatedTransactions();break;
             default: throw new IllegalArgumentException("Invalid condition: " + condition);
         }
-        return getAllTransactions();
+        return filteredTransactions.stream()
+                .skip(skip != null ? skip : 0)
+                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .collect(Collectors.toList());
     }
 
     public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,

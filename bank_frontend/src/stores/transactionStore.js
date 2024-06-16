@@ -68,6 +68,26 @@ export const useTransactionStore = defineStore('transactionStore', {
                 throw error.response.data;
             }
         },
+
+        async filterTransactions(condition,userId = null, skip = null, limit = null) {
+            try{
+                let query = `condition=${condition}`;
+                if(userId != null){
+                    query = `${query}&userId=${userId}`;
+                }
+                if (limit != null) {
+                    query = `${query}&limit=${limit}`;
+                }
+                if (skip != null) {
+                    query = `${query}&skip=${skip}`;
+                }
+                const response = await axios.get(`/transactions/history?${query}`);
+                this.transactionsList = response.data.transactions;
+                return response.data
+              } catch (error){
+                console.log(error)
+              }
+        }
     }
 
 })

@@ -128,17 +128,20 @@ public class TransactionController {
     }
 
     @GetMapping ("/history")//route: /transactions
-    // getTransactions can have different Request Params, all of them are optional.
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> filterTransactions(
             // optional filters to filter transactions
-            @RequestParam int condition,
+            @RequestParam String condition,
             @RequestParam(required = false) Long userId, // for admin to read a userId.
             @RequestParam(required = false) Integer skip,
             @RequestParam(required = false) Integer limit) {
 
         try{
-            return ResponseEntity.ok().body(transactionService.filterTransactions(condition,userId));
+            if(condition.equals("ID") && userId!=null){
+                return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId,skip,limit));
+            }else{
+                return ResponseEntity.ok().body(transactionService.filterTransactions(condition,skip,limit));
+            }
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
             }
