@@ -57,9 +57,14 @@ export const createTransaction = async (transactionsData) =>{
     }
 }
 
-export const filterTransaction = async (userId,condition)=>{
+export const filterTransaction = async (userId = null,condition)=>{
     try{
-        const response = await axios.get(`/transactions?id=${userId}&condition=${condition}`)
+        if(userId != null){
+            const response = await axios.get(`/transactions/history?condition=${condition}&userId=${userId}`)
+        } else{
+            const response = await axios.get(`/transactions/history?condition=${condition}`)
+        }
+        
           return response.data
       } catch (error){
         console.log(error)

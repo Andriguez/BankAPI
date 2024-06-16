@@ -26,7 +26,6 @@
 
 <script>
 import { useLoginStore } from '@/stores/loginStore';
-import { getTransactionOfCustomerByType } from '@/services/transactionsService';
 export default {
     name: 'TransactionPage',
     props: ['type'],

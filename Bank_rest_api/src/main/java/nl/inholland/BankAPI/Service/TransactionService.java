@@ -181,7 +181,7 @@ public class TransactionService {
         try {
             List<Transaction> filteredTransactions = new ArrayList<>();
             User neededUser = userService.getUserById(id);
-            for (Transaction t:getAllTransactions()) {
+            for (Transaction t:transactionRepository.findAll()) {
                 if(t.getUserInitiating() == neededUser){
                     filteredTransactions.add(t);
                 }
@@ -192,24 +192,32 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> getAdminInitiatedTransactions(){
+    public List<TransactionResponseDTO> getAdminInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t:getAllTransactions()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+        for (Transaction t : transactionRepository.findAll()) {
+            if (t.getUserInitiating().getUserType().equals(UserType.ADMIN)) {
                 filteredTransactions.add(t);
             }
         }
-        return filteredTransactions;
+        List<TransactionResponseDTO> transactionResponseDTOs = filteredTransactions.stream()
+                .map(TransactionResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return transactionResponseDTOs;
     }
 
-    public List<Transaction> getUserInitiatedTransactions(){
+    public List<TransactionResponseDTO> getUserInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t:getAllTransactions()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)){
+        for (Transaction t : transactionRepository.findAll()) {
+            if (t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)) {
                 filteredTransactions.add(t);
             }
         }
-        return filteredTransactions;
+        List<TransactionResponseDTO> transactionResponseDTOs = filteredTransactions.stream()
+                .map(TransactionResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return transactionResponseDTOs;
     }
 
     public List<Transaction> getATMInitiatedTransactions(){
@@ -217,7 +225,7 @@ public class TransactionService {
         //todo
         List<Transaction> filteredTransactions = new ArrayList<>();
         String initiatingIban;
-        for (Transaction t:getAllTransactions()) {
+        for (Transaction t:transactionRepository.findAll()) {
             if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
                 filteredTransactions.add(t);
             }
@@ -225,11 +233,17 @@ public class TransactionService {
         return filteredTransactions;
     }
 
-    public List<Transaction> getAllTransactions(){
-        return transactionRepository.findAll();
+    public List<TransactionResponseDTO> getAllTransactions() {
+        List<Transaction> allTransactions = transactionRepository.findAll();
+
+        List<TransactionResponseDTO> transactionResponseDTOs = allTransactions.stream()
+                .map(TransactionResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return transactionResponseDTOs;
     }
 
-    public void filterTransactions(int condition, long id){
+    public List<TransactionResponseDTO> filterTransactions(int condition, long id){
         switch (condition){
             //case 0 = all transactions
             case 0: getAllTransactions(); break;
@@ -239,11 +253,11 @@ public class TransactionService {
             case 2: getATMInitiatedTransactions(); break;
             //case 3 = user initiated transactions
             case 3: getUserInitiatedTransactions(); break;
-
             //case 4= get admin initiated transactions();
             case 4: getAdminInitiatedTransactions(); break;
-            default: break;
+            default: throw new IllegalArgumentException("Invalid condition: " + condition);
         }
+        return getAllTransactions();
     }
 
     public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,

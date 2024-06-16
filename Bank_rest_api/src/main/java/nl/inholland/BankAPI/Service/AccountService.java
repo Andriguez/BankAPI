@@ -4,6 +4,7 @@ import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.AccountStatus;
+import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -48,13 +49,29 @@ public class AccountService {
     public void createAccount(Account account){
         accountRepository.save(account);
     }
-    public void updateAccount(Account account){
-            Account accountToChange = this.getAccountByIban(account.getIban());
 
-            accountToChange.setAbsoluteLimit(account.getAbsoluteLimit());
-            accountToChange.setDailyLimit(account.getDailyLimit());
+    public User updateAccounts(User user, Map<String, Object> requestData) {
 
-        accountRepository.save(accountToChange);
+        List<Account> accounts = user.getAccounts();
+        Account currentAccount = null;
+        Account savingsAccount = null;
+
+        for (Account account : accounts) {
+            if (account.getType() == AccountType.CURRENT) {
+                currentAccount = account;
+                currentAccount.setAbsoluteLimit(((Number) requestData.get("absolute1")).doubleValue());
+                currentAccount.setDailyLimit(((Number) requestData.get("daily1")).doubleValue());
+            } else if (account.getType() == AccountType.SAVINGS) {
+                savingsAccount = account;
+                savingsAccount.setAbsoluteLimit(((Number) requestData.get("absolute2")).doubleValue());
+                savingsAccount.setDailyLimit(((Number) requestData.get("daily2")).doubleValue());
+            }
+        }
+
+        // Save the updated accounts
+        accountRepository.save(currentAccount);
+        accountRepository.save(savingsAccount);
+        return user;
     }
     public String generateIBAN() {
         String countryCode = "NL";
@@ -71,10 +88,15 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
-    public void closeAccount(Account account){
-        Account accountToClose = this.getAccountByIban(account.getIban());
-        accountToClose.setAccountStatus(AccountStatus.INACTIVE);
-        accountRepository.save(accountToClose);
+    public List<Account> closeUserAccounts(User user) {
+        List<Account> accounts = user.getAccounts();
+
+        for (Account account : accounts) {
+            account.setAccountStatus(AccountStatus.INACTIVE);
+            accountRepository.save(account);
+        }
+
+        return accounts;
     }
     public Optional<Account> updateBalance(Account account, double balance){
         return accountRepository.findById(account.getId()).map(a -> {

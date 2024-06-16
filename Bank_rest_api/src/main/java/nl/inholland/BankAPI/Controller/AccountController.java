@@ -52,14 +52,18 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping(params="userid")
+
+    @GetMapping(params = "userid")
     public ResponseEntity<Object> getAccountsById(@RequestParam Long userid) {
-
-        User neededUser = userService.getUserById(userid);
-        List<Account> neededAccounts = neededUser.getAccounts();
-
+        try {
+            User neededUser = userService.getUserById(userid);
+            List<Account> neededAccounts = neededUser.getAccounts();
             return ResponseEntity.ok().body(neededAccounts);
-
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving accounts");
+        }
     }
 
     @PostMapping(params="userid")
@@ -104,52 +108,28 @@ public class AccountController {
         }
 
     }
-    @PutMapping(params="userid")
-    public ResponseEntity<?> updateAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
-        User user;
+    @PutMapping(params = "userid")
+    public ResponseEntity<Object> updateAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
         try {
-            user = userService.getUserById(userid);
+
+            User user = accountService.updateAccounts(userService.getUserById(userid), requestData);
+            return ResponseEntity.ok().body(new AccountsDTO(user.getAccounts()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating accounts");
         }
-        // Get the accounts of the user
-        List<Account> accounts = user.getAccounts();
-        Account currentAccount = null;
-        Account savingsAccount = null;
-        // Find the CURRENT and SAVINGS accounts
-        for (Account account : accounts) {
-            if (account.getType() == AccountType.CURRENT) {
-                currentAccount = account;
-            } else if (account.getType() == AccountType.SAVINGS) {
-                savingsAccount = account;
-            }
-        }
-        // If either account is missing, return an error
-        if (currentAccount == null || savingsAccount == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Both CURRENT and SAVINGS accounts must exist for the user");
-        }
-        // Update the accounts with the new limits
-        currentAccount.setAbsoluteLimit(((Number) requestData.get("absolute1")).doubleValue());
-        currentAccount.setDailyLimit(((Number) requestData.get("daily1")).doubleValue());
-        savingsAccount.setAbsoluteLimit(((Number) requestData.get("absolute2")).doubleValue());
-        savingsAccount.setDailyLimit(((Number) requestData.get("daily2")).doubleValue());
-        // Save the updated accounts
-        accountService.updateAccount(currentAccount);
-        accountService.updateAccount(savingsAccount);
-        return ResponseEntity.ok().body(user.getAccounts());
     }
-    @DeleteMapping(params="userid")
-    public ResponseEntity<List<Account>> closeAccounts(@RequestParam Long userid){
-        User user;
-            user = userService.getUserById(userid);
-        // Get the accounts of the user
-        List<Account> accounts = user.getAccounts();
-        Account currentAccount = null;
-        Account savingsAccount = null;
-        // Find the CURRENT and SAVINGS accounts
-        for (Account account : accounts) {
-            accountService.closeAccount(account);
+    @DeleteMapping(params = "userid")
+    public ResponseEntity<Object> closeAccounts(@RequestParam Long userid) {
+        try {
+
+            List<Account> accounts = accountService.closeUserAccounts(userService.getUserById(userid));
+            return ResponseEntity.ok().body(new AccountsDTO(accounts));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while closing accounts");
         }
-        return ResponseEntity.ok().body(accounts);
     }
 }
