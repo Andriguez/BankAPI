@@ -30,17 +30,6 @@ public class AccountService {
            return null;
       }
     }
-
-    public void editDailyLimit(String accountIban, double newLimit){
-        Account account = this.getAccountByIban(accountIban);
-        account.setDailyLimit(newLimit);
-    }
-
-    public void editAbsoluteLimit(String accountIban, double newLimit){
-        Account account = this.getAccountByIban(accountIban);
-        account.setAbsoluteLimit(newLimit);
-    }
-
     public List<Account> getAccountsByUserId(long userId) {
         List<Account> accounts = accountRepository.findByUserId(userId);
         return accounts;

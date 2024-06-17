@@ -28,19 +28,8 @@ public class Transaction {
     @JsonBackReference
     private User userInitiating;
     private TransactionType transactionType;
-
-    //public long getSenderId(){
-       // return senderId;
-    //}
-
     public Account getSenderAccount() {return senderAccount;}
     public Account getReceiverAccount() {return receiverAccount;}
-
-    //public long getReceiverId(){
-      //  return receiverId;
-    //}
-
-
     public double getAmount() {
         return amount;
     }
