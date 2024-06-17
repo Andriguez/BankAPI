@@ -32,6 +32,7 @@ public class TransactionController {
         this.userService = userService;
     }
 
+    // Sara's Code
     // GetMapping without any inputs means the base API. So, APIs calling /transactions will be handled by the
     // following method.
     @GetMapping //route: /transactions

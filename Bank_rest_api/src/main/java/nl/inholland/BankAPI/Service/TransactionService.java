@@ -30,6 +30,7 @@ public class TransactionService {
         this.userService = userService;
     }
 
+    // Sara's Code
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
     public List<Transaction> getTransactionsByAccount(
@@ -41,6 +42,7 @@ public class TransactionService {
         return getTransactionsByAccount(account, transactionType,
                 startDate, endDate, minAmount, maxAmount, exactAmount, iban, null, null);
     }
+    // Sara's Code
     public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
@@ -246,6 +248,7 @@ public class TransactionService {
         }
     }
 
+    // Sara's Code
     public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,
                                                        TransactionType transactionType, LocalDate startDate,
                                                        LocalDate endDate, Float minAmount, Float maxAmount,

@@ -34,6 +34,7 @@ public class TransactionServiceTest {
 
     private Account account;
 
+    // Sara's Code
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -67,6 +68,7 @@ public class TransactionServiceTest {
         when(account.getReceivedTransactions()).thenReturn(receivedTransactions);
     }
 
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountWhenNoTransactionIsAvailable() {
         Account emptyAccount = mock(Account.class);
@@ -77,6 +79,8 @@ public class TransactionServiceTest {
 
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountGetAll() {
         // Test
@@ -86,6 +90,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(3, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterTypeDeposit() {
         // Test
@@ -96,6 +102,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getTransactionType(), TransactionType.DEPOSIT);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterTypeWithdraw() {
         // Test
@@ -106,6 +114,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getTransactionType(), TransactionType.WITHDRAWAL);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterStartDate() {
         // Test
@@ -118,6 +128,8 @@ public class TransactionServiceTest {
         assertEquals(result.get(0).getDateTime().isAfter(localDate.atStartOfDay()), true);
         assertEquals(result.get(1).getDateTime().isAfter(localDate.atStartOfDay()), true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterStartDate2() {
         // Test
@@ -128,6 +140,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterEndDate() {
         // Test
@@ -139,6 +153,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getDateTime().isBefore(localDate.atStartOfDay()), true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterEndDate2() {
         // Test
@@ -149,6 +165,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterStartEndDate() {
         // Test
@@ -161,6 +179,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getDateTime().isBefore(localDateEnd.atStartOfDay()) && result.get(0).getDateTime().isAfter(localDateStart.atStartOfDay()), true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterMinAmount() {
         // Test
@@ -172,6 +192,8 @@ public class TransactionServiceTest {
         assertEquals(2, result.size());
         assertEquals(result.get(0).getAmount() >= min, true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterMinAmount2() {
         // Test
@@ -182,6 +204,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterMaxAmount() {
         // Test
@@ -193,6 +217,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getAmount() <= max, true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterMaxAmount2() {
         // Test
@@ -203,6 +229,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterMinMaxAmount() {
         // Test
@@ -215,6 +243,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getAmount() >= min && result.get(0).getAmount() <= max, true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterEqualAmount() {
         // Test
@@ -226,6 +256,8 @@ public class TransactionServiceTest {
         assertEquals(1, result.size());
         assertEquals(result.get(0).getAmount() == equal, true);
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterEqualAmount2() {
         // Test
@@ -236,6 +268,8 @@ public class TransactionServiceTest {
         // Assertions
         assertEquals(0, result.size());
     }
+
+    // Sara's Code
     @Test
     void testGetTransactionsByAccountFilterStartEndDateAndMinMaxAmount() {
         // Test
