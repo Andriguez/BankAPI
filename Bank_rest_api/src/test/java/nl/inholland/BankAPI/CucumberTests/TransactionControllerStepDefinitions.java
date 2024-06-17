@@ -60,6 +60,7 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
     }
     private LoginRequestDTO loginDTO;
 
+    // Sara's Code
     @Given("To see my transactions, I login as as Customer with email {string} and password {string}")
     public void toSeeMyTransactionsILoginAsAsCustomerWithEmailAndPassword(String email, String password) {
         logger.info(email + " " + password);
@@ -72,6 +73,8 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         httpHeaders.setBearerAuth(loginResponse.getToken());
         // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
+
+    // Sara's Code
     @When("I request to read transactions without account type")
     public void iRequestToReadTransactionsWithoutAccountType() {
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
@@ -79,11 +82,14 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
                 String.class);
         logger.info(customerTransactionResponseEntity.toString());
     }
+
+    // Sara's Code
     @And("I receive error message {string}")
     public void iReceiveErrorMessage(String message) {
         assertEquals(message, customerTransactionResponseEntity.getBody());
     }
 
+    // Sara's Code
     @When("I request to read transactions of {string} account")
     public void iRequestToReadTransactionsOfAccount(String accountType) {
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
@@ -92,6 +98,8 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
                 entity,
                 String.class);
     }
+
+    // Sara's Code
     @Then("I receive transaction response with status code {int}")
     public void iReceiveCustomerTransactionResponseWithStatusCode(int statusCode) throws JsonProcessingException {
         assertEquals(HttpStatus.valueOf(statusCode), customerTransactionResponseEntity.getStatusCode());
@@ -100,15 +108,17 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         }
     }
 
+    // Sara's Code
     @And("I receive transaction array of length {int}")
     public void iReceiveTransactionArrayOfLength(int numberOfTransactions) {
         assertNotNull(customerTransactionsResponse);
         assertEquals(numberOfTransactions, customerTransactionsResponse.transactions().size());
     }
 
+    // Sara's Code
     @And("I receive account of transaction of type {string}")
     public void iReceiveAccountOfTransactionOfType(String accountType) {
-        String readAccount = customerTransactionsResponse.accountDTO().getType().toString();
+        String readAccount = customerTransactionsResponse.account().getType().toString();
         assertTrue(accountType.equals(readAccount));
     }
 
@@ -116,11 +126,14 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
     private String filter;
     private String accountType;
     private List<Transaction> filteredTransactions;
+
+    // Sara's Code
     @Then("I receive transaction array and save it")
     public void iReceiveTransactionArrayAndSaveIt() {
         allTransactions = customerTransactionsResponse.transactions();
     }
 
+    // Sara's Code
     @Then("I request to read transactions with filter {string} for account of type {string}")
     public void iRequestToReadTransactionsWithFilterForAccountOfType(String userFilter, String accountType) throws JsonProcessingException {
         filter = userFilter;
@@ -137,7 +150,8 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         filteredTransactions = customerTransactionsResponse.transactions();
     }
 
-    // from ChatGPT
+    // Sara's Code
+    // with help from ChatGPT
     private Map<String, String> getMap(String filter) {
         Map<String, String> params = new HashMap<>();
         for (String param : filter.split("&")) {
@@ -262,6 +276,8 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         }
         return limit;
     }
+
+    // Sara's Code
     @Then("I check to see if filter is correctly applied")
     public void iCheckToSeeIfFilterIsCorrectlyApplied() {
         Map<String, String> params = getMap(filter);

@@ -6,7 +6,7 @@ import nl.inholland.BankAPI.Model.Transaction;
 
 import java.util.List;
 
-public record CustomerTransactionsDTO (AccountDTO accountDTO, List<Transaction> transactions) {
+public record CustomerTransactionsDTO (AccountDTO account, List<Transaction> transactions) {
     public CustomerTransactionsDTO (Account account, List<Transaction> transactions) {
         this(
                 new AccountDTO(account),

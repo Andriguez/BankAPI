@@ -32,6 +32,7 @@ public class TransactionController {
         this.userService = userService;
     }
 
+    // Sara's Code
     // GetMapping without any inputs means the base API. So, APIs calling /transactions will be handled by the
     // following method.
     @GetMapping //route: /transactions
@@ -40,7 +41,7 @@ public class TransactionController {
     public ResponseEntity<Object> getCustomerTransactions(
             // optional filters to filter transactions
             @RequestParam(required = false) Long userId, // for admin to read a userId.
-            @RequestParam(required = false) String accountType,
+            @RequestParam(required = false) String accountType, // either savings or current
             @RequestParam(required = false) TransactionType transactionType,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
@@ -61,15 +62,18 @@ public class TransactionController {
                 return ResponseEntity.badRequest().body("accountType should be present");
             }
             accountType = accountType.toUpperCase();
+            // check to see if accountType is CURRENT or SAVINGS
             if (!accountType.equals(AccountType.CURRENT.toString()) && !accountType.equals(AccountType.SAVINGS.toString())) {
                 return ResponseEntity.badRequest().body("accountType should be either CURRENT or SAVINGS");
             }
+            // if the caller is admin, check userId
             if (loggedInUser.getUserType().contains(UserType.ADMIN)) {
                 if(userId == null) {
                     return ResponseEntity.badRequest().body("userId should be present for admin");
                 }
                 userToFindTransactions = userService.getUserById(userId);
             }
+            // if the caller is customer
             else {
                 userToFindTransactions = loggedInUser;
             }

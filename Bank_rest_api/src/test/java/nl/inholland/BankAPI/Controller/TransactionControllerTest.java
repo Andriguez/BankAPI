@@ -71,6 +71,7 @@ public class TransactionControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
+    // Sara's Code
     @Test
     public void testGetTransactionsByCustomerNoAuthenticationFails() throws Exception {
         // Perform the GET request and verify the response
@@ -78,6 +79,7 @@ public class TransactionControllerTest {
                 .andExpect(status().is(400));
     }
 
+    // Sara's Code
     public User createUserWithAccounts() {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
@@ -98,6 +100,8 @@ public class TransactionControllerTest {
         mockUser.setUserType(Arrays.asList(UserType.CUSTOMER));
         return mockUser;
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountButAccountTypeIsNotPresent() throws Exception {
@@ -111,13 +115,15 @@ public class TransactionControllerTest {
                 .andExpect(status().is(400))
                 .andExpect(content().string("accountType should be present"));
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsCustomerLoggedUserWithNoAccount() throws Exception {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
         mockUser.setEmail("customer@email.com");
-        mockUser.setUserType(Arrays.asList(UserType.CUSTOMER));
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
         List<Account> mockAccounts = new ArrayList<>();
         mockUser.setAccounts(mockAccounts);
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
@@ -131,9 +137,11 @@ public class TransactionControllerTest {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions?accountType=current")).andDo(print())
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.account").isEmpty())
+                .andExpect(jsonPath("$.account.id").isEmpty())
                 .andExpect(jsonPath("$.transactions").isEmpty());
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountCurrentNoTransaction() throws Exception {
@@ -155,6 +163,8 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions").isEmpty());
     }
+
+    // Sara's Code
     public List<Transaction> createTransactions() {
         List<Transaction> transactions = new ArrayList<>();
         Transaction t1 = new Transaction();
@@ -177,6 +187,8 @@ public class TransactionControllerTest {
         transactions.add(t1);
         return transactions;
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountCurrent() throws Exception {
@@ -198,6 +210,8 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions", hasSize(3)));
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountCurrentWithFiltersForAmount() throws Exception {
@@ -216,6 +230,8 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions", hasSize(3)));
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountCurrentWithFiltersForDates() throws Exception {

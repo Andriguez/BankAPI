@@ -38,7 +38,13 @@ public class AccountDTO {
             this.status = account.getAccountStatus();
         }
     }
+    public Long getId() { return this.id; }
+    public String getIban() { return this.iban; }
     public AccountType getType() {
         return this.type;
     }
+    public double getBalance() { return this.balance; }
+    public double getAbsolute() { return this.absolute; }
+    public double getDaily() { return this.daily; }
+    public AccountStatus getStatus() { return  this.status; }
 }

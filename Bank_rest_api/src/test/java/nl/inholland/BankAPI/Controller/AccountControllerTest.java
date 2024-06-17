@@ -53,6 +53,7 @@ public class AccountControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // Sara's Code
     @Test
     public void testGetAccountsByCustomerNoAuthenticationFails() throws Exception {
         // Perform the GET request and verify the response
@@ -60,6 +61,7 @@ public class AccountControllerTest {
                 .andExpect(status().is(401));
     }
 
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetAccountsByCustomerLoggedUserWithNoAccount() throws Exception {
@@ -77,6 +79,8 @@ public class AccountControllerTest {
                 .andExpect(content().string("this user has no accounts"));
 
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetAccountsByCustomerLoggedUserWithAccount() throws Exception {

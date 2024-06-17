@@ -30,6 +30,7 @@ public class TransactionService {
         this.userService = userService;
     }
 
+    // Sara's Code
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
     public List<Transaction> getTransactionsByAccount(
@@ -41,6 +42,7 @@ public class TransactionService {
         return getTransactionsByAccount(account, transactionType,
                 startDate, endDate, minAmount, maxAmount, exactAmount, iban, null, null);
     }
+    // Sara's Code
     public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
@@ -52,7 +54,7 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(account.getSentTransactions());
         transactions.addAll(account.getReceivedTransactions());
-        return transactions.stream()
+        List<Transaction> filteredTransactions = transactions.stream()
                 .filter(transaction -> transactionType == null || transaction.getTransactionType() == transactionType)
                 .filter(transaction -> startDate == null || transaction.getDateTime().isAfter(startDate.atStartOfDay()))
                 .filter(transaction -> endDate == null || transaction.getDateTime().isBefore(endDate.atStartOfDay()))
@@ -65,6 +67,7 @@ public class TransactionService {
                 .skip(skip != null ? skip : 0)
                 .limit(limit != null ? limit : Integer.MAX_VALUE)
                 .collect(Collectors.toList());
+        return filteredTransactions;
     }
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
@@ -249,6 +252,7 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
+    // Sara's Code
     public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,
                                                        TransactionType transactionType, LocalDate startDate,
                                                        LocalDate endDate, Float minAmount, Float maxAmount,
@@ -263,6 +267,7 @@ public class TransactionService {
             customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
             return customerTransactionsDTO;
         }
+        // fund the account with provided accountType
         for (Account account : userToFindTransactions.getAccounts()) {
             if (accountType.equals(account.getType().toString())) {
                 customerAccount = account;
