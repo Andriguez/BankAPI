@@ -2,6 +2,7 @@ package nl.inholland.BankAPI.Controller;
 
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.DTO.AccountDTO;
 import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
@@ -43,7 +44,8 @@ public class AccountController {
 
             if (!accounts.isEmpty()) {
                 if(loggedUser.getUserType().equals(List.of(UserType.ADMIN)) || loggedUser.getId() == accounts.get(0).getUser().getId()) {
-                    return ResponseEntity.ok().body(new AccountsDTO(loggedUser.getAccounts()));
+                    AccountsDTO accountsDTO = new AccountsDTO(loggedUser.getAccounts());
+                    return ResponseEntity.ok().body(accountsDTO);
                 } else {
                     throw new IllegalArgumentException("User is not allowed to access this data!");
                 }
