@@ -73,4 +73,20 @@ public class Transaction {
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
     }
+    public String getSenderAccountIban() {
+        if(this.senderAccount == null) {
+            return "";
+        }
+        else {
+            return this.senderAccount.getIban();
+        }
+    }
+    public String getReceiverAccountIban() {
+        if(this.receiverAccount == null) {
+            return "";
+        }
+        else {
+            return this.receiverAccount.getIban();
+        }
+    }
 }

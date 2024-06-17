@@ -54,7 +54,7 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(account.getSentTransactions());
         transactions.addAll(account.getReceivedTransactions());
-        return transactions.stream()
+        List<Transaction> filteredTransactions = transactions.stream()
                 .filter(transaction -> transactionType == null || transaction.getTransactionType() == transactionType)
                 .filter(transaction -> startDate == null || transaction.getDateTime().isAfter(startDate.atStartOfDay()))
                 .filter(transaction -> endDate == null || transaction.getDateTime().isBefore(endDate.atStartOfDay()))
@@ -67,6 +67,7 @@ public class TransactionService {
                 .skip(skip != null ? skip : 0)
                 .limit(limit != null ? limit : Integer.MAX_VALUE)
                 .collect(Collectors.toList());
+        return filteredTransactions;
     }
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
@@ -263,6 +264,7 @@ public class TransactionService {
             customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
             return customerTransactionsDTO;
         }
+        // fund the account with provided accountType
         for (Account account : userToFindTransactions.getAccounts()) {
             if (accountType.equals(account.getType().toString())) {
                 customerAccount = account;
