@@ -55,13 +55,14 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
     }
     private LoginRequestDTO loginDTO;
 
+    // Sara's Code
     @Given("I have login request with email {string} and password {string}")
     public void iHaveLoginRequestWithEmailAndPassword(String email, String password) throws JsonProcessingException {
         logger.info(email + " " + password);
         loginDTO = new LoginRequestDTO(email, password);
     }
 
-
+    // Sara's Code
     @When("I send login request")
     public void iSendLoginRequest() {
         // Send login request
@@ -77,11 +78,13 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
         httpHeaders.setBearerAuth(loginResponse.getToken());
     }
 
+    // Sara's Code
     @Then("I receive login response with status code {int}")
     public void iReceiveLoginResponseWithStatusCode(int statusCode) {
         assertEquals(HttpStatus.valueOf(statusCode), loginResponseEntity.getStatusCode());
     }
 
+    // Sara's Code
     @Then("I receive valid login response")
     public void iReceiveValidLoginResponse() {
         assertNotNull(loginResponse);

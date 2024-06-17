@@ -53,7 +53,7 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
     }
     private LoginRequestDTO loginDTO;
 
-
+    // Sara's Code
     @Given("I login as as Guest with email {string} and password {string}")
     public void iLoginAsAsGuestWithEmailAndPassword(String email, String password) {
         logger.info(email + " " + password);
@@ -67,22 +67,26 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
 
-
+    // Sara's Code
     @When("I request to read accounts as guest")
     public void itFailsRequestToReadAccounts() {
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         accountResponseEntity = restTemplate.exchange("/accounts", HttpMethod.GET, entity, String.class);
     }
+
+    // Sara's Code
     @Then("I receive error response with status code {int}")
     public void iReceiveErrorResponseWithStatusCode(int statusCode) {
         assertEquals(HttpStatus.valueOf(statusCode), accountResponseEntity.getStatusCode());
     }
 
+    // Sara's Code
     @And("I receive an error message {string}")
     public void iReceiveAnErrorMesage(String message) {
         assertEquals(message, accountResponseEntity.getBody());
     }
 
+    // Sara's Code
     @Given("To see my accounts, I login as as Customer with email {string} and password {string}")
     public void toSeeMyAccountsILoginAsAsCustomerWithEmailAndPassword(String email, String password) {
         logger.info(email + " " + password);
@@ -95,17 +99,22 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         httpHeaders.setBearerAuth(loginResponse.getToken());
         // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
+
+    // Sara's Code
     @When("I request to read accounts as customer")
     public void iRequestToReadAccountsAsCustomer() {
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         accountResponseEntity = restTemplate.exchange("/accounts", HttpMethod.GET, entity, String.class);
     }
+
+    // Sara's Code
     @Then("I receive accounts response with status code {int}")
     public void iReceiveAccountsResponseWithStatusCode(int statusCode) {
         assertEquals(HttpStatus.valueOf(statusCode), accountResponseEntity.getStatusCode());
         assertEquals(HttpStatus.OK, accountResponseEntity.getStatusCode(), "Response status is not OK");
     }
 
+    // Sara's Code
     @And("I receive accounts array of length {int}")
     public void iReceiveAccountsArrayOfLength(int numberOfAccounts) throws IOException {
 
@@ -116,6 +125,7 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         assertEquals(numberOfAccounts, accountResponse.accounts().size());
     }
 
+    // Sara's Code
     @And("I receive account of type {string}")
     public void iReceiveAccountOfType(String accountType) {
         Boolean  accountPresent= accountResponse.accounts().containsKey(AccountType.valueOf(accountType));
