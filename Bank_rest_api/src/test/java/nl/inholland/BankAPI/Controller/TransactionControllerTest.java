@@ -117,7 +117,7 @@ public class TransactionControllerTest {
         // Mock the user and accounts returned by the userService and accountService
         User mockUser = new User();
         mockUser.setEmail("customer@email.com");
-        mockUser.setUserType(Arrays.asList(UserType.CUSTOMER));
+        mockUser.setUserType(List.of(UserType.CUSTOMER));
         List<Account> mockAccounts = new ArrayList<>();
         mockUser.setAccounts(mockAccounts);
         when(userService.getUserByEmail("customer@email.com")).thenReturn(mockUser);
@@ -131,7 +131,7 @@ public class TransactionControllerTest {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/transactions?accountType=current")).andDo(print())
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.account").isEmpty())
+                .andExpect(jsonPath("$.account.id").isEmpty())
                 .andExpect(jsonPath("$.transactions").isEmpty());
     }
     @Test

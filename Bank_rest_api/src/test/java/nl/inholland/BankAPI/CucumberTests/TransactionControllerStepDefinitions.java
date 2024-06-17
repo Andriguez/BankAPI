@@ -108,7 +108,7 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
 
     @And("I receive account of transaction of type {string}")
     public void iReceiveAccountOfTransactionOfType(String accountType) {
-        String readAccount = customerTransactionsResponse.accountDTO().getType().toString();
+        String readAccount = customerTransactionsResponse.account().getType().toString();
         assertTrue(accountType.equals(readAccount));
     }
 
