@@ -31,8 +31,8 @@ import { formatDate } from '@/services/helpers';
                     <tbody>
                         <tr v-for="(transaction) in transactions">
                             <td>{{ transaction.transactionType }}</td>
-                            <td>{{ transaction.senderAccount?.iban }}</td>
-                            <td>{{ transaction.receiverAccount?.iban }}</td>
+                            <td>{{ transaction.senderAccountIban }}</td>
+                            <td>{{ transaction.receiverAccountIban }}</td>
                             <td>{{ formatDate(transaction.dateTime) }}</td>
                             <td>{{ transaction.amount }}</td>
                         </tr>
@@ -93,6 +93,7 @@ export default {
                 console.log(response)              
             } catch (error) {
                 this.transactions = [];
+                console.error(error);  
             }
         },
         

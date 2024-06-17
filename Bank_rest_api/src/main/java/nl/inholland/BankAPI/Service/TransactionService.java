@@ -199,30 +199,34 @@ public class TransactionService {
     public List<Transaction> getAdminInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
         for (Transaction t : getAllTransactions()) {
-            if (t.getUserInitiating().getUserType().equals(UserType.ADMIN)) {
+            if (t.getUserInitiating().getUserType().contains(UserType.ADMIN)) {
                 filteredTransactions.add(t);
             }
         }
-        return filteredTransactions;
+        if(filteredTransactions.size()==0)
+        {
+            System.out.println("NUHUH");
+        }
+            return filteredTransactions;
+
     }
 
     public List<Transaction> getUserInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
         for (Transaction t : getAllTransactions()) {
-            if (t.getUserInitiating().getUserType().equals(List.of(UserType.CUSTOMER))) {
+            if (t.getUserInitiating().getUserType().contains(UserType.CUSTOMER)) {
                 filteredTransactions.add(t);
             }
         }
         return filteredTransactions;
     }
 
-    public List<Transaction> getATMInitiatedTransactions(){
-
-        //todo
+    public List<Transaction> getATMInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        String initiatingIban;
-        for (Transaction t:transactionRepository.findAll()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+
+        for (Transaction t : transactionRepository.findAll()) {
+            if ((t.getSenderAccount() != null && t.getReceiverAccount() == null) ||
+                    (t.getReceiverAccount() != null && t.getSenderAccount() == null)) {
                 filteredTransactions.add(t);
             }
         }
