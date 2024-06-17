@@ -62,8 +62,8 @@
                     <tbody>
                         <tr v-for="(transaction, index) in transactions" :key="index">
                             <td>{{ transaction.transactionType }}</td>
-                            <td>{{ transaction?.senderAccount?.iban }}</td>
-                            <td>{{ transaction?.receiverAccount?.iban }}</td>
+                            <td>{{ transaction?.senderAccountIban }}</td>
+                            <td>{{ transaction?.receiverAccountIban }}</td>
                             <td>{{ formatDate(transaction.dateTime) }}</td>
                             <td>{{ transaction.amount }}</td>
                         </tr>

@@ -230,6 +230,8 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions", hasSize(3)));
     }
+
+    // Sara's Code
     @Test
     @WithMockUser(username = "customer@email.com", roles = {"CUSTOMER"})
     public void testGetTransactionsByCustomerLoggedUserWithAccountCurrentWithFiltersForDates() throws Exception {
