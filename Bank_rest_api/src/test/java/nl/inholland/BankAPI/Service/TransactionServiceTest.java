@@ -75,7 +75,7 @@ public class TransactionServiceTest {
         when(emptyAccount.getSentTransactions()).thenReturn(new ArrayList<>());
         when(emptyAccount.getReceivedTransactions()).thenReturn(new ArrayList<>());
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                emptyAccount, null, null, null, null, null, null, null);
+                emptyAccount, null, null, null, null, null, null, null, null, null);
 
         assertEquals(0, result.size());
     }
@@ -85,7 +85,7 @@ public class TransactionServiceTest {
     void testGetTransactionsByAccountGetAll() {
         // Test
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, null, null, null, null);
+                account, null, null, null, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(3, result.size());
@@ -96,7 +96,7 @@ public class TransactionServiceTest {
     void testGetTransactionsByAccountFilterTypeDeposit() {
         // Test
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, TransactionType.DEPOSIT, null, null, null, null, null, null);
+                account, TransactionType.DEPOSIT, null, null, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -108,7 +108,7 @@ public class TransactionServiceTest {
     void testGetTransactionsByAccountFilterTypeWithdraw() {
         // Test
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, TransactionType.WITHDRAWAL, null, null, null, null, null, null);
+                account, TransactionType.WITHDRAWAL, null, null, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -121,7 +121,7 @@ public class TransactionServiceTest {
         // Test
         LocalDate localDate = LocalDate.of(2024,6,10);
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, localDate, null, null, null, null, null);
+                account, null, localDate, null, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(2, result.size());
@@ -135,7 +135,7 @@ public class TransactionServiceTest {
         // Test
         LocalDate localDate = LocalDate.of(2024,9,10);
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, localDate, null, null, null, null, null);
+                account, null, localDate, null, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(0, result.size());
@@ -147,7 +147,7 @@ public class TransactionServiceTest {
         // Test
         LocalDate localDate = LocalDate.of(2024,6,10);
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, localDate, null, null, null, null);
+                account, null, null, localDate, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -160,7 +160,7 @@ public class TransactionServiceTest {
         // Test
         LocalDate localDate = LocalDate.of(2024,5,10);
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, localDate, null, null, null, null);
+                account, null, null, localDate, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(0, result.size());
@@ -173,7 +173,7 @@ public class TransactionServiceTest {
         LocalDate localDateStart = LocalDate.of(2024,6,10);
         LocalDate localDateEnd = LocalDate.of(2024,7,10);
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, localDateStart, localDateEnd, null, null, null, null);
+                account, null, localDateStart, localDateEnd, null, null, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -186,7 +186,7 @@ public class TransactionServiceTest {
         // Test
         Float min = 200.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, min, null, null, null);
+                account, null, null, null, min, null, null, null, null, null);
 
         // Assertions
         assertEquals(2, result.size());
@@ -199,7 +199,7 @@ public class TransactionServiceTest {
         // Test
         Float min = 1200.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, min, null, null, null);
+                account, null, null, null, min, null, null, null, null, null);
 
         // Assertions
         assertEquals(0, result.size());
@@ -211,7 +211,7 @@ public class TransactionServiceTest {
         // Test
         Float max = 190.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, null, max, null, null);
+                account, null, null, null, null, max, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -224,7 +224,7 @@ public class TransactionServiceTest {
         // Test
         Float max = 90.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, null, max, null, null);
+                account, null, null, null, null, max, null, null, null, null);
 
         // Assertions
         assertEquals(0, result.size());
@@ -237,7 +237,7 @@ public class TransactionServiceTest {
         Float min = 190.5f;
         Float max = 210.0f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, min, max, null, null);
+                account, null, null, null, min, max, null, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -250,7 +250,7 @@ public class TransactionServiceTest {
         // Test
         Float equal = 200.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, null, null, equal, null);
+                account, null, null, null, null, null, equal, null, null, null);
 
         // Assertions
         assertEquals(1, result.size());
@@ -263,7 +263,7 @@ public class TransactionServiceTest {
         // Test
         Float equal = 199.5f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, null, null, null, null, equal, null);
+                account, null, null, null, null, null, equal, null, null, null);
 
         // Assertions
         assertEquals(0, result.size());
@@ -279,7 +279,7 @@ public class TransactionServiceTest {
         Float min = 190.5f;
         Float max = 210.0f;
         List<Transaction> result = transactionService.getTransactionsByAccount(
-                account, null, localDateStart, localDateEnd, min, max, null, null);
+                account, null, localDateStart, localDateEnd, min, max, null, null, null, null);
         // Assertions
         assertEquals(1, result.size());
         assertEquals(
