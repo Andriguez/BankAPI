@@ -21,7 +21,9 @@ export const getAccountsById = async (userid) => {
 
 export const createAccounts = async (userId, currentData, savingsData) => {
     try {
-    
+        if (currentData.absolute < 0 || currentData.daily < 0 || savingsData.absolute < 0 || savingsData.daily < 0) {
+            throw new Error('Absolute and daily limits must not be negative.');
+        }
             const data = {
                 absolute1: currentData.absolute,
                 daily1: currentData.daily,
@@ -43,7 +45,9 @@ export const createAccounts = async (userId, currentData, savingsData) => {
 
 export const editAccountsInfo = async (userId, currentData, savingsData) => {
     try {
-    
+        if (currentData.absolute < 0 || currentData.daily < 0 || savingsData.absolute < 0 || savingsData.daily < 0) {
+            throw new Error('Absolute and daily limits must not be negative.');
+        }
             const data = {
                 absolute1: currentData.absolute,
                 daily1: currentData.daily,

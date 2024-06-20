@@ -129,7 +129,6 @@ public class UserService {
     public void AddAccountToUser(User user, Account account){
             user.addAccount(account);
             userRepository.save(user);
-
     }
 
     public UserDTO getUserDTO(User requestedUser){

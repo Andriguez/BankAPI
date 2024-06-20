@@ -14,11 +14,12 @@ public class Transaction {
     private long id;
     @ManyToOne
     @JoinColumn(name = "sender_account_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference(value = "sentTransactions")
     private Account senderAccount;
     @ManyToOne
     @JoinColumn(name = "receiver_account_id", nullable = true)
-    @JsonBackReference
+    @JsonBackReference(value = "receivedTransactions")
+
     private Account receiverAccount;
     private double amount;
     private LocalDateTime dateTime;
@@ -71,5 +72,21 @@ public class Transaction {
     }
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
+    }
+    public String getSenderAccountIban() {
+        if(this.senderAccount == null) {
+            return "";
+        }
+        else {
+            return this.senderAccount.getIban();
+        }
+    }
+    public String getReceiverAccountIban() {
+        if(this.receiverAccount == null) {
+            return "";
+        }
+        else {
+            return this.receiverAccount.getIban();
+        }
     }
 }

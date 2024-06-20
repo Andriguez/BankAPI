@@ -34,11 +34,11 @@ public class Account {
     private User user;
 
     @OneToMany(mappedBy = "senderAccount", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "sentTransactions")
     private List<Transaction> sentTransactions;
 
    @OneToMany(mappedBy = "receiverAccount", cascade = CascadeType.ALL)
-   @JsonManagedReference
+   @JsonManagedReference(value = "receivedTransactions")
     private List<Transaction> receivedTransactions;
 
     public long getId() {return id;}

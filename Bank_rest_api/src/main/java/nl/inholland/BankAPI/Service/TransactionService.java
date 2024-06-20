@@ -1,9 +1,11 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,86 +30,35 @@ public class TransactionService {
         this.userService = userService;
     }
 
+    // Sara's Code
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
+    // Sara's Code
     public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
             LocalDate startDate, LocalDate endDate,
             Float minAmount, Float maxAmount, Float exactAmount,
-            String iban) {
-        List<Transaction> transactionsSent = account.getSentTransactions();
-        List<Transaction> transactionsReceived = account.getReceivedTransactions();
+            String iban, Integer skip, Integer limit) {
 
+        // JPA is set up to automatically set all transactions sent by account in sentTransactions array and similar
+        // for received transactions.
         List<Transaction> transactions = new ArrayList<>();
-        transactions.addAll(transactionsSent);
-        transactions.addAll(transactionsReceived);
-        System.out.println("Transaction service called ");
-        System.out.println(transactions.size());
-        if(transactionType != null) {
-            // filter transactions to keep transactions with transactionType (got from method inputs that came from
-            // API call)
-            transactions = transactions.stream()
-                    .filter(transaction -> transaction.getTransactionType() == transactionType)
-                    .collect(Collectors.toList());
-            System.out.println("found by transaction type " + transactionType );
-            System.out.println(transactions.size());
-        }
-        if(startDate != null) {
-            transactions = transactions.stream()
-                    // when filtering by time, we should convert the startDate (which is date) to dateTime and we
-                    // should .asStartOfDay to convert date (received from frontend) to dateTime.
-                    .filter(transaction -> transaction.getDateTime().isAfter(startDate.atStartOfDay()))
-                    .collect(Collectors.toList());
-            System.out.println("found by after startDate " + startDate.toString() );
-            System.out.println(transactions.size());
-        }
-        if(endDate != null) {
-            transactions = transactions.stream()
-                    .filter(transaction -> transaction.getDateTime().isBefore(endDate.atStartOfDay()))
-                    .collect(Collectors.toList());
-            System.out.println("found by before endDate " + endDate.toString() );
-            System.out.println(transactions.size());
-        }
-        if(minAmount != null) {
-            transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() >= minAmount)
-                    .collect(Collectors.toList());
-            System.out.println("found by bigger than " + minAmount.toString() );
-            System.out.println(transactions.size());
-        }
-        if(maxAmount != null) {
-            transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() <= maxAmount)
-                    .collect(Collectors.toList());
-            System.out.println("found by smaller than " + maxAmount.toString() );
-            System.out.println(transactions.size());
-        }
-        if(exactAmount != null) {
-            transactions = transactions.stream()
-                    .filter(transaction -> transaction.getAmount() == exactAmount)
-                    .collect(Collectors.toList());
-            System.out.println("found by equal to " + exactAmount.toString() );
-            System.out.println(transactions.size());
-        }
-        if(iban != null) {
-            transactions = transactions.stream()
-                    .filter(transaction -> {
-                        // I check to see if the provided iban filter is in sender account or receiver account iban
-                        if (transaction.getSenderAccount().getIban().contains(iban)) {
-                            return true;
-                        }
-                        else if(transaction.getReceiverAccount().getIban().contains(iban)) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    })
-                    .collect(Collectors.toList());
-            System.out.println("found by iban to " + iban );
-            System.out.println(transactions.size());
-        }
-        return transactions;
+        transactions.addAll(account.getSentTransactions());
+        transactions.addAll(account.getReceivedTransactions());
+        List<Transaction> filteredTransactions = transactions.stream()
+                .filter(transaction -> transactionType == null || transaction.getTransactionType() == transactionType)
+                .filter(transaction -> startDate == null || transaction.getDateTime().isAfter(startDate.atStartOfDay()))
+                .filter(transaction -> endDate == null || transaction.getDateTime().isBefore(endDate.atStartOfDay()))
+                .filter(transaction -> minAmount == null || transaction.getAmount() >= minAmount)
+                .filter(transaction -> maxAmount == null || transaction.getAmount() <= maxAmount)
+                .filter(transaction -> exactAmount == null || transaction.getAmount() == exactAmount)
+                .filter(transaction -> iban == null ||
+                        transaction.getSenderAccount().getIban().contains(iban) ||
+                        transaction.getReceiverAccount().getIban().contains(iban))
+                .skip(skip != null ? skip : 0)
+                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .collect(Collectors.toList());
+        return filteredTransactions;
     }
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
@@ -220,72 +171,112 @@ public class TransactionService {
         return false;
     }
 
-    public List<Transaction> getTransactionByUserId(long id){
-        try {
+    public List<Transaction> getTransactionByUserId(long id, Integer skip, Integer limit){
+
             List<Transaction> filteredTransactions = new ArrayList<>();
             User neededUser = userService.getUserById(id);
-            for (Transaction t:getAllTransactions()) {
+            for (Transaction t:transactionRepository.findAll()) {
                 if(t.getUserInitiating() == neededUser){
                     filteredTransactions.add(t);
                 }
             }
+        return filteredTransactions.stream()
+                .skip(skip != null ? skip : 0)
+                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<Transaction> getAdminInitiatedTransactions() {
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        for (Transaction t : getAllTransactions()) {
+            if (t.getUserInitiating().getUserType().contains(UserType.ADMIN)) {
+                filteredTransactions.add(t);
+            }
+        }
+        if(filteredTransactions.size()==0)
+        {
+            System.out.println("NUHUH");
+        }
             return filteredTransactions;
-        }catch (Exception e){
-            throw e;
-        }
+
     }
 
-    public List<Transaction> getAdminInitiatedTransactions(){
+    public List<Transaction> getUserInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t:getAllTransactions()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
+        for (Transaction t : getAllTransactions()) {
+            if (t.getUserInitiating().getUserType().contains(UserType.CUSTOMER)) {
                 filteredTransactions.add(t);
             }
         }
         return filteredTransactions;
     }
 
-    public List<Transaction> getUserInitiatedTransactions(){
+    public List<Transaction> getATMInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t:getAllTransactions()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.CUSTOMER)){
+
+        for (Transaction t : transactionRepository.findAll()) {
+            if ((t.getSenderAccount() != null && t.getReceiverAccount() == null) ||
+                    (t.getReceiverAccount() != null && t.getSenderAccount() == null)) {
                 filteredTransactions.add(t);
             }
         }
         return filteredTransactions;
     }
 
-    public List<Transaction> getATMInitiatedTransactions(){
-
-        //todo
-        List<Transaction> filteredTransactions = new ArrayList<>();
-        String initiatingIban;
-        for (Transaction t:getAllTransactions()) {
-            if(t.getUserInitiating().getUserType().equals(UserType.ADMIN)){
-                filteredTransactions.add(t);
-            }
-        }
-        return filteredTransactions;
-    }
-
-    public List<Transaction> getAllTransactions(){
+    public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
 
-    public void filterTransactions(int condition, long id){
+    public List<Transaction> filterTransactions(String condition,Integer skip, Integer limit){
+        List<Transaction> filteredTransactions = new ArrayList<>();
         switch (condition){
-            //case 0 = all transactions
-            case 0: getAllTransactions(); break;
-            //case 1 = get transactions by userId
-            case 1: getTransactionByUserId(id); break;
-            //case 2 = ATM transactions
-            case 2: getATMInitiatedTransactions(); break;
-            //case 3 = user initiated transactions
-            case 3: getUserInitiatedTransactions(); break;
-
-            //case 4= get admin initiated transactions();
-            case 4: getAdminInitiatedTransactions(); break;
-            default: break;
+            //case ALL = all transactions
+            case "ALL": filteredTransactions = getAllTransactions();break;
+            //case ATM = ATM transactions
+            case "ATM": filteredTransactions = getATMInitiatedTransactions();break;
+            //case ADMIN= get admin initiated transactions();
+            case "ADMIN": filteredTransactions = getAdminInitiatedTransactions();break;
+            //case CUSTOMER = user initiated transactions
+            case "CUSTOMER": filteredTransactions = getUserInitiatedTransactions();break;
+            default: throw new IllegalArgumentException("Invalid condition: " + condition);
         }
+        return filteredTransactions.stream()
+                .skip(skip != null ? skip : 0)
+                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .collect(Collectors.toList());
+    }
+
+    // Sara's Code
+    public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,
+                                                       TransactionType transactionType, LocalDate startDate,
+                                                       LocalDate endDate, Float minAmount, Float maxAmount,
+                                                       Float exactAmount, String iban, Integer skip, Integer limit) {
+        Account customerAccount = null;
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        // I want to send info about account and its transactions to the frontend. So, I created a new class that has
+        // account and a list of transactions called CustomerTransactionsDTO
+        CustomerTransactionsDTO customerTransactionsDTO;
+        if (userToFindTransactions.getAccounts().size() == 0) {
+            // if customer does not have any accounts, she does not have any transactions too. We return empty dto.
+            customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
+            return customerTransactionsDTO;
+        }
+        // fund the account with provided accountType
+        for (Account account : userToFindTransactions.getAccounts()) {
+            if (accountType.equals(account.getType().toString())) {
+                customerAccount = account;
+                break;
+            }
+        }
+        if (customerAccount == null) {
+            // if customer does not have any accounts, she does not have any transactions too. We return empty dto.
+            customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
+            return customerTransactionsDTO;
+        }
+        transactions = getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
+                minAmount, maxAmount, exactAmount, iban, skip, limit);
+        customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
+        return customerTransactionsDTO;
     }
 }

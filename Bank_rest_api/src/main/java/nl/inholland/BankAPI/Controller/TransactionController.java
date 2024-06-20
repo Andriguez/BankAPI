@@ -32,63 +32,59 @@ public class TransactionController {
         this.userService = userService;
     }
 
+    // Sara's Code
     // GetMapping without any inputs means the base API. So, APIs calling /transactions will be handled by the
     // following method.
     @GetMapping //route: /transactions
     // getTransactions can have different Request Params, all of them are optional.
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
     public ResponseEntity<Object> getCustomerTransactions(
             // optional filters to filter transactions
-            @RequestParam(required = false) String accountType,
+            @RequestParam(required = false) Long userId, // for admin to read a userId.
+            @RequestParam(required = false) String accountType, // either savings or current
             @RequestParam(required = false) TransactionType transactionType,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(required = false) Float minAmount,
             @RequestParam(required = false) Float exactAmount,
             @RequestParam(required = false) Float maxAmount,
-            @RequestParam(required = false) String iban
-    ) {
+            @RequestParam(required = false) String iban,
+            @RequestParam(required = false) Integer skip,
+            @RequestParam(required = false) Integer limit) {
 
         try{
-            System.out.println("Transaction controller called ");
-            Account customerAccount = null;
-            List<Transaction> transactions = new ArrayList<Transaction>();
             // find logged in user from her JWT
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedInUser = userService.getUserByEmail(email);
+            // this method can be called by a user or by admin. If it is called by admin, userId should be present.
+            User userToFindTransactions;
+            if (accountType == null) {
+                return ResponseEntity.badRequest().body("accountType should be present");
+            }
+            accountType = accountType.toUpperCase();
+            // check to see if accountType is CURRENT or SAVINGS
+            if (!accountType.equals(AccountType.CURRENT.toString()) && !accountType.equals(AccountType.SAVINGS.toString())) {
+                return ResponseEntity.badRequest().body("accountType should be either CURRENT or SAVINGS");
+            }
+            // if the caller is admin, check userId
+            if (loggedInUser.getUserType().contains(UserType.ADMIN)) {
+                if(userId == null) {
+                    return ResponseEntity.badRequest().body("userId should be present for admin");
+                }
+                userToFindTransactions = userService.getUserById(userId);
+            }
+            // if the caller is customer
+            else {
+                userToFindTransactions = loggedInUser;
+            }
+
+            // getUserTransactions method in transactionService gets transactions of the user based on the given
+            // filters.
             // I want to send info about account and its transactions to the frontend. So, I created a new class that has
             // account and a list of transactions called CustomerTransactionsDTO
-            CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
-            if (loggedInUser.getAccounts().size() == 0) {
-                // if customer does not have any accounts, she does not have any transactions too
-                return ResponseEntity.status(200).body(customerTransactionsDTO);
-            }
-            if ("current".equals(accountType)) {
-                // if accountType is current, find the "current" account of user.
-                for (Account account : loggedInUser.getAccounts()) {
-                    if (account.getType() == AccountType.CURRENT) {
-                        System.out.println("iban: " + account.getIban() + " - " + account.getType());
-                        customerAccount = account;
-                        break;
-                    }
-                }
-            }
-            else if ("savings".equals(accountType)) {
-                for (Account account : loggedInUser.getAccounts()) {
-                    if (account.getType() == AccountType.SAVINGS) {
-                        System.out.println("iban: " + account.getIban() + " - " + account.getType());
-                        customerAccount = account;
-                        break;
-                    }
-                }
-            }
-            else {
-                return ResponseEntity.status(200).body(customerTransactionsDTO);
-            }
-            // getTransactionsByAccount method in transactionService gets inputs from frontend (some of them might be
-            // null) and pass it to service and return transactions that match those filters.
-            transactions = transactionService.getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
-                    minAmount, maxAmount, exactAmount, iban);
-            customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
+            CustomerTransactionsDTO customerTransactionsDTO =
+              transactionService.getUserTransactions(userToFindTransactions, accountType, transactionType, startDate,
+                      endDate, minAmount, maxAmount, exactAmount, iban, skip, limit);
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -135,5 +131,24 @@ public class TransactionController {
         return false;
     }
 
+    @GetMapping ("/history")//route: /transactions
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Object> filterTransactions(
+            // optional filters to filter transactions
+            @RequestParam String condition,
+            @RequestParam(required = false) Long userId, // for admin to read a userId.
+            @RequestParam(required = false) Integer skip,
+            @RequestParam(required = false) Integer limit) {
+
+        try{
+            if(condition.equals("ID") && userId!=null){
+                return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId,skip,limit));
+            }else{
+                return ResponseEntity.ok().body(transactionService.filterTransactions(condition,skip,limit));
+            }
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }
 
 }
