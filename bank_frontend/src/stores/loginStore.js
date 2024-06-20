@@ -26,7 +26,7 @@ export const useLoginStore = defineStore('login', {
           axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.token;
           this.token = res.data.token;
           this.loggedIn = true;
-          this.name = res.data.name;
+          this.name = `${res.data.firstName} ${res.data.lastName}`;
           this.usertype = res.data.usertype;
           this.userId = res.data.userId;
           localStorage.setItem('jwtToken', this.token);

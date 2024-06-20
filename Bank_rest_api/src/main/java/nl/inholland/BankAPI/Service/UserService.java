@@ -104,22 +104,19 @@ public class UserService {
     }
 
      public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
-        User user = userRepository.findUserByEmail(loginRequest.email());
-        if (user != null && bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            String fullName = user.getFirstName() + ' '+ user.getLastName();
-            String usertype = user.getUserType().toString();
-            Long userId = user.getId();
-            return new LoginResponseDTO(userId, fullName, usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
-        } else {
-            throw new AuthenticationException("Invalid credentials");
-        }
-    }
+        User user = getUserByEmail(loginRequest.email());
 
-    public void deleteUser(long id){
-        User user = this.getUserById(id);
-        //instead of deleting user, we just close their accounts
-        //user.getCheckingAccount().getIban();
-        //user.getSavingAccount().getIban();
+        if (user == null){
+            throw new AuthenticationException("No user found with this email");
+        }
+
+        if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
+            throw new AuthenticationException("password is incorrect");
+        }
+
+         String usertype = user.getUserType().toString();
+         Long userId = user.getId();
+         return new LoginResponseDTO(userId, user.getFirstName(), user.getLastName(), usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
     }
 
     public User getUserByEmail(String email){

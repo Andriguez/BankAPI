@@ -25,7 +25,7 @@ public class RegisterController {
     public ResponseEntity<Object> registerUser(@RequestBody RegistrationDTO user) {
         try{
             User newUser;
-
+            //check with Aleks
             if(authenticateInput(user)){
                 newUser = userService.createUserDTO(user);
                 return ResponseEntity.ok().body(newUser);
