@@ -33,15 +33,6 @@ public class TransactionService {
     // Sara's Code
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactionsByAccount(
-            Account account, TransactionType transactionType,
-            LocalDate startDate, LocalDate endDate,
-            Float minAmount, Float maxAmount, Float exactAmount,
-            String iban) {
-
-        return getTransactionsByAccount(account, transactionType,
-                startDate, endDate, minAmount, maxAmount, exactAmount, iban, null, null);
-    }
     // Sara's Code
     public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
