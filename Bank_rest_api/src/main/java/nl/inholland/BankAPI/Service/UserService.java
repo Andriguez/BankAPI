@@ -139,9 +139,20 @@ public class UserService {
                 accountService.getNewAccountInfo(requestedUser.getAccounts(), requestedUser.getId()));
     }
 
-    public List<UserOverviewDTO> getUsersOverview(UserType userType){
+    public List<UserOverviewDTO> getUsersOverview(String userType) throws EntityNotFoundException{
 
-        List<User> users = getUsersByType(List.of(userType));
+        UserType type;
+        try {
+            type = UserType.valueOf(userType);
+        } catch (IllegalArgumentException e){
+            throw new EntityNotFoundException("Incorrect Usertype submitted");
+        }
+
+        List<User> users = getUsersByType(List.of(type));
+
+        if (users == null || users.isEmpty()) {
+            throw new EntityNotFoundException("No users found for the given user type");
+        }
 
         return users.stream()
                 .map(user -> new UserOverviewDTO(user.getId(), user.getFirstName(), user.getLastName()))

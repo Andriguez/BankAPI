@@ -89,7 +89,7 @@ public class UserControllerTest {
 
         List<UserOverviewDTO> usersOverview = Arrays.asList(userOverview1, userOverview2);
 
-        when(userService.getUsersOverview(UserType.GUEST)).thenReturn(usersOverview);
+        when(userService.getUsersOverview("CUSTOMER")).thenReturn(usersOverview);
 
         mockMvc.perform(get("/users").param("type", "guest"))
                 .andDo(print())

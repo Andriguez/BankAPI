@@ -1,5 +1,6 @@
 package nl.inholland.BankAPI.Controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
@@ -8,11 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 
 @RestController
@@ -33,16 +32,9 @@ public class UserController {
 
     @GetMapping(params = "type")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<UserOverviewDTO>> getUsersByType(String type){
-
-        UserType userType;
-        try{
-            userType = UserType.valueOf(type.toUpperCase());
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersOverview(userType));
+    public ResponseEntity<List<UserOverviewDTO>> getUsersByType(String type) throws EntityNotFoundException {
+        List<UserOverviewDTO> users = userService.getUsersOverview(type.toUpperCase());
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @GetMapping(params = "id")
