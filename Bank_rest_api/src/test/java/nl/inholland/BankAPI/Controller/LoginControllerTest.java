@@ -1,6 +1,5 @@
 package nl.inholland.BankAPI.Controller;
 
-import io.cucumber.java.sl.In;
 import lombok.SneakyThrows;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
@@ -23,8 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.naming.AuthenticationException;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

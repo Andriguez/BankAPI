@@ -1,8 +1,11 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.TransactionType;
+import nl.inholland.BankAPI.Model.User;
+import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.TransactionService;
 import nl.inholland.BankAPI.Service.UserService;
@@ -13,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

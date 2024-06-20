@@ -1,6 +1,5 @@
 package nl.inholland.BankAPI.Model.DTO;
 
-import io.cucumber.java.bs.A;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.Transaction;
 

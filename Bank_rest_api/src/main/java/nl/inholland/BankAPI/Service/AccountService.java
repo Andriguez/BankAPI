@@ -1,9 +1,9 @@
 package nl.inholland.BankAPI.Service;
 
 import nl.inholland.BankAPI.Model.Account;
+import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
-import nl.inholland.BankAPI.Model.AccountStatus;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;

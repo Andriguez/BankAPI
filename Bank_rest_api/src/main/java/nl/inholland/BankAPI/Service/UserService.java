@@ -32,7 +32,7 @@ public class UserService {
     public User createUser(User user) {
         if (existingEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email is already taken");
-        } else if (existingBSN(user.getBsnNumber())){
+        } else if (existingBSN(user.getBsnNumber())) {
             throw new IllegalArgumentException("BSN number is already on our database");
         }
 
@@ -42,25 +42,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Boolean existingEmail(String email){
+    public Boolean existingEmail(String email) {
         User existingUser = userRepository.findUserByEmail(email);
 
-        if(existingUser != null) {
+        if (existingUser != null) {
             return true;
         }
 
         return false;
     }
 
-    public Boolean existingBSN(Long bsn){
+    public Boolean existingBSN(Long bsn) {
         User existingUser = userRepository.findUserByBsnNumber(bsn);
 
-        if(existingUser != null) {
+        if (existingUser != null) {
             return true;
         }
 
         return false;
     }
+
     public User createUserDTO(RegistrationDTO user) {
         User existingUser = userRepository.findUserByEmail(user.email());
         if (existingUser != null) {
@@ -80,14 +81,15 @@ public class UserService {
     }
 
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public List<User> getUsersByType(List<UserType> userType){
+    public List<User> getUsersByType(List<UserType> userType) {
         return userRepository.findByUserTypeIn(userType);
     }
-    public void changeGuestToUser(User guest){
+
+    public void changeGuestToUser(User guest) {
 
         if (guest.getUserType().contains(UserType.GUEST)) {
             List<UserType> newUserTypes = new ArrayList<>(guest.getUserType());
@@ -99,14 +101,14 @@ public class UserService {
 
     }
 
-    public User getUserById(long id){
+    public User getUserById(long id) throws EntityNotFoundException {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found."));
     }
 
-     public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
+    public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
         User user = getUserByEmail(loginRequest.email());
 
-        if (user == null){
+        if (user == null) {
             throw new AuthenticationException("No user found with this email");
         }
 
@@ -114,21 +116,21 @@ public class UserService {
             throw new AuthenticationException("password is incorrect");
         }
 
-         String usertype = user.getUserType().toString();
-         Long userId = user.getId();
-         return new LoginResponseDTO(userId, user.getFirstName(), user.getLastName(), usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
+        String usertype = user.getUserType().toString();
+        Long userId = user.getId();
+        return new LoginResponseDTO(userId, user.getFirstName(), user.getLastName(), usertype, jwtProvider.createToken(user.getEmail(), user.getUserType()));
     }
 
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
 
-    public void AddAccountToUser(User user, Account account){
-            user.addAccount(account);
-            userRepository.save(user);
+    public void AddAccountToUser(User user, Account account) {
+        user.addAccount(account);
+        userRepository.save(user);
     }
 
-    public UserDTO getUserDTO(User requestedUser){
+    public UserDTO getUserDTO(User requestedUser) {
         return new UserDTO(
                 requestedUser.getId(),
                 requestedUser.getFirstName(),
@@ -139,12 +141,12 @@ public class UserService {
                 accountService.getNewAccountInfo(requestedUser.getAccounts(), requestedUser.getId()));
     }
 
-    public List<UserOverviewDTO> getUsersOverview(String userType) throws EntityNotFoundException{
+    public List<UserOverviewDTO> getUsersOverview(String userType) throws EntityNotFoundException {
 
         UserType type;
         try {
             type = UserType.valueOf(userType);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new EntityNotFoundException("Incorrect Usertype submitted");
         }
 
