@@ -30,9 +30,9 @@ import { formatDate } from '@/services/helpers';
                     </thead>
                     <tbody>
                         <tr v-for="(transaction) in transactions">
-                            <td>{{ transaction.transactionType }}</td>
-                            <td>{{ transaction.senderAccountIban }}</td>
-                            <td>{{ transaction.receiverAccountIban }}</td>
+                            <td>{{ transaction.type }}</td>
+                            <td>{{ transaction.sender}}</td>
+                            <td>{{ transaction.receiver }}</td>
                             <td>{{ formatDate(transaction.dateTime) }}</td>
                             <td>{{ transaction.amount }}</td>
                         </tr>

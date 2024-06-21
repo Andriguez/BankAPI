@@ -117,17 +117,15 @@ public class TransactionController {
             @RequestParam final String condition,
             @RequestParam(required = false) final Long userId, // for admin to read a userId.
             @RequestParam(required = false) final Integer skip,
-            @RequestParam(required = false) final Integer limit) {
+            @RequestParam(required = false) final Integer limit) throws RuntimeException{
 
-        try {
+
             if (condition.equals("ID") && userId != null) {
                 return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId, skip, limit));
             } else {
                 return ResponseEntity.ok().body(transactionService.filterTransactions(condition, skip, limit));
             }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
     }
 
 }
