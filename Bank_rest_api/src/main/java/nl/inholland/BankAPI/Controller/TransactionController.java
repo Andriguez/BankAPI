@@ -1,6 +1,5 @@
 package nl.inholland.BankAPI.Controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
@@ -20,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @RestController
 // RequestMapping determines with API calls are handled by this controller.
@@ -33,8 +29,7 @@ public class TransactionController {
     private AccountService accountService;
     private UserService userService;
 
-    public TransactionController(TransactionService transactionService, AccountService accountService,
-                                 UserService userService) {
+    public TransactionController(TransactionService transactionService, AccountService accountService, UserService userService) {
         this.transactionService = transactionService;
         this.accountService = accountService;
         this.userService = userService;
@@ -101,19 +96,18 @@ public class TransactionController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
-    public ResponseEntity<TransactionResponseDTO> CreateTransaction(@RequestBody TransactionRequestDTO transactionData) throws AuthorizationServiceException, IllegalArgumentException, Exception {
+    public ResponseEntity<TransactionResponseDTO> CreateTransaction(@RequestBody TransactionRequestDTO transactionData) throws AuthorizationServiceException, IllegalArgumentException, RuntimeException {
 
-            User loggedUser = userService.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        User loggedUser = userService.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
-            List<String> accounts = Stream.of(transactionData.sender(), transactionData.receiver()).filter(iban -> !iban.equals("NLXXINHOXXXXXXXXXX")).toList();
+        List<String> accounts = Stream.of(transactionData.sender(), transactionData.receiver()).filter(iban -> !iban.equals("NLXXINHOXXXXXXXXXX")).toList();
 
-            if (!accountService.hasAccess(loggedUser, accounts)) {
-                throw new AuthorizationServiceException("user is not allowed to make this transaction");
-            }
+        if (!accountService.hasAccess(loggedUser, accounts)) {
+            throw new AuthorizationServiceException("user is not allowed to make this transaction");
+        }
 
         return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
     }
-
 
 
     @GetMapping("/history")//route: /transactions

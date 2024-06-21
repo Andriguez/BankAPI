@@ -155,7 +155,6 @@ public class AccountService {
 
         // Check if the user has access to any of the provided accounts
         if (initiator.getUserType().contains(UserType.CUSTOMER)) {
-
             return accounts.stream().anyMatch(iban -> {
                 try {
                     Account account = getAccountByIban(iban);

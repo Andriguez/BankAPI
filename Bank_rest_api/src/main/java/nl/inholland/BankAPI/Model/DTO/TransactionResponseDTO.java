@@ -1,6 +1,5 @@
 package nl.inholland.BankAPI.Model.DTO;
 
-import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.Transaction;
 import nl.inholland.BankAPI.Model.TransactionType;
 import nl.inholland.BankAPI.Model.User;
