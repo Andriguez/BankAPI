@@ -27,17 +27,7 @@ public class AccountService {
             return null;
         }
     }
-
-    public void editDailyLimit(String accountIban, double newLimit) {
-        Account account = this.getAccountByIban(accountIban);
-        account.setDailyLimit(newLimit);
-    }
-
-    public void editAbsoluteLimit(String accountIban, double newLimit) {
-        Account account = this.getAccountByIban(accountIban);
-        account.setAbsoluteLimit(newLimit);
-    }
-
+    
     public List<Account> getAccountsByUserId(long userId) {
         List<Account> accounts = accountRepository.findByUserId(userId);
         return accounts;
@@ -47,7 +37,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public User updateAccounts(User user, Map<String, Object> requestData) {
+    public List<Account> updateAccounts(final User user,final Map<String, Object> requestData) {
 
         List<Account> accounts = user.getAccounts();
         Account currentAccount = null;
@@ -68,7 +58,7 @@ public class AccountService {
         // Save the updated accounts
         accountRepository.save(currentAccount);
         accountRepository.save(savingsAccount);
-        return user;
+        return accounts;
     }
 
     public String generateIBAN() {
@@ -86,7 +76,7 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
-    public List<Account> closeUserAccounts(User user) {
+    public List<Account> closeUserAccounts(final User user) {
         List<Account> accounts = user.getAccounts();
 
         for (Account account : accounts) {

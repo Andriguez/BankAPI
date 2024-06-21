@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +22,9 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -31,9 +34,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -242,7 +249,7 @@ public class TransactionControllerTest {
         CustomerTransactionsDTO customerTransactionsDTO = new CustomerTransactionsDTO(mockUser.getAccounts().get(0),
                 transactions);
         when(transactionService.getUserTransactions(mockUser, "CURRENT", null,
-                LocalDate.of(2022, 1, 1),LocalDate.of(2024,11,11), null, null,
+                LocalDate.of(2022, 1, 1), LocalDate.of(2024, 11, 11), null, null,
                 null, null, null, null)).thenReturn(customerTransactionsDTO);
 
         mockMvc.perform(get("/transactions?accountType=current&startDate=2022-01-01&endDate=2024-11-11")).andDo(print())
@@ -251,7 +258,6 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.account.type").value("CURRENT"))
                 .andExpect(jsonPath("$.transactions", hasSize(3)));
     }
-
 
 
     ///ANDY's Tests
@@ -396,6 +402,136 @@ public class TransactionControllerTest {
                 .andDo(print())
                 .andExpect(status().isForbidden())
                 .andExpect(content().string("User is not allowed to make this transaction"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetTransactionByUserId() throws Exception {
+        // Create a mock transaction
+        Transaction mockTransaction = new Transaction(
+                null,  // Mock senderAccount
+                null,  // Mock receiverAccount
+                100.0, // amount
+                LocalDateTime.now(),
+                null,  // Mock userInitiating
+                TransactionType.DEPOSIT // Mock transactionType
+        );
+        // Mock the service method to return the list with one transaction
+        Mockito.when(transactionService.getTransactionByUserId(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(mockTransaction));
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
+                        .param("condition", "ID")
+                        .param("userId", "1")
+                        .param("limit","1")
+                        .param("skip","1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetTransactionWithConditionAdmin() throws Exception {
+        // Create a mock transaction
+        Transaction mockTransaction = new Transaction(
+                null,  // Mock senderAccount
+                null,  // Mock receiverAccount
+                100.0, // amount
+                LocalDateTime.now(),
+                null,  // Mock userInitiating
+                TransactionType.DEPOSIT // Mock transactionType
+        );
+        // Mock the service method to return the list with one transaction
+        Mockito.when(transactionService.filterTransactions(eq("ADMIN"), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(mockTransaction));
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
+                        .param("condition", "ADMIN")
+                        .param("userId", "1")
+                        .param("limit","1")
+                        .param("skip","1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetTransactionWithConditionATM() throws Exception {
+        // Create a mock transaction
+        Transaction mockTransaction = new Transaction(
+                null,  // Mock senderAccount
+                null,  // Mock receiverAccount
+                100.0, // amount
+                LocalDateTime.now(),
+                null,  // Mock userInitiating
+                TransactionType.DEPOSIT // Mock transactionType
+        );
+        // Mock the service method to return the list with one transaction
+        Mockito.when(transactionService.filterTransactions(eq("ATM"), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(mockTransaction));
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
+                        .param("condition", "ATM")
+                        .param("userId", "1")
+                        .param("limit","1")
+                        .param("skip","1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetTransactionWithConditionAll() throws Exception {
+        // Create a mock transaction
+        Transaction mockTransaction = new Transaction(
+                null,  // Mock senderAccount
+                null,  // Mock receiverAccount
+                100.0, // amount
+                LocalDateTime.now(),
+                null,  // Mock userInitiating
+                TransactionType.DEPOSIT // Mock transactionType
+        );
+        // Mock the service method to return the list with one transaction
+        Mockito.when(transactionService.filterTransactions(eq("ALL"), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(mockTransaction));
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
+                        .param("condition", "ALL")
+                        .param("userId", "1")
+                        .param("limit","1")
+                        .param("skip","1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetTransactionWithConditionCustomer() throws Exception {
+        // Create a mock transaction
+        Transaction mockTransaction = new Transaction(
+                null,  // Mock senderAccount
+                null,  // Mock receiverAccount
+                100.0, // amount
+                LocalDateTime.now(),
+                null,  // Mock userInitiating
+                TransactionType.DEPOSIT // Mock transactionType
+        );
+        // Mock the service method to return the list with one transaction
+        Mockito.when(transactionService.filterTransactions(eq("CUSTOMER"), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(mockTransaction));
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
+                        .param("condition", "CUSTOMER")
+                        .param("userId", "1")
+                        .param("limit","1")
+                        .param("skip","1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 }
 

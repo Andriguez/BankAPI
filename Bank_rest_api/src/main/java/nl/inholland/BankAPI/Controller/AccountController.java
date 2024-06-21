@@ -55,10 +55,9 @@ public class AccountController {
     }
 
     @GetMapping(params = "userid")
-    public ResponseEntity<Object> getAccountsById(@RequestParam Long userid) {
+    public ResponseEntity<Object> getAccountsById(@RequestParam final Long userid) {
         try {
-            User neededUser = userService.getUserById(userid);
-            List<Account> neededAccounts = neededUser.getAccounts();
+            List<Account> neededAccounts = userService.getUserById(userid).getAccounts();
             return ResponseEntity.ok().body(neededAccounts);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -97,11 +96,10 @@ public class AccountController {
         return ResponseEntity.ok().body(new AccountsDTO(accounts));
     }
     @PutMapping(params = "userid")
-    public ResponseEntity<Object> updateAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
+    public ResponseEntity<Object> updateAccounts(@RequestParam final Long userid, @RequestBody final Map<String, Object> requestData) {
         try {
-
-            User user = accountService.updateAccounts(userService.getUserById(userid), requestData);
-            return ResponseEntity.ok().body(new AccountsDTO(user.getAccounts()));
+            List<Account> accounts = accountService.updateAccounts(userService.getUserById(userid), requestData);
+            return ResponseEntity.ok().body(new AccountsDTO(accounts));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } catch (Exception e) {
@@ -109,9 +107,8 @@ public class AccountController {
         }
     }
     @DeleteMapping(params = "userid")
-    public ResponseEntity<Object> closeAccounts(@RequestParam Long userid) {
+    public ResponseEntity<Object> closeAccounts(@RequestParam final Long userid) {
         try {
-
             List<Account> accounts = accountService.closeUserAccounts(userService.getUserById(userid));
             return ResponseEntity.ok().body(new AccountsDTO(accounts));
         } catch (IllegalArgumentException e) {

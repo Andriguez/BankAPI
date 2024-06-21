@@ -1,29 +1,35 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.User;
-import nl.inholland.BankAPI.Model.UserType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -107,4 +113,39 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.accounts.CURRENT.type").value("CURRENT"))
                 .andExpect(jsonPath("$.accounts.SAVINGS.type").value("SAVINGS"));
     }
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    public void testGetAccountsById_InternalServerError() throws Exception {
+        Long userId = 1L; // Assuming userId that causes an internal server error
+        Mockito.when(userService.getUserById(userId)).thenThrow(new RuntimeException("Internal server error"));
+
+        mockMvc.perform(get("/accounts")
+                        .param("userid", userId.toString()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("An error occurred while retrieving accounts"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testGetUserAccountsById() throws Exception {
+        // Create a mock user with an account
+        User mockUser = new User();
+        Account mockCurrent = new Account("NL12INHO3456789012", 1000.0, 5000.0, 1000.0, AccountType.CURRENT);
+        Account mockSavings = new Account("NL12INHO3456789011", 1000.0, 5000.0, 1000.0, AccountType.SAVINGS);
+        mockCurrent.setUser(mockUser);
+        mockSavings.setUser(mockUser);
+        mockUser.setAccounts(List.of(mockCurrent,mockSavings));
+
+        // Mock the userService.getUserById method to return the mock user
+        Mockito.when(userService.getUserById(Mockito.anyLong())).thenReturn(mockUser);
+
+        // Perform the GET request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+                        .param("userid", "2"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
+                .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
+    }
 }
+
