@@ -103,7 +103,7 @@ public class TransactionController {
         List<String> accounts = Stream.of(transactionData.sender(), transactionData.receiver()).filter(iban -> !iban.equals("NLXXINHOXXXXXXXXXX")).toList();
 
         if (!accountService.hasAccess(loggedUser, accounts)) {
-            throw new AuthorizationServiceException("user is not allowed to make this transaction");
+            throw new AuthorizationServiceException("User is not allowed to make this transaction");
         }
 
         return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));

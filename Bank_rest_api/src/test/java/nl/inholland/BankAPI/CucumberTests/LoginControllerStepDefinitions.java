@@ -84,6 +84,6 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
     public void iReceiveValidLoginResponse() {
         assertNotNull(loginResponse);
         assertNotNull(loginResponse.token());
-        assertNotNull(loginResponse.name());
+        assertNotNull(loginResponse.firstName());
     }
 }

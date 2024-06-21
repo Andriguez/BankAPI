@@ -87,7 +87,7 @@ public class UserControllerTest {
 
         List<UserOverviewDTO> usersOverview = Arrays.asList(userOverview1, userOverview2);
 
-        when(userService.getUsersOverview("CUSTOMER")).thenReturn(usersOverview);
+        when(userService.getUsersOverview("GUEST")).thenReturn(usersOverview);
 
         mockMvc.perform(get("/users").param("type", "guest"))
                 .andDo(print())
@@ -132,7 +132,7 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/users").param("id", "2"))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(content().string("user has no access to this data!"));
     }
 
