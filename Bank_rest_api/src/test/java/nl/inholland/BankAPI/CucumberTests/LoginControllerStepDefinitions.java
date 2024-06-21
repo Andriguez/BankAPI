@@ -7,11 +7,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
-import nl.inholland.BankAPI.Model.DTO.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -24,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
 
@@ -37,7 +34,6 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
     private int port;
 
     private LoginResponseDTO loginResponse;
-    private ResponseEntity<UserDTO> registerResponse;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -59,18 +55,19 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
 
     // Sara's Code
     @When("I send login request")
-    public void iSendLoginRequest() {
+    public void iSendLoginRequest() throws Exception{
         // Send login request
         String url = "http://localhost:" + port + "/login";
         logger.info("Request URL: 2 " + url);
 
         loginResponseEntity = restTemplate.postForEntity(url, loginDTO, LoginResponseDTO.class);
 
-        // Store login response
+        //Store login response
         loginResponse = loginResponseEntity.getBody();
 
-        // Set JWT token in headers for future requests
+        //Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.getToken());
+
     }
 
     // Sara's Code

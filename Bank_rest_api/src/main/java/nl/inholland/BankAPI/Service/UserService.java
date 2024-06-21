@@ -62,11 +62,12 @@ public class UserService {
         return false;
     }
 
-    public User createUserDTO(RegistrationDTO user) {
-        User existingUser = userRepository.findUserByEmail(user.email());
-        if (existingUser != null) {
-            throw new IllegalArgumentException("Email is already taken");
+    public UserOverviewDTO createUserDTO(RegistrationDTO user) {
+        if (userRepository.existsByEmail(user.email())) {
+           throw new IllegalArgumentException("Email is already registered with another user");
         }
+
+
         User userToAdd = new User();
         userToAdd.setFirstName(user.firstName());
         userToAdd.setLastName(user.lastName());
@@ -76,7 +77,7 @@ public class UserService {
         userToAdd.setUserType(List.of(UserType.GUEST));
         userToAdd.setPassword(bCryptPasswordEncoder.encode(user.password()));
 
-        return userRepository.save(userToAdd);
+        return new UserOverviewDTO(userRepository.save(userToAdd));
 
     }
 
