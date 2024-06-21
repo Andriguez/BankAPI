@@ -69,10 +69,9 @@ public class AccountController {
 
     @PostMapping(params="userid")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<AccountsDTO> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) throws EntityNotFoundException, IllegalArgumentException {
+    public ResponseEntity<AccountsDTO> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) throws EntityNotFoundException, IllegalArgumentException, RuntimeException {
 
         User user;
-
         user = userService.getUserById(userid);
         if (user == null) {
             throw new EntityNotFoundException("Incorrect user Id");
@@ -80,6 +79,10 @@ public class AccountController {
 
         if (requestData.isEmpty()) {
             throw new IllegalArgumentException("No input has been received");
+        }
+
+        if(!user.getAccounts().isEmpty()){
+            throw new RuntimeException("User already has accounts open");
         }
 
         List<Account> accounts = accountService.createAccounts(
@@ -92,7 +95,6 @@ public class AccountController {
         userService.changeGuestToUser(user);
 
         return ResponseEntity.ok().body(new AccountsDTO(accounts));
-
     }
     @PutMapping(params = "userid")
     public ResponseEntity<Object> updateAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
