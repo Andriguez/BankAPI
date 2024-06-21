@@ -135,10 +135,10 @@ public class TransactionController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> filterTransactions(
             // optional filters to filter transactions
-            @RequestParam String condition,
-            @RequestParam(required = false) Long userId, // for admin to read a userId.
-            @RequestParam(required = false) Integer skip,
-            @RequestParam(required = false) Integer limit) {
+            @RequestParam final String condition,
+            @RequestParam(required = false) final Long userId, // for admin to read a userId.
+            @RequestParam(required = false) final Integer skip,
+            @RequestParam(required = false) final Integer limit) {
 
         try{
             if(condition.equals("ID") && userId!=null){
@@ -150,5 +150,4 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
             }
         }
-
-}
+    }

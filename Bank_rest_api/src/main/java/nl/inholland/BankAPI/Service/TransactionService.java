@@ -180,7 +180,7 @@ public class TransactionService {
         return false;
     }
 
-    public List<Transaction> getTransactionByUserId(long id, Integer skip, Integer limit){
+    public List<Transaction> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
 
             List<Transaction> filteredTransactions = new ArrayList<>();
             User neededUser = userService.getUserById(id);
@@ -194,8 +194,6 @@ public class TransactionService {
                 .limit(limit != null ? limit : Integer.MAX_VALUE)
                 .collect(Collectors.toList());
     }
-
-
     public List<Transaction> getAdminInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
         for (Transaction t : getAllTransactions()) {
@@ -203,12 +201,7 @@ public class TransactionService {
                 filteredTransactions.add(t);
             }
         }
-        if(filteredTransactions.size()==0)
-        {
-            System.out.println("NUHUH");
-        }
             return filteredTransactions;
-
     }
 
     public List<Transaction> getUserInitiatedTransactions() {
@@ -222,22 +215,16 @@ public class TransactionService {
     }
 
     public List<Transaction> getATMInitiatedTransactions() {
-        List<Transaction> filteredTransactions = new ArrayList<>();
-
-        for (Transaction t : transactionRepository.findAll()) {
-            if ((t.getSenderAccount() != null && t.getReceiverAccount() == null) ||
-                    (t.getReceiverAccount() != null && t.getSenderAccount() == null)) {
-                filteredTransactions.add(t);
-            }
-        }
-        return filteredTransactions;
+            return transactionRepository.findAll().stream()
+                    .filter(t -> (t.getSenderAccount() != null && t.getReceiverAccount() == null) ||
+                            (t.getReceiverAccount() != null && t.getSenderAccount() == null))
+                    .collect(Collectors.toList());
     }
-
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
 
-    public List<Transaction> filterTransactions(String condition,Integer skip, Integer limit){
+    public List<Transaction> filterTransactions(final String condition,final Integer skip,final Integer limit){
         List<Transaction> filteredTransactions = new ArrayList<>();
         switch (condition){
             //case ALL = all transactions

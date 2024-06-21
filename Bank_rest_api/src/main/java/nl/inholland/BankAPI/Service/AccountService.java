@@ -39,7 +39,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    public User updateAccounts(User user, Map<String, Object> requestData) {
+    public List<Account> updateAccounts(final User user,final Map<String, Object> requestData) {
 
         List<Account> accounts = user.getAccounts();
         Account currentAccount = null;
@@ -60,7 +60,7 @@ public class AccountService {
         // Save the updated accounts
         accountRepository.save(currentAccount);
         accountRepository.save(savingsAccount);
-        return user;
+        return accounts;
     }
     public String generateIBAN() {
         String countryCode = "NL";
@@ -77,7 +77,7 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
-    public List<Account> closeUserAccounts(User user) {
+    public List<Account> closeUserAccounts(final User user) {
         List<Account> accounts = user.getAccounts();
 
         for (Account account : accounts) {

@@ -4110,3 +4110,7 @@ VALUES (1059, 100.0, '2024-06-10 21:29:36.217252', 2, 152, 252, 152) [42001-224]
 2024-06-17 12:52:58.520121+02:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]TRANSACTION"; expected "TRUNCATE"; SQL statement:
 TRANSACTION [42001-224]
+2024-06-19 15:07:43.492314+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM ACCOUNTS \000d\000a[*]SELECT * FROM TRANSACTION"; SQL statement:
+SELECT * FROM ACCOUNTS 
+SELECT * FROM TRANSACTION [42000-224]

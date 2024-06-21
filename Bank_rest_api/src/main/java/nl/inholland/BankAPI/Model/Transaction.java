@@ -46,7 +46,9 @@ public class Transaction {
     public User getUserInitiating() {
         return userInitiating;
     }
-
+    public long getId(){
+        return id;
+    }
     public Transaction(Account senderAccount, Account receiverAccount, double amount, LocalDateTime dateTime, User userInitiating, TransactionType type ){
         this.senderAccount = senderAccount;
         this.receiverAccount = receiverAccount;
