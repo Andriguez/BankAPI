@@ -62,41 +62,34 @@ public class TransactionService {
 
     public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
 
-        try {
-            Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
-            Account sender = accounts.get("sender");
-            Account receiver = accounts.get("receiver");
+        Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
+        Account sender = accounts.get("sender");
+        Account receiver = accounts.get("receiver");
 
-            TransactionType type = TransactionType.valueOf(transactionData.type());
+        TransactionType type = TransactionType.valueOf(transactionData.type());
 
-            if (checkLimits(sender, transactionData.amount())) {
-                System.out.println("limits are okay");
+        boolean checkLimits = sender != null ? checkLimits(sender, transactionData.amount()) : true;
 
-                Boolean updatedSenderBalance = setAccountBalance(type, "sender", sender, transactionData.amount());
-                Boolean updatedReceiverBalance = setAccountBalance(type, "receiver", receiver, transactionData.amount());
+        if (checkLimits) {
 
-                if (updatedSenderBalance & updatedReceiverBalance) {
-                    Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
-                    transactionRepository.save(transaction);
-                    System.out.println("balances are updated");
+            boolean updatedSenderBalance = sender != null ? setAccountBalance(type, "sender", sender, transactionData.amount()) : true;
+            boolean updatedReceiverBalance = receiver != null ? setAccountBalance(type, "receiver", receiver, transactionData.amount()) : true;
 
-                    return new TransactionResponseDTO(transaction);
-                }
+            if (updatedSenderBalance & updatedReceiverBalance) {
+                Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
+                transactionRepository.save(transaction);
+
+                return new TransactionResponseDTO(transaction);
             }
-
-            throw new Exception("Transaction limits are being violated");
-
-        } catch (Exception e) {
-            throw e;
         }
+
+        throw new Exception("Transaction limits are being violated");
     }
 
     public Boolean setAccountBalance(TransactionType transactionType, String transactionRole, Account account, double amount){
-        if (account == null) {
-            return true;
-        }
 
         double balance = account.getBalance();
+
         if ("receiver".equals(transactionRole) || TransactionType.DEPOSIT.equals(transactionType)) {
             balance += amount;
         } else if ("sender".equals(transactionRole) || TransactionType.WITHDRAWAL.equals(transactionType)) {
@@ -105,7 +98,6 @@ public class TransactionService {
 
         if (balance != account.getBalance()) {
             accountService.updateBalance(account, balance);
-            System.out.println(account.getBalance());
             return true;
         }
 
@@ -115,22 +107,15 @@ public class TransactionService {
 
     public Boolean checkLimits(Account account, double amount){
 
-        if(account == null){
-            return true;
-        }
-
         //double dailyLimit = account.getDailyLimit();
         double totalTransactions = account.getSentTransactions().stream().filter(transaction -> transaction.getDateTime().toLocalDate().equals(LocalDate.now())).mapToDouble(Transaction::getAmount).sum();
-        System.out.println("total transactions: "+totalTransactions + " limit: "+account.getDailyLimit());
 
         if (totalTransactions + amount > account.getDailyLimit()) {
-            System.out.println("Daily limit exceeded.");
             return false; // Exceeds daily limit
         }
 
         double remainingBalance = account.getBalance() - amount;
         if (remainingBalance < account.getAbsoluteLimit()) {
-            System.out.println("Absolute limit exceeded: " + account.getAbsoluteLimit() + " amount remaining: " + remainingBalance);
             return false; // Violates absolute limit
         }
 
@@ -145,11 +130,11 @@ public class TransactionService {
         Account receiver;
 
         if(isATM(requestSender)){
-            sender = new ATMAccount();
+            sender = null;
             receiver = accountService.getAccountByIban(requestReceiver);
         } else if (isATM(requestReceiver)){
-            sender = accountService.getAccountByIban(requestReceiver);
-            receiver = new ATMAccount();
+            sender = accountService.getAccountByIban(requestSender);
+            receiver = null;
         } else {
             sender = accountService.getAccountByIban(requestSender);
             receiver = accountService.getAccountByIban(requestReceiver);
@@ -159,11 +144,10 @@ public class TransactionService {
         accounts.put("receiver", receiver);
 
         return accounts;
-
     }
 
     private Boolean isATM(String input){
-        if (input == "NLXXINHOXXXXXXXXXX" || input == null){
+        if (input.equals("NLXXINHOXXXXXXXXXX")){
             return true;
         }
 

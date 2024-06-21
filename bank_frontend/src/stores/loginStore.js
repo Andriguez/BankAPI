@@ -30,7 +30,7 @@ export const useLoginStore = defineStore('login', {
           this.usertype = res.data.usertype;
           this.userId = res.data.userId;
           localStorage.setItem('jwtToken', this.token);
-          localStorage.setItem('name', JSON.stringify(res.data.name));
+          localStorage.setItem('name', JSON.stringify(this.name));
           localStorage.setItem('usertype', JSON.stringify(res.data.usertype));
           localStorage.setItem('userid', JSON.stringify(res.data.userId))
 
