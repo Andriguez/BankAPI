@@ -1,14 +1,14 @@
 package nl.inholland.BankAPI.CucumberTests;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.DTO.*;
+import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
+import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

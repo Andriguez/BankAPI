@@ -1,7 +1,6 @@
 package nl.inholland.BankAPI.Controller;
 
 import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
-import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,21 +21,13 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> registerUser(@RequestBody RegistrationDTO user) {
-        try{
-            User newUser;
+    public ResponseEntity<Object> registerUser(@RequestBody RegistrationDTO user) throws IllegalArgumentException{
 
             if(authenticateInput(user)){
-                newUser = userService.createUserDTO(user);
-                return ResponseEntity.ok().body(newUser);
+                return ResponseEntity.ok().body(userService.createUserDTO(user));
             } else {
                 throw new IllegalArgumentException("User information was not saved, please try again");
             }
-
-        } catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-
     }
 
     private Boolean authenticateInput(RegistrationDTO user){

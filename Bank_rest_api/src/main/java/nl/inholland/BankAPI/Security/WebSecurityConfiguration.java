@@ -28,7 +28,7 @@ public class WebSecurityConfiguration {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(config -> {
             CorsConfiguration corsConfig = new CorsConfiguration();
-            corsConfig.addAllowedOrigin("*"); // Allow requests from any origin, you might want to restrict this in a production environment
+            corsConfig.addAllowedOrigin("*"); // Allow requests from any origin
             corsConfig.addAllowedHeader("*"); // Allow all headers
             corsConfig.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
 

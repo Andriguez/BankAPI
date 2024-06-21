@@ -1,8 +1,8 @@
 package nl.inholland.BankAPI.Controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.Account;
 import nl.inholland.BankAPI.Model.AccountType;
-import nl.inholland.BankAPI.Model.DTO.AccountDTO;
 import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
 import nl.inholland.BankAPI.Model.User;
@@ -15,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,10 +46,10 @@ public class AccountController {
                     AccountsDTO accountsDTO = new AccountsDTO(loggedUser.getAccounts());
                     return ResponseEntity.ok().body(accountsDTO);
                 } else {
-                    throw new IllegalArgumentException("User is not allowed to access this data!");
+                    throw new Exception("User is not allowed to access this data!");
                 }
-            } throw new IllegalArgumentException ("this user has no accounts");
-        } catch(IllegalArgumentException e){
+            } throw new Exception ("this user has no accounts");
+        } catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -69,45 +68,32 @@ public class AccountController {
 
     @PostMapping(params="userid")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Object> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) {
+    public ResponseEntity<AccountsDTO> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) throws EntityNotFoundException, IllegalArgumentException, RuntimeException {
 
         User user;
-
-        try {
-
-            user = userService.getUserById(userid);
-            if(user == null){
-                throw new IllegalArgumentException("Incorrect user Id");
-            }
-
-            if(requestData.isEmpty()){
-                throw new IllegalArgumentException("No input has been received");
-            }
-
-            List<NewAccountDTO> accountsData = List.of(
-                    new NewAccountDTO(
-                        user.getId(),
-                        (Number) requestData.get("absolute1"),
-                        (Number) requestData.get("daily1"),
-                        AccountType.valueOf((String)requestData.get("type1"))),
-                    new NewAccountDTO(
-                        user.getId(),
-                        (Number) requestData.get("absolute2"),
-                        (Number) requestData.get("daily2"),
-                        AccountType.valueOf((String)requestData.get("type2"))
-            ));
-
-            List<Account> accounts = accountService.createAccounts(accountsData);
-            accounts.forEach(account -> userService.AddAccountToUser(user, account));
-
-            userService.changeGuestToUser(user);
-
-            return ResponseEntity.ok().body(new AccountsDTO(accounts));
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        user = userService.getUserById(userid);
+        if (user == null) {
+            throw new EntityNotFoundException("Incorrect user Id");
         }
 
+        if (requestData.isEmpty()) {
+            throw new IllegalArgumentException("No input has been received");
+        }
+
+        if(!user.getAccounts().isEmpty()){
+            throw new RuntimeException("User already has accounts open");
+        }
+
+        List<Account> accounts = accountService.createAccounts(
+                List.of(
+                        new NewAccountDTO(user.getId(), (Number) requestData.get("absolute1"), (Number) requestData.get("daily1"), AccountType.valueOf((String) requestData.get("type1"))),
+                        new NewAccountDTO(user.getId(), (Number) requestData.get("absolute2"), (Number) requestData.get("daily2"), AccountType.valueOf((String) requestData.get("type2")))
+                ));
+
+        accounts.forEach(account -> userService.AddAccountToUser(user, account));
+        userService.changeGuestToUser(user);
+
+        return ResponseEntity.ok().body(new AccountsDTO(accounts));
     }
     @PutMapping(params = "userid")
     public ResponseEntity<Object> updateAccounts(@RequestParam final Long userid, @RequestBody final Map<String, Object> requestData) {

@@ -1,6 +1,7 @@
 package nl.inholland.BankAPI.Controller;
 
 import nl.inholland.BankAPI.Model.DTO.RegistrationDTO;
+import nl.inholland.BankAPI.Model.DTO.UserOverviewDTO;
 import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.UserService;
@@ -21,8 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,6 +64,7 @@ public class RegisterControllerTest {
 
         // Setup mock user
         User mockUser = new User();
+        mockUser.setId(2);
         mockUser.setFirstName("John");
         mockUser.setLastName("Doe");
         mockUser.setEmail("john.doe@example.com");
@@ -72,8 +72,10 @@ public class RegisterControllerTest {
         mockUser.setBsnNumber(987654321L);
         mockUser.setPassword("password");
 
+        UserOverviewDTO userOverviewDTO = new UserOverviewDTO(mockUser);
+
         // Mock the service call
-        when(userService.createUserDTO(any(RegistrationDTO.class))).thenReturn(mockUser);
+        when(userService.createUserDTO(any(RegistrationDTO.class))).thenReturn(userOverviewDTO);
 
         // Perform the POST request
         mockMvc.perform(MockMvcRequestBuilders.post("/register")
@@ -81,7 +83,7 @@ public class RegisterControllerTest {
                         .content("{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john.doe@example.com\",\"phoneNumber\":123456789,\"bsnNumber\":987654321,\"password\":\"password\"}"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john.doe@example.com\",\"phoneNumber\":123456789,\"bsnNumber\":987654321}"));
+                .andExpect(content().json("{\"Id\":2,\"firstName\":\"John\",\"lastName\":\"Doe\"}"));
     }
 
     @Test

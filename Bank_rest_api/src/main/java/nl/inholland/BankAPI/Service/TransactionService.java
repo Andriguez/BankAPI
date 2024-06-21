@@ -1,11 +1,11 @@
 package nl.inholland.BankAPI.Service;
 
+import jakarta.transaction.Transactional;
 import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,15 +33,6 @@ public class TransactionService {
     // Sara's Code
     // getTransactions get all transactions that satisfy the given filters. Some of the inputs might be null in that
     // case they are ignored.
-    public List<Transaction> getTransactionsByAccount(
-            Account account, TransactionType transactionType,
-            LocalDate startDate, LocalDate endDate,
-            Float minAmount, Float maxAmount, Float exactAmount,
-            String iban) {
-
-        return getTransactionsByAccount(account, transactionType,
-                startDate, endDate, minAmount, maxAmount, exactAmount, iban, null, null);
-    }
     // Sara's Code
     public List<Transaction> getTransactionsByAccount(
             Account account, TransactionType transactionType,
@@ -70,43 +61,39 @@ public class TransactionService {
         return filteredTransactions;
     }
 
-    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws Exception {
+    @Transactional
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws RuntimeException {
 
-        try {
-            Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
-            Account sender = accounts.get("sender");
-            Account receiver = accounts.get("receiver");
+        Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
+        Account sender = accounts.get("sender");
+        Account receiver = accounts.get("receiver");
 
-            TransactionType type = TransactionType.valueOf(transactionData.type());
+        TransactionType type = TransactionType.valueOf(transactionData.type());
 
-            if (checkLimits(sender, transactionData.amount())) {
-                System.out.println("limits are okay");
+        //checks if sender is the ATM, otherwise checks for account limits
+        boolean checkLimits = sender != null ? checkLimits(sender, transactionData.amount()) : true;
 
-                Boolean updatedSenderBalance = setAccountBalance(type, "sender", sender, transactionData.amount());
-                Boolean updatedReceiverBalance = setAccountBalance(type, "receiver", receiver, transactionData.amount());
-
-                if (updatedSenderBalance && updatedReceiverBalance) {
-                    Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
-                    transactionRepository.save(transaction);
-                    System.out.println("balances are updated");
-
-                    return new TransactionResponseDTO(transaction);
-                }
-            }
-
-            throw new Exception("Transaction limits are being violated");
-
-        } catch (Exception e) {
-            throw e;
+        if (!checkLimits) {
+            throw new RuntimeException("Transaction limits are being violated");
         }
+
+        boolean updatedSenderBalance = sender == null || setAccountBalance(type, "sender", sender, transactionData.amount());
+        boolean updatedReceiverBalance = receiver == null || setAccountBalance(type, "receiver", receiver, transactionData.amount());
+
+        if (!(updatedSenderBalance & updatedReceiverBalance)) {
+            throw new RuntimeException("The account balance couldn't be updated");
+        }
+
+        Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);
+        transactionRepository.save(transaction);
+
+        return new TransactionResponseDTO(transaction);
     }
 
-    public Boolean setAccountBalance(TransactionType transactionType, String transactionRole, Account account, double amount){
-        if (account == null) {
-            return true;
-        }
+    public boolean setAccountBalance(TransactionType transactionType, String transactionRole, Account account, double amount) {
 
         double balance = account.getBalance();
+
         if ("receiver".equals(transactionRole) || TransactionType.DEPOSIT.equals(transactionType)) {
             balance += amount;
         } else if ("sender".equals(transactionRole) || TransactionType.WITHDRAWAL.equals(transactionType)) {
@@ -115,7 +102,6 @@ public class TransactionService {
 
         if (balance != account.getBalance()) {
             accountService.updateBalance(account, balance);
-            System.out.println(account.getBalance());
             return true;
         }
 
@@ -123,24 +109,17 @@ public class TransactionService {
 
     }
 
-    public Boolean checkLimits(Account account, double amount){
-
-        if(account == null){
-            return true;
-        }
+    public Boolean checkLimits(Account account, double amount) {
 
         //double dailyLimit = account.getDailyLimit();
         double totalTransactions = account.getSentTransactions().stream().filter(transaction -> transaction.getDateTime().toLocalDate().equals(LocalDate.now())).mapToDouble(Transaction::getAmount).sum();
-        System.out.println("total transactions: "+totalTransactions + " limit: "+account.getDailyLimit());
 
         if (totalTransactions + amount > account.getDailyLimit()) {
-            System.out.println("Daily limit exceeded.");
             return false; // Exceeds daily limit
         }
 
         double remainingBalance = account.getBalance() - amount;
         if (remainingBalance < account.getAbsoluteLimit()) {
-            System.out.println("Absolute limit exceeded: " + account.getAbsoluteLimit() + " amount remaining: " + remainingBalance);
             return false; // Violates absolute limit
         }
 
@@ -148,18 +127,18 @@ public class TransactionService {
 
     }
 
-    private Map<String, Account> getTransactionAccounts(String requestSender, String requestReceiver){
+    private Map<String, Account> getTransactionAccounts(String requestSender, String requestReceiver) {
         Map<String, Account> accounts = new HashMap<>();
 
         Account sender;
         Account receiver;
 
-        if(isATM(requestSender)){
-            sender = new ATMAccount();
+        if (isATM(requestSender)) {
+            sender = null;
             receiver = accountService.getAccountByIban(requestReceiver);
-        } else if (isATM(requestReceiver)){
-            sender = accountService.getAccountByIban(requestReceiver);
-            receiver = new ATMAccount();
+        } else if (isATM(requestReceiver)) {
+            sender = accountService.getAccountByIban(requestSender);
+            receiver = null;
         } else {
             sender = accountService.getAccountByIban(requestSender);
             receiver = accountService.getAccountByIban(requestReceiver);
@@ -169,26 +148,25 @@ public class TransactionService {
         accounts.put("receiver", receiver);
 
         return accounts;
-
     }
 
-    private Boolean isATM(String input){
-        if (input == "NLXXINHOXXXXXXXXXX" || input == null){
+    private boolean isATM(String input) {
+        if (input.equals("NLXXINHOXXXXXXXXXX")) {
             return true;
         }
 
         return false;
     }
 
-    public List<Transaction> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
 
-            List<Transaction> filteredTransactions = new ArrayList<>();
-            User neededUser = userService.getUserById(id);
-            for (Transaction t:transactionRepository.findAll()) {
-                if(t.getUserInitiating() == neededUser){
-                    filteredTransactions.add(t);
-                }
+    public List<Transaction> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
+        List<Transaction> filteredTransactions = new ArrayList<>();
+        User neededUser = userService.getUserById(id);
+        for (Transaction t : transactionRepository.findAll()) {
+            if (t.getUserInitiating() == neededUser) {
+                filteredTransactions.add(t);
             }
+        }
         return filteredTransactions.stream()
                 .skip(skip != null ? skip : 0)
                 .limit(limit != null ? limit : Integer.MAX_VALUE)
@@ -202,6 +180,7 @@ public class TransactionService {
             }
         }
             return filteredTransactions;
+
     }
 
     public List<Transaction> getUserInitiatedTransactions() {
@@ -224,18 +203,28 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
+
     public List<Transaction> filterTransactions(final String condition,final Integer skip,final Integer limit){
         List<Transaction> filteredTransactions = new ArrayList<>();
-        switch (condition){
+        switch (condition) {
             //case ALL = all transactions
-            case "ALL": filteredTransactions = getAllTransactions();break;
+            case "ALL":
+                filteredTransactions = getAllTransactions();
+                break;
             //case ATM = ATM transactions
-            case "ATM": filteredTransactions = getATMInitiatedTransactions();break;
+            case "ATM":
+                filteredTransactions = getATMInitiatedTransactions();
+                break;
             //case ADMIN= get admin initiated transactions();
-            case "ADMIN": filteredTransactions = getAdminInitiatedTransactions();break;
+            case "ADMIN":
+                filteredTransactions = getAdminInitiatedTransactions();
+                break;
             //case CUSTOMER = user initiated transactions
-            case "CUSTOMER": filteredTransactions = getUserInitiatedTransactions();break;
-            default: throw new IllegalArgumentException("Invalid condition: " + condition);
+            case "CUSTOMER":
+                filteredTransactions = getUserInitiatedTransactions();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid condition: " + condition);
         }
         return filteredTransactions.stream()
                 .skip(skip != null ? skip : 0)
