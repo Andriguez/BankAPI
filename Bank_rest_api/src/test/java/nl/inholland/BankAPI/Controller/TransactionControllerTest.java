@@ -418,7 +418,7 @@ public class TransactionControllerTest {
         );
         // Mock the service method to return the list with one transaction
         Mockito.when(transactionService.getTransactionByUserId(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(List.of(mockTransaction));
+                .thenReturn(List.of(new TransactionResponseDTO(mockTransaction)));
 
         // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
@@ -444,7 +444,7 @@ public class TransactionControllerTest {
         );
         // Mock the service method to return the list with one transaction
         Mockito.when(transactionService.filterTransactions(eq("ADMIN"), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(List.of(mockTransaction));
+                .thenReturn(List.of(new TransactionResponseDTO(mockTransaction)));
 
         // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
@@ -470,7 +470,7 @@ public class TransactionControllerTest {
         );
         // Mock the service method to return the list with one transaction
         Mockito.when(transactionService.filterTransactions(eq("ATM"), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(List.of(mockTransaction));
+                .thenReturn(List.of(new TransactionResponseDTO(mockTransaction)));
 
         // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
@@ -496,7 +496,7 @@ public class TransactionControllerTest {
         );
         // Mock the service method to return the list with one transaction
         Mockito.when(transactionService.filterTransactions(eq("ALL"), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(List.of(mockTransaction));
+                .thenReturn(List.of(new TransactionResponseDTO(mockTransaction)));
 
         // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")
@@ -522,7 +522,7 @@ public class TransactionControllerTest {
         );
         // Mock the service method to return the list with one transaction
         Mockito.when(transactionService.filterTransactions(eq("CUSTOMER"), Mockito.anyInt(), Mockito.anyInt()))
-                .thenReturn(List.of(mockTransaction));
+                .thenReturn(List.of(new TransactionResponseDTO(mockTransaction)));
 
         // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/transactions/history")

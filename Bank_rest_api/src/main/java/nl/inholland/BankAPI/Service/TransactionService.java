@@ -159,12 +159,12 @@ public class TransactionService {
     }
 
 
-    public List<Transaction> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
-        List<Transaction> filteredTransactions = new ArrayList<>();
+    public List<TransactionResponseDTO> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
+        List<TransactionResponseDTO> filteredTransactions = new ArrayList<>();
         User neededUser = userService.getUserById(id);
         for (Transaction t : transactionRepository.findAll()) {
             if (t.getUserInitiating() == neededUser) {
-                filteredTransactions.add(t);
+                filteredTransactions.add(new TransactionResponseDTO(t));
             }
         }
         return filteredTransactions.stream()
@@ -204,7 +204,7 @@ public class TransactionService {
     }
 
 
-    public List<Transaction> filterTransactions(final String condition,final Integer skip,final Integer limit){
+    public List<TransactionResponseDTO> filterTransactions(final String condition,final Integer skip,final Integer limit){
         List<Transaction> filteredTransactions = new ArrayList<>();
         switch (condition) {
             //case ALL = all transactions
@@ -228,7 +228,7 @@ public class TransactionService {
         }
         return filteredTransactions.stream()
                 .skip(skip != null ? skip : 0)
-                .limit(limit != null ? limit : Integer.MAX_VALUE)
+                .limit(limit != null ? limit : Integer.MAX_VALUE).map(TransactionResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
