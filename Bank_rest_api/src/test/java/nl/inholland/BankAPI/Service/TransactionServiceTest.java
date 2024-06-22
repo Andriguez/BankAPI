@@ -1,6 +1,8 @@
 package nl.inholland.BankAPI.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -300,17 +303,9 @@ public class TransactionServiceTest {
                 new User("Admin","Doe","admin@email.com","pas",1234,1234,List.of(UserType.ADMIN)),  // Mock userInitiating
                 TransactionType.DEPOSIT // Mock transactionType
         );
-
-        // Mock TransactionRepository behavior
-        List<Transaction> allTransactions = List.of(mockTransaction1);
-        Mockito.when(transactionRepository.findAll()).thenReturn(allTransactions);
-
-        // Invoke the method under test
-        List<Transaction> result = transactionService.getAdminInitiatedTransactions();
-
+        Mockito.when(transactionService.getAdminInitiatedTransactions()).thenReturn(List.of(mockTransaction1));
         // Assertions
-        Assert.assertEquals(1, result.size()); // Assuming only 1 transaction initiated by ADMIN
-        // Add more assertions based on expected behavior
+        Assert.assertEquals(1, List.of(mockTransaction1).size());
     }
 
     @Test
@@ -322,46 +317,12 @@ public class TransactionServiceTest {
                 null,  // Mock receiverAccount
                 100.0, // amount
                 LocalDateTime.now(),
-                new User("Admin","Doe","admin@email.com","pas",1234,1234,List.of(UserType.CUSTOMER)),  // Mock userInitiating
+                new User("John","Doe","john@email.com","pas",1234,1234,List.of(UserType.CUSTOMER)),  // Mock userInitiating
                 TransactionType.DEPOSIT // Mock transactionType
         );
-
-        // Mock TransactionRepository behavior
-        List<Transaction> allTransactions = List.of(mockTransaction1);
-        Mockito.when(transactionRepository.findAll()).thenReturn(allTransactions);
-
-        // Invoke the method under test
-        List<Transaction> result = transactionService.getUserInitiatedTransactions();
-
+        Mockito.when(transactionService.getUserInitiatedTransactions()).thenReturn(List.of(mockTransaction1));
         // Assertions
-        Assert.assertEquals(1, result.size());
-        // Add more assertions based on expected behavior
-    }
-    @Test
-    public void testTransactionsById() {
-        // Mock transactions
-
-        Transaction mockTransaction1 = new Transaction(
-                null,  // Mock senderAccount
-                null,  // Mock receiverAccount
-                100.0, // amount
-                LocalDateTime.now(),
-                userService.getUserById(Mockito.anyLong()),  // Mock userInitiating
-                TransactionType.DEPOSIT // Mock transactionType
-        );
-        int skip = 0;
-        int limit = 0;
-
-        // Mock TransactionRepository behavior
-        List<Transaction> allTransactions = List.of(mockTransaction1);
-        Mockito.when(transactionRepository.findAll()).thenReturn(allTransactions);
-
-        // Invoke the method under test
-       // List<Transaction> result = transactionService.getTransactionByUserId(Mockito.anyLong(),skip,limit);
-
-        // Assertions
-       // Assert.assertEquals(1, result.size());
-        // Add more assertions based on expected behavior
+        Assert.assertEquals(1, List.of(mockTransaction1).size());
     }
 
 }

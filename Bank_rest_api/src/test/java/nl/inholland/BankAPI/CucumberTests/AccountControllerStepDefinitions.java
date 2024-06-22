@@ -131,4 +131,47 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         assertEquals(true, accountPresent);
     }
 
+
+    @Given("I am logged in as an Admin with email {string} and password {string}")
+    public void iLogInAsAdminWithEmailAndPassword(String email, String password){
+        loginDTO = new LoginRequestDTO(email,password);
+        String url = "http://localhost:" + port + "/login";
+        loginResponseEntity = restTemplate.postForEntity(url, loginDTO, LoginResponseDTO.class);
+        // Store login response
+        loginResponse = loginResponseEntity.getBody();
+        System.out.println("Try" + loginResponseEntity.getBody());
+        // Set JWT token in headers for future requests
+        httpHeaders.setBearerAuth(loginResponse.token());
+        System.out.println("Try" + loginResponse);
+    }
+
+    @When("I retrieve accounts for user ID {long}")
+    public void iRetrieveAccountsForUserId(Long userId) throws Exception {
+        String url = "http://localhost:" + port + "/accounts?userid=" + userId;
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        accountResponseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+    }
+    @When("I close accounts for user ID {long}")
+    public void iCloseAccountsForUserId(Long userId) {
+        // Simulate making an HTTP DELETE request to the controller endpoint
+        String url = "/accounts?userid=" + userId; // Adjust the URL as per your controller mapping
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        accountResponseEntity = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+    }
+    @Then("the response status should be {int}")
+    public void theResponseStatusShouldBe(int expectedStatus) {
+        HttpStatus expectedHttpStatus = HttpStatus.valueOf(expectedStatus);
+        assertEquals(expectedHttpStatus, accountResponseEntity.getStatusCode(), "Unexpected status code");
+    }
+    @Then("the response body should contain account details")
+    public void theResponseBodyShouldContainAccountDetails() {
+        assertNotNull(accountResponseEntity.getBody(), "Response body should not be null");
+    }
+
+    @Then("the response body should indicate {string}")
+    public void theResponseBodyShouldIndicate(String expectedMessage) {
+        assertNotNull(accountResponseEntity.getBody(), "Response body should not be null");
+        assertEquals(expectedMessage, accountResponseEntity.getBody(), "Unexpected response body content");
+    }
 }
+

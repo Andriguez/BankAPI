@@ -13,3 +13,21 @@ Scenario: Guest has no accounts
     And I receive accounts array of length 2
     And I receive account of type "SAVINGS"
     And I receive account of type "CURRENT"
+
+  Scenario: Successfully close user accounts
+        Given I am logged in as an Admin with email "admin@email.com" and password "password"
+        When I close accounts for user ID 123
+        Then the response status should be 200
+        And the response body should contain account details
+
+  Scenario: User not found
+        Given a user does not exist with ID 456
+        When I close accounts for user ID 456
+        Then the response status should be 404
+        And the response body should indicate "User not found"
+
+  Scenario: As an admin I get customer accounts with their ID
+    Given I am logged in as an Admin with email "admin@email.com" and password "password"
+    When I retrieve accounts for user ID 152
+    Then the response status should be 200
+    And the response body should contain account details

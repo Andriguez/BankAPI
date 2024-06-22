@@ -127,7 +127,7 @@ public class AccountControllerTest {
     }
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void testGetUserAccountsById() throws Exception {
+    public void testGetUserAccountsByUserId() throws Exception {
         // Create a mock user with an account
         User mockUser = new User();
         Account mockCurrent = new Account("NL12INHO3456789012", 1000.0, 5000.0, 1000.0, AccountType.CURRENT);
@@ -147,5 +147,7 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
                 .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
     }
+
+
 }
 
