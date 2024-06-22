@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("test")
 public class RegisterControllerStepDefinitions extends CucumberSpringConfiguration{
 
-    private static final Logger logger = LoggerFactory.getLogger(RegisterControllerStepDefinitions.class);
-
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -50,7 +48,6 @@ public class RegisterControllerStepDefinitions extends CucumberSpringConfigurati
     @When("I send registration request")
     public void i_send_registration_request() throws PendingException{
         String url = "http://localhost:" + port + "/register";
-        System.out.println(registrationDto.email());
         userResponseEntity = restTemplate.postForEntity(url, registrationDto, UserOverviewDTO.class);
 
         user = userResponseEntity.getBody();
