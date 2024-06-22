@@ -57,7 +57,7 @@ public class TransactionController {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedInUser = userService.getUserByEmail(email);
             // this method can be called by a user or by admin. If it is called by admin, userId should be present.
-            User userToFindTransactions;
+            User userCustomer;
             if (accountType == null) {
                 return ResponseEntity.badRequest().body("accountType should be present");
             }
@@ -66,16 +66,16 @@ public class TransactionController {
             if (!accountType.equals(AccountType.CURRENT.toString()) && !accountType.equals(AccountType.SAVINGS.toString())) {
                 return ResponseEntity.badRequest().body("accountType should be either CURRENT or SAVINGS");
             }
-            // if the caller is admin, check userId
+            // if the caller is admin, check userId of customer
             if (loggedInUser.getUserType().contains(UserType.ADMIN)) {
                 if(userId == null) {
-                    return ResponseEntity.badRequest().body("userId should be present for admin");
+                    return ResponseEntity.badRequest().body("userId of customer should be present for admin");
                 }
-                userToFindTransactions = userService.getUserById(userId);
+                userCustomer = userService.getUserById(userId);
             }
             // if the caller is customer
             else {
-                userToFindTransactions = loggedInUser;
+                userCustomer = loggedInUser;
             }
 
             // getUserTransactions method in transactionService gets transactions of the user based on the given
@@ -83,7 +83,7 @@ public class TransactionController {
             // I want to send info about account and its transactions to the frontend. So, I created a new class that has
             // account and a list of transactions called CustomerTransactionsDTO
             CustomerTransactionsDTO customerTransactionsDTO =
-              transactionService.getUserTransactions(userToFindTransactions, accountType, transactionType, startDate,
+              transactionService.getUserTransactions(userCustomer, accountType, transactionType, startDate,
                       endDate, minAmount, maxAmount, exactAmount, iban, skip, limit);
             return ResponseEntity.status(200).body(customerTransactionsDTO);
         } catch (Exception e){

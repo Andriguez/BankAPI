@@ -104,6 +104,8 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
     public void iReceiveCustomerTransactionResponseWithStatusCode(int statusCode) throws JsonProcessingException {
         assertEquals(HttpStatus.valueOf(statusCode), customerTransactionResponseEntity.getStatusCode());
         if (statusCode == 200) {
+            // if the response is successful, convert the response body (which is String) to proper format of
+            // CustomerTransactionsDTO)
             customerTransactionsResponse = objectMapper.readValue(customerTransactionResponseEntity.getBody(), CustomerTransactionsDTO.class);
         }
     }

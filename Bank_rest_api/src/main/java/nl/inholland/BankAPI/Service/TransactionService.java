@@ -40,8 +40,8 @@ public class TransactionService {
             Float minAmount, Float maxAmount, Float exactAmount,
             String iban, Integer skip, Integer limit) {
 
-        // JPA is set up to automatically set all transactions sent by account in sentTransactions array and similar
-        // for received transactions.
+        // JPA is set up to automatically set all transactions sent by account in sentTransactions array and
+        // for receivedTransactions.
         List<Transaction> transactions = new ArrayList<>();
         transactions.addAll(account.getSentTransactions());
         transactions.addAll(account.getReceivedTransactions());
@@ -248,7 +248,7 @@ public class TransactionService {
     }
 
     // Sara's Code
-    public CustomerTransactionsDTO getUserTransactions(User userToFindTransactions, String accountType,
+    public CustomerTransactionsDTO getUserTransactions(User userCustomer, String accountType,
                                                        TransactionType transactionType, LocalDate startDate,
                                                        LocalDate endDate, Float minAmount, Float maxAmount,
                                                        Float exactAmount, String iban, Integer skip, Integer limit) {
@@ -257,13 +257,13 @@ public class TransactionService {
         // I want to send info about account and its transactions to the frontend. So, I created a new class that has
         // account and a list of transactions called CustomerTransactionsDTO
         CustomerTransactionsDTO customerTransactionsDTO;
-        if (userToFindTransactions.getAccounts().size() == 0) {
+        if (userCustomer.getAccounts().size() == 0) {
             // if customer does not have any accounts, she does not have any transactions too. We return empty dto.
             customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
             return customerTransactionsDTO;
         }
-        // fund the account with provided accountType
-        for (Account account : userToFindTransactions.getAccounts()) {
+        // find the account with provided accountType
+        for (Account account : userCustomer.getAccounts()) {
             if (accountType.equals(account.getType().toString())) {
                 customerAccount = account;
                 break;

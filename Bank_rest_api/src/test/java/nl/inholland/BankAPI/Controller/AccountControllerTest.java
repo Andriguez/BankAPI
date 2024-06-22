@@ -58,7 +58,8 @@ public class AccountControllerTest {
     public void testGetAccountsByCustomerNoAuthenticationFails() throws Exception {
         // Perform the GET request and verify the response
         mockMvc.perform(get("/accounts")).andDo(print())
-                .andExpect(status().is(401));
+                .andExpect(status().is(401
+                ));
     }
 
     // Sara's Code
