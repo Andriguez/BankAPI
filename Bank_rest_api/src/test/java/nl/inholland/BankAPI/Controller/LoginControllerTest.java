@@ -1,6 +1,5 @@
 package nl.inholland.BankAPI.Controller;
 
-import io.cucumber.java.sl.In;
 import lombok.SneakyThrows;
 import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
@@ -23,8 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.naming.AuthenticationException;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -64,7 +61,7 @@ public class LoginControllerTest {
             LoginRequestDTO loginRequest = new LoginRequestDTO("john.doe@example.com", "password");
 
             // Setup mock login response
-            LoginResponseDTO loginResponse = new LoginResponseDTO(1L, "customer1", UserType.CUSTOMER.name(), "token123");
+            LoginResponseDTO loginResponse = new LoginResponseDTO(1L, "CustomerName", "CustomerLastname", UserType.CUSTOMER.name(), "token123");
 
             // Mock the service call
             when(userService.login(any(LoginRequestDTO.class))).thenReturn(loginResponse);
@@ -82,7 +79,7 @@ public class LoginControllerTest {
         public void testLoginFailure() throws Exception {
            LoginRequestDTO loginRequest = new LoginRequestDTO("john.doe@example.com", "wrongpassword");
 
-          when(userService.login(any(LoginRequestDTO.class))).thenThrow(new AuthenticationException("Invalid credentials"));
+          when(userService.login(any(LoginRequestDTO.class))).thenThrow(new AuthenticationException("The provided email and/or username are incorrect"));
 
             mockMvc.perform(MockMvcRequestBuilders.post("/login")
                             .contentType(MediaType.APPLICATION_JSON)

@@ -1,20 +1,25 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.AccountType;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
+import nl.inholland.BankAPI.Model.TransactionType;
+import nl.inholland.BankAPI.Model.User;
+import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.TransactionService;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 // RequestMapping determines with API calls are handled by this controller.
@@ -24,9 +29,7 @@ public class TransactionController {
     private AccountService accountService;
     private UserService userService;
 
-    private String ATMIban = "NLXXINHOXXXXXXXXXX";
-    public TransactionController(TransactionService transactionService, AccountService accountService,
-                                 UserService userService){
+    public TransactionController(TransactionService transactionService, AccountService accountService, UserService userService) {
         this.transactionService = transactionService;
         this.accountService = accountService;
         this.userService = userService;
@@ -52,7 +55,7 @@ public class TransactionController {
             @RequestParam(required = false) Integer skip,
             @RequestParam(required = false) Integer limit) {
 
-        try{
+        try {
             // find logged in user from her JWT
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             User loggedInUser = userService.getUserByEmail(email);
@@ -85,70 +88,45 @@ public class TransactionController {
             CustomerTransactionsDTO customerTransactionsDTO =
               transactionService.getUserTransactions(userCustomer, accountType, transactionType, startDate,
                       endDate, minAmount, maxAmount, exactAmount, iban, skip, limit);
+
             return ResponseEntity.status(200).body(customerTransactionsDTO);
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
-    public ResponseEntity<Object> CreateTransaction (@RequestBody TransactionRequestDTO transactionData){
-
-        try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            User loggedUser = userService.getUserByEmail(email);
-
-            if(hasAccess(loggedUser, transactionData.sender()) || hasAccess(loggedUser, transactionData.receiver())){
-                return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
-            }
-             else {
-                 throw new Exception("user is not allowed to make this transaction");
-            }
-
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
-    private Boolean hasAccess(User initiator, String iban){
+    @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
+    public ResponseEntity<TransactionResponseDTO> CreateTransaction(@RequestBody TransactionRequestDTO transactionData) throws AuthorizationServiceException, IllegalArgumentException, RuntimeException {
 
-        if(!initiator.getUserType().equals(List.of(UserType.GUEST))){
-            if(initiator.getUserType().equals(List.of(UserType.ADMIN))){
-                return true;
-            }
+        User loggedUser = userService.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
-            if(!ATMIban.equals(iban)){
-                if(initiator.getId() == accountService.getAccountByIban(iban).getUser().getId()){
-                    return true;
-                }
-            }
+        List<String> accounts = Stream.of(transactionData.sender(), transactionData.receiver()).filter(iban -> !iban.equals("NLXXINHOXXXXXXXXXX")).toList();
+
+        if (!accountService.hasAccess(loggedUser, accounts)) {
+            throw new AuthorizationServiceException("User is not allowed to make this transaction");
         }
 
-
-        return false;
+        return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
     }
 
-    @GetMapping ("/history")//route: /transactions
+
+    @GetMapping("/history")//route: /transactions
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> filterTransactions(
             // optional filters to filter transactions
-            @RequestParam String condition,
-            @RequestParam(required = false) Long userId, // for admin to read a userId.
-            @RequestParam(required = false) Integer skip,
-            @RequestParam(required = false) Integer limit) {
+            @RequestParam final String condition,
+            @RequestParam(required = false) final Long userId, // for admin to read a userId.
+            @RequestParam(required = false) final Integer skip,
+            @RequestParam(required = false) final Integer limit) throws RuntimeException{
 
-        try{
-            if(condition.equals("ID") && userId!=null){
-                return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId,skip,limit));
-            }else{
-                return ResponseEntity.ok().body(transactionService.filterTransactions(condition,skip,limit));
+
+            if (condition.equals("ID") && userId != null) {
+                return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId, skip, limit));
+            } else {
+                return ResponseEntity.ok().body(transactionService.filterTransactions(condition, skip, limit));
             }
-        }catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            }
-        }
+
+    }
 
 }

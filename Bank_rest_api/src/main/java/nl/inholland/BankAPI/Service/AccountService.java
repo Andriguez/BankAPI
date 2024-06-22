@@ -1,10 +1,8 @@
 package nl.inholland.BankAPI.Service;
 
-import nl.inholland.BankAPI.Model.Account;
-import nl.inholland.BankAPI.Model.AccountType;
+import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Model.DTO.NewAccountDTO;
-import nl.inholland.BankAPI.Model.AccountStatus;
-import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,34 +21,23 @@ public class AccountService {
     // account.
     public Account getAccountByIban(String iban) {
         List<Account> accounts = accountRepository.findAccountsByIban(iban);
-        if(accounts.size() == 1) {
+        if (accounts.size() == 1) {
             return accounts.get(0);
+        } else {
+            return null;
         }
-        else {
-           return null;
-      }
     }
-
-    public void editDailyLimit(String accountIban, double newLimit){
-        Account account = this.getAccountByIban(accountIban);
-        account.setDailyLimit(newLimit);
-    }
-
-    public void editAbsoluteLimit(String accountIban, double newLimit){
-        Account account = this.getAccountByIban(accountIban);
-        account.setAbsoluteLimit(newLimit);
-    }
-
+    
     public List<Account> getAccountsByUserId(long userId) {
         List<Account> accounts = accountRepository.findByUserId(userId);
         return accounts;
     }
 
-    public void createAccount(Account account){
+    public void createAccount(Account account) {
         accountRepository.save(account);
     }
 
-    public User updateAccounts(User user, Map<String, Object> requestData) {
+    public List<Account> updateAccounts(final User user,final Map<String, Object> requestData) {
 
         List<Account> accounts = user.getAccounts();
         Account currentAccount = null;
@@ -71,8 +58,9 @@ public class AccountService {
         // Save the updated accounts
         accountRepository.save(currentAccount);
         accountRepository.save(savingsAccount);
-        return user;
+        return accounts;
     }
+
     public String generateIBAN() {
         String countryCode = "NL";
         String bankCode = "INHO0";
@@ -88,7 +76,7 @@ public class AccountService {
         return countryCode + checkDigitsFormatted + bankCode + accountNumberFormatted;
     }
 
-    public List<Account> closeUserAccounts(User user) {
+    public List<Account> closeUserAccounts(final User user) {
         List<Account> accounts = user.getAccounts();
 
         for (Account account : accounts) {
@@ -98,19 +86,20 @@ public class AccountService {
 
         return accounts;
     }
-    public Optional<Account> updateBalance(Account account, double balance){
+
+    public Optional<Account> updateBalance(Account account, double balance) {
         return accountRepository.findById(account.getId()).map(a -> {
             a.setBalance(balance);
             return accountRepository.save(a);
         });
     }
 
-    public Map<AccountType, NewAccountDTO> getNewAccountInfo(List<Account> accounts, Long userId){
+    public Map<AccountType, NewAccountDTO> getNewAccountInfo(List<Account> accounts, Long userId) {
 
         //returns the accounts as a NewAccountDTO which contains only necessary information without transactions or balance
         Map<AccountType, NewAccountDTO> accountsMap = new HashMap<>();
-        if(!accounts.isEmpty()){
-            for (Account account : accounts){
+        if (!accounts.isEmpty()) {
+            for (Account account : accounts) {
                 NewAccountDTO dto = new NewAccountDTO(
                         userId,
                         account.getAbsoluteLimit(),
@@ -121,25 +110,25 @@ public class AccountService {
             }
         } else {
             NewAccountDTO dto1 = new NewAccountDTO(userId, 0, 0, AccountType.CURRENT);
-            NewAccountDTO dto2 = new NewAccountDTO(userId, 0,0,AccountType.SAVINGS);
+            NewAccountDTO dto2 = new NewAccountDTO(userId, 0, 0, AccountType.SAVINGS);
             accountsMap.putAll(Map.of(dto1.type(), dto1, dto2.type(), dto2));
         }
 
         return accountsMap;
     }
 
-    public List<Account> createAccounts(List<NewAccountDTO> accountsData){
+    public List<Account> createAccounts(List<NewAccountDTO> accountsData) {
 
         List<Account> createdAccounts = new ArrayList<>();
         accountsData.forEach(
                 accountDTO -> {
 
-                   Account account = new Account(
-                           generateIBAN(),
-                           0,
-                           accountDTO.absolute().doubleValue(),
-                           accountDTO.daily().doubleValue(),
-                           accountDTO.type());
+                    Account account = new Account(
+                            generateIBAN(),
+                            0,
+                            accountDTO.absolute().doubleValue(),
+                            accountDTO.daily().doubleValue(),
+                            accountDTO.type());
 
                     createdAccounts.add(accountRepository.save(account));
                 }
@@ -148,7 +137,27 @@ public class AccountService {
         return createdAccounts;
     }
 
+    public Boolean hasAccess(User initiator, List<String> accounts) throws EntityNotFoundException {
+        // Admins always have access
+        if (initiator.getUserType().contains(UserType.ADMIN)) {
+            return true;
+        }
 
+        // Check if the user has access to any of the provided accounts
+        if (initiator.getUserType().contains(UserType.CUSTOMER)) {
+            return accounts.stream().anyMatch(iban -> {
+                try {
+                    Account account = getAccountByIban(iban);
+                    return initiator.getId() == account.getUser().getId();
 
+                } catch (Exception e) {
+                    return false;
+                }
+            });
+        }
+
+        // If none of the accounts are accessible, return false
+        return false;
+    }
 }
 
