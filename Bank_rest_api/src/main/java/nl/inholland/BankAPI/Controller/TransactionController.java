@@ -106,6 +106,10 @@ public class TransactionController {
             throw new AuthorizationServiceException("User is not allowed to make this transaction");
         }
 
+        if (transactionData.amount() < 0) {
+            throw new IllegalArgumentException("Transaction amount cannot be negative");
+        }
+
         return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
     }
 

@@ -95,7 +95,8 @@ export default {
           this.$router.replace("/users");
 
         } catch (error){
-          console.error(error)
+          console.error(error);
+          alert(error.response.data);
         }
         
   },
@@ -120,6 +121,7 @@ export default {
 
         } catch (error){
           console.error(error)
+          alert(error.response.data);
         }
         
   },
@@ -132,6 +134,7 @@ export default {
 
         } catch (error){
           console.error(error)
+          alert(error.response.data);
         }
   },
   hasUsertype(usertype){

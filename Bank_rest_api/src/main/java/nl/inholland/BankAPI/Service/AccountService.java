@@ -43,6 +43,7 @@ public class AccountService {
         Account currentAccount = null;
         Account savingsAccount = null;
     try {
+
         for (Account account : accounts) {
             if (account.getType() == AccountType.CURRENT) {
                 currentAccount = account;
