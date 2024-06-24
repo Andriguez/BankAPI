@@ -30,6 +30,7 @@
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/transactions" class="nav-link px-2 link-body-emphasis">Transactions</router-link></li>
           <li v-if="isLoggedIn() && hasUsertype('ADMIN')"><router-link to="/accounts" class="nav-link px-2 link-body-emphasis">Accounts</router-link></li>
           <li v-if="isLoggedIn() && !hasUsertype('GUEST')"><router-link to="/transfer" class="nav-link px-2 link-body-emphasis">Transfer</router-link></li>
+          <li v-if="!isLoggedIn()"><router-link to="/atm" class="nav-link px-2 link-body-emphasis">ATM</router-link></li>
 
         </ul>
         
