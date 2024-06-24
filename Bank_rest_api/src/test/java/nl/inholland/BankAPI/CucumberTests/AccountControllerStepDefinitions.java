@@ -64,7 +64,6 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         loginResponse = loginResponseEntity.getBody();
         // Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.getToken());
-        // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
 
     // Sara's Code
@@ -97,7 +96,6 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         loginResponse = loginResponseEntity.getBody();
         // Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.getToken());
-        // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
 
     // Sara's Code

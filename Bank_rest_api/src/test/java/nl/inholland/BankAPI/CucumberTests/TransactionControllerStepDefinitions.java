@@ -68,7 +68,6 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         loginResponse = loginResponseEntity.getBody();
         // Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.getToken());
-        // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
 
     // Sara's Code
