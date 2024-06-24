@@ -114,7 +114,7 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.accounts.SAVINGS.type").value("SAVINGS"));
     }
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testGetAccountsById_InternalServerError() throws Exception {
         Long userId = 1L;
         Mockito.when(userService.getUserById(userId)).thenThrow(new RuntimeException("Internal server error"));
@@ -147,7 +147,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(authorities = {"ADMIN"})
     public void testDeleteUserAccount() throws Exception {
         // Create a mock user with an account
         User mockUser = new User();
@@ -157,12 +157,14 @@ public class AccountControllerTest {
         mockSavings.setUser(mockUser);
         mockUser.setAccounts(List.of(mockCurrent,mockSavings));
 
-        when(accountService.closeUserAccounts(Mockito.any(User.class))).thenReturn(List.of(mockSavings,mockCurrent));
+        Mockito.when(accountService.closeUserAccounts(Mockito.any(User.class))).thenReturn(List.of(mockSavings,mockCurrent));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/accounts")
                         .param("userid", "2"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
+                .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
     }
 
 

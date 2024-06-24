@@ -46,7 +46,7 @@ import { formatDate } from '@/services/helpers';
             </div>
         </div>
         <div v-else>
-        <h3 style="color: #6504c6" class="m-3">There are no transactions displayed</h3>
+        <h3 style="color: #6504c6" class="container mx-5 mt-5 mb-3 w-auto">You have not made any transactions yet</h3>
         </div>
     
        
@@ -77,7 +77,8 @@ export default {
                 this.setCondition("ID");
             });
 
-        },  setCondition(condition){            
+        },  setCondition(condition){       
+            this.currentPage = 1;     
             this.condition = condition;
             if (condition != "ID") {
             this.userId = null; // Set userId to null if condition is "ID"
