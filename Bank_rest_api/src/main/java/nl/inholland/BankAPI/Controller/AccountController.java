@@ -55,6 +55,7 @@ public class AccountController {
     }
 
     @GetMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getAccountsById(@RequestParam final Long userid) {
         try {
             List<Account> neededAccounts = userService.getUserById(userid).getAccounts();
@@ -96,6 +97,7 @@ public class AccountController {
         return ResponseEntity.ok().body(new AccountsDTO(accounts));
     }
     @PutMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> updateAccounts(@RequestParam final Long userid, @RequestBody final Map<String, Object> requestData) {
         try {
             List<Account> accounts = accountService.updateAccounts(userService.getUserById(userid), requestData);
@@ -107,6 +109,7 @@ public class AccountController {
         }
     }
     @DeleteMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> closeAccounts(@RequestParam final Long userid) {
         try {
             List<Account> accounts = accountService.closeUserAccounts(userService.getUserById(userid));

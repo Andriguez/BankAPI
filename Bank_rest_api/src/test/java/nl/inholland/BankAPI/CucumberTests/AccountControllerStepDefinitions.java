@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -139,14 +140,12 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         loginResponseEntity = restTemplate.postForEntity(url, loginDTO, LoginResponseDTO.class);
         // Store login response
         loginResponse = loginResponseEntity.getBody();
-        System.out.println("Try" + loginResponseEntity.getBody());
         // Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.token());
-        System.out.println("Try" + loginResponse);
     }
 
     @When("I retrieve accounts for user ID {long}")
-    public void iRetrieveAccountsForUserId(Long userId) throws Exception {
+    public void iRetrieveAccountsForUserId(Long userId) {
         String url = "http://localhost:" + port + "/accounts?userid=" + userId;
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         accountResponseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);

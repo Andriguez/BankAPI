@@ -161,12 +161,19 @@ public class TransactionService {
 
     public List<TransactionResponseDTO> getTransactionByUserId(final long id,final Integer skip,final Integer limit){
         List<TransactionResponseDTO> filteredTransactions = new ArrayList<>();
-        User neededUser = userService.getUserById(id);
-        for (Transaction t : transactionRepository.findAll()) {
-            if (t.getUserInitiating() == neededUser) {
-                filteredTransactions.add(new TransactionResponseDTO(t));
+
+        try{
+            User neededUser = userService.getUserById(id);
+            for (Transaction t : transactionRepository.findAll()) {
+                if (t.getUserInitiating() == neededUser) {
+                    filteredTransactions.add(new TransactionResponseDTO(t));
+                }
             }
+        } catch (Exception e){
+            System.err.println("An error occurred: " + e.getMessage());
+
         }
+
         return filteredTransactions.stream()
                 .skip(skip != null ? skip : 0)
                 .limit(limit != null ? limit : Integer.MAX_VALUE)
@@ -174,22 +181,30 @@ public class TransactionService {
     }
     public List<Transaction> getAdminInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t : getAllTransactions()) {
-            if (t.getUserInitiating().getUserType().contains(UserType.ADMIN)) {
-                filteredTransactions.add(t);
+        try {
+            for (Transaction t : getAllTransactions()) {
+                if (t.getUserInitiating().getUserType().contains(UserType.ADMIN)) {
+                    filteredTransactions.add(t);
+                }
             }
+        } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
         }
-            return filteredTransactions;
-
+        return filteredTransactions;
     }
 
     public List<Transaction> getUserInitiatedTransactions() {
         List<Transaction> filteredTransactions = new ArrayList<>();
-        for (Transaction t : getAllTransactions()) {
-            if (t.getUserInitiating().getUserType().contains(UserType.CUSTOMER)) {
-                filteredTransactions.add(t);
+        try{
+            for (Transaction t : getAllTransactions()) {
+                if (t.getUserInitiating().getUserType().contains(UserType.CUSTOMER)) {
+                    filteredTransactions.add(t);
+                }
             }
+        } catch (Exception e){
+            System.err.println("An error occurred: " + e.getMessage());
         }
+
         return filteredTransactions;
     }
 
@@ -206,25 +221,29 @@ public class TransactionService {
 
     public List<TransactionResponseDTO> filterTransactions(final String condition,final Integer skip,final Integer limit){
         List<Transaction> filteredTransactions = new ArrayList<>();
-        switch (condition) {
-            //case ALL = all transactions
-            case "ALL":
-                filteredTransactions = getAllTransactions();
-                break;
-            //case ATM = ATM transactions
-            case "ATM":
-                filteredTransactions = getATMInitiatedTransactions();
-                break;
-            //case ADMIN= get admin initiated transactions();
-            case "ADMIN":
-                filteredTransactions = getAdminInitiatedTransactions();
-                break;
-            //case CUSTOMER = user initiated transactions
-            case "CUSTOMER":
-                filteredTransactions = getUserInitiatedTransactions();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid condition: " + condition);
+        try{
+            switch (condition) {
+                //case ALL = all transactions
+                case "ALL":
+                    filteredTransactions = getAllTransactions();
+                    break;
+                //case ATM = ATM transactions
+                case "ATM":
+                    filteredTransactions = getATMInitiatedTransactions();
+                    break;
+                //case ADMIN= get admin initiated transactions();
+                case "ADMIN":
+                    filteredTransactions = getAdminInitiatedTransactions();
+                    break;
+                //case CUSTOMER = user initiated transactions
+                case "CUSTOMER":
+                    filteredTransactions = getUserInitiatedTransactions();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid condition: " + condition);
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
         }
         return filteredTransactions.stream()
                 .skip(skip != null ? skip : 0)

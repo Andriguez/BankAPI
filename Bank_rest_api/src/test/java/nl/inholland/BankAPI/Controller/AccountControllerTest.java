@@ -116,7 +116,7 @@ public class AccountControllerTest {
     @Test
     @WithMockUser(authorities = "ADMIN")
     public void testGetAccountsById_InternalServerError() throws Exception {
-        Long userId = 1L; // Assuming userId that causes an internal server error
+        Long userId = 1L;
         Mockito.when(userService.getUserById(userId)).thenThrow(new RuntimeException("Internal server error"));
 
         mockMvc.perform(get("/accounts")
@@ -136,16 +136,33 @@ public class AccountControllerTest {
         mockSavings.setUser(mockUser);
         mockUser.setAccounts(List.of(mockCurrent,mockSavings));
 
-        // Mock the userService.getUserById method to return the mock user
         Mockito.when(userService.getUserById(Mockito.anyLong())).thenReturn(mockUser);
 
-        // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
-                        .param("userid", "2"))
+                        .param("userid", "152"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
                 .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testDeleteUserAccount() throws Exception {
+        // Create a mock user with an account
+        User mockUser = new User();
+        Account mockCurrent = new Account("NL12INHO3456789012", 1000.0, 5000.0, 1000.0, AccountType.CURRENT);
+        Account mockSavings = new Account("NL12INHO3456789011", 1000.0, 5000.0, 1000.0, AccountType.SAVINGS);
+        mockCurrent.setUser(mockUser);
+        mockSavings.setUser(mockUser);
+        mockUser.setAccounts(List.of(mockCurrent,mockSavings));
+
+        when(accountService.closeUserAccounts(Mockito.any(User.class))).thenReturn(List.of(mockSavings,mockCurrent));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/accounts")
+                        .param("userid", "2"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
 

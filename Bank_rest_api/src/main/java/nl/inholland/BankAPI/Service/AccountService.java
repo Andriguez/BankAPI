@@ -42,7 +42,7 @@ public class AccountService {
         List<Account> accounts = user.getAccounts();
         Account currentAccount = null;
         Account savingsAccount = null;
-
+    try {
         for (Account account : accounts) {
             if (account.getType() == AccountType.CURRENT) {
                 currentAccount = account;
@@ -58,6 +58,9 @@ public class AccountService {
         // Save the updated accounts
         accountRepository.save(currentAccount);
         accountRepository.save(savingsAccount);
+    } catch (Exception e){
+        System.err.println("An error occurred: " + e.getMessage());
+    }
         return accounts;
     }
 
@@ -77,13 +80,16 @@ public class AccountService {
     }
 
     public List<Account> closeUserAccounts(final User user) {
+
         List<Account> accounts = user.getAccounts();
-
-        for (Account account : accounts) {
-            account.setAccountStatus(AccountStatus.INACTIVE);
-            accountRepository.save(account);
+        try {
+            for (Account account : accounts) {
+                account.setAccountStatus(AccountStatus.INACTIVE);
+                accountRepository.save(account);
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred: " + e.getMessage());
         }
-
         return accounts;
     }
 

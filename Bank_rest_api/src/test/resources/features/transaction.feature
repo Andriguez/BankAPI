@@ -76,3 +76,33 @@ Scenario: Filter transactions based on minAmount=10.5 and maxAmount=111.5
   Then I receive transaction array and save it
   Then I request to read transactions with filter "minAmount=10.5&maxAmount=111.5" for account of type "CURRENT"
   Then I check to see if filter is correctly applied
+
+  Scenario: Filter transactions by condition ID
+    Given I am logged in as Admin with email "admin@email.com" and password "password"
+    When I filter transactions with condition "ID" and userid 152 and skip 0 and limit 10
+    Then the response status for transaction should be 200
+    Then I should receive the filtered transactions based on condition
+
+  Scenario: Filter transactions by condition ALL
+    Given I am logged in as Admin with email "admin@email.com" and password "password"
+    When I filter transactions with condition "ALL" and skip 0 and limit 10
+    Then the response status for transaction should be 200
+    Then I should receive the filtered transactions based on condition
+
+  Scenario: Filter transactions by condition ATM
+    Given I am logged in as Admin with email "admin@email.com" and password "password"
+    When I filter transactions with condition "ATM" and skip 0 and limit 10
+    Then the response status for transaction should be 200
+    Then I should receive the filtered transactions based on condition
+
+  Scenario: Filter transactions by condition ADMIN
+    Given I am logged in as Admin with email "admin@email.com" and password "password"
+    When I filter transactions with condition "ADMIN" and skip 0 and limit 10
+    Then the response status for transaction should be 200
+    Then I should receive the filtered transactions based on condition
+
+  Scenario: Filter transactions by condition CUSTOMER
+    Given I am logged in as Admin with email "admin@email.com" and password "password"
+    When I filter transactions with condition "CUSTOMER" and skip 0 and limit 10
+    Then the response status for transaction should be 200
+    Then I should receive the filtered transactions based on condition
