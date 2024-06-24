@@ -14,5 +14,5 @@ export default defineConfig({
     }
   },
 
-  base: '/bankAPI/bank_frontend'
+  base: '/BankAPI/'
 })
