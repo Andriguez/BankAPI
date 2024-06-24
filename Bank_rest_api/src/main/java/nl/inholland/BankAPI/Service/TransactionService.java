@@ -273,11 +273,6 @@ public class TransactionService {
                 break;
             }
         }
-        if (customerAccount == null) {
-            // if customer does not have any accounts, she does not have any transactions too. We return empty dto.
-            customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
-            return customerTransactionsDTO;
-        }
         transactions = getTransactionsByAccount(customerAccount, transactionType, startDate, endDate,
                 minAmount, maxAmount, exactAmount, iban, skip, limit);
         customerTransactionsDTO = new CustomerTransactionsDTO(customerAccount, transactions);
