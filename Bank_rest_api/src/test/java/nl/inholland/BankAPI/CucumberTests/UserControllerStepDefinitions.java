@@ -74,8 +74,17 @@ public class UserControllerStepDefinitions extends CucumberSpringConfiguration{
         assertFalse(users.isEmpty());
     }
 
+
+    @When("I request to read users of type {string}")
+    public void iRequestToReadUsersOfType(String type) {
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        generalResponseEntity = restTemplate.exchange("/users?type="+type, HttpMethod.GET, entity, String.class);
+        System.out.println("Response Body: " + generalResponseEntity.getBody());
+
+    }
+
     @And("list has user of type {string}")
     public void listHasUserOfType(String type){
-        assertEquals(true, users.stream().anyMatch(user -> user.getUserType().equals(List.of(UserType.valueOf(type)))));
+        assertTrue(users.stream().anyMatch(user -> user.getUserType().equals(List.of(UserType.valueOf(type)))));
     }
 }
