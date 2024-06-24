@@ -10,6 +10,12 @@
   </head>
   <body>
     <div id="app"> </div>
-    <a href="/BankAPI/login">ATM</a>
+    <button id="myButton">ATM</button>
+
+  <script>
+    document.getElementById('myButton').addEventListener('click', function() {
+      window.location.href = '/BankAPI/atm';
+    });
+  </script>
   </body>
 </html>
