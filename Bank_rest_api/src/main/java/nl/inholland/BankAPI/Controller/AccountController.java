@@ -116,7 +116,7 @@ public class AccountController {
         double absolute2 = ((Number) requestData.get("absolute2")).doubleValue();
         double daily2 = ((Number) requestData.get("daily2")).doubleValue();
 
-        if (absolute1 < 0 || daily1 < 0 || absolute2 < 0 || daily2 < 0) {
+        if (absolute1 < 0 || daily1 <= 0 || absolute2 < 0 || daily2 <= 0) {
             throw new IllegalArgumentException("Daily and absolute limits cannot be negative");
         }
     }
