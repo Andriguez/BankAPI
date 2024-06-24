@@ -1,5 +1,5 @@
 import axios from "axios";
 
-const instance = axios.create({baseURL: 'https://localhost:8443/'});
+const instance = axios.create({baseURL: 'https://holladollabank.onrender.com/'});
 
 export default instance;
