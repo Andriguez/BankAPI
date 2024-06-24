@@ -115,9 +115,7 @@ public class AccountController {
             List<Account> accounts = accountService.closeUserAccounts(userService.getUserById(userid));
             return ResponseEntity.ok().body(new AccountsDTO(accounts));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while closing accounts");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         }
     }
 }

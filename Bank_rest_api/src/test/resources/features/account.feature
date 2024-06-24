@@ -18,10 +18,10 @@ Scenario: Guest has no accounts
         Given I am logged in as an Admin with email "admin@email.com" and password "password"
         When I close accounts for user ID 452
         Then the response status should be 200
-        And the response body should contain account details
+        And I receive accounts array of length 2
 
   Scenario: As an admin I get customer accounts with their ID
     Given I am logged in as an Admin with email "admin@email.com" and password "password"
     When I retrieve accounts for user ID 152
     Then the response status should be 200
-    And the response body should contain account details
+    And the response body in not empty

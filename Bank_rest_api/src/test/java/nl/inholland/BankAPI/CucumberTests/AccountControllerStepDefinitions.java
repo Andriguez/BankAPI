@@ -162,7 +162,7 @@ public class AccountControllerStepDefinitions extends CucumberSpringConfiguratio
         HttpStatus expectedHttpStatus = HttpStatus.valueOf(expectedStatus);
         assertEquals(expectedHttpStatus, accountResponseEntity.getStatusCode(), "Unexpected status code");
     }
-    @Then("the response body should contain account details")
+    @Then("the response body in not empty")
     public void theResponseBodyShouldContainAccountDetails() {
         assertNotNull(accountResponseEntity.getBody(), "Response body should not be null");
     }

@@ -1,11 +1,9 @@
 package nl.inholland.BankAPI.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -145,28 +142,6 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
                 .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
     }
-
-    @Test
-    @WithMockUser(authorities = {"ADMIN"})
-    public void testDeleteUserAccount() throws Exception {
-        // Create a mock user with an account
-        User mockUser = new User();
-        Account mockCurrent = new Account("NL12INHO3456789012", 1000.0, 5000.0, 1000.0, AccountType.CURRENT);
-        Account mockSavings = new Account("NL12INHO3456789011", 1000.0, 5000.0, 1000.0, AccountType.SAVINGS);
-        mockCurrent.setUser(mockUser);
-        mockSavings.setUser(mockUser);
-        mockUser.setAccounts(List.of(mockCurrent,mockSavings));
-
-        Mockito.when(accountService.closeUserAccounts(Mockito.any(User.class))).thenReturn(List.of(mockSavings,mockCurrent));
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/accounts")
-                        .param("userid", "2"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
-                .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
-    }
-
 
 }
 
