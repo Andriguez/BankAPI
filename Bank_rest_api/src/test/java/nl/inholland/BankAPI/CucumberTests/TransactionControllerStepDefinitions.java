@@ -150,6 +150,11 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
 
     // Sara's Code
     // with help from ChatGPT
+    // for example: String filter = "startDate=2024-06-10&endDate=2024-08-20&minAmount=11&TransacitionType=WITHDRAWAL"
+    // return { "startDate": "2024-06-10",
+    // "endDate":"2024-08-20",
+    // "minAmount": "11",
+    // "transacitionType":"WITHDRAWAL"}
     private Map<String, String> getMap(String filter) {
         Map<String, String> params = new HashMap<>();
         for (String param : filter.split("&")) {
