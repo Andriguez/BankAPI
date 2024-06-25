@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -67,7 +68,6 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         loginResponse = loginResponseEntity.getBody();
         // Set JWT token in headers for future requests
         httpHeaders.setBearerAuth(loginResponse.getToken());
-        // httpHeaders.add("Authorization", "Bearer " + loginResponse.getToken());
     }
 
     // Sara's Code
@@ -308,4 +308,42 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
         logger.info("number of transactions: " + filteredTransactions.size()+ " with filter " + filter);
         assertEquals(filteredTransactions.size(), actualFiltered.size());
     }
+
+    protected ResponseEntity<String> filteredTransactionsResponseEntity;
+    @Given("I am logged in as Admin with email {string} and password {string}")
+    public void iLogInAsAdminWithEmailAndPassword(String email, String password){
+        loginDTO = new LoginRequestDTO(email,password);
+        String url = "http://localhost:" + port + "/login";
+        loginResponseEntity = restTemplate.postForEntity(url, loginDTO, LoginResponseDTO.class);
+        // Store login response
+        loginResponse = loginResponseEntity.getBody();
+        // Set JWT token in headers for future requests
+        httpHeaders.setBearerAuth(loginResponse.token());
+    }
+    @When("I filter transactions with condition {string} and userid {long} and skip {int} and limit {int}")
+    public void iFilterTransactionsWithConditionID(String condition, long userId, int skip, int limit) {
+        String url = "http://localhost:" + port +  "/transactions/history?condition=" + condition + "&userId=" + userId + "&limit=" + limit +"&skip=" + skip;
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        filteredTransactionsResponseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+    }
+    @When("I filter transactions with condition {string} and skip {int} and limit {int}")
+    public void iFilterTransactionsWithCondition(String condition,int skip, int limit) {
+        String url = "http://localhost:" + port +  "/transactions/history?condition=" + condition + "&limit=" + limit +"&skip=" + skip;
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        filteredTransactionsResponseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+    }
+    @Then("the response status for transaction should be {int}")
+    public void theResponseStatusShouldBe(int expectedStatus) {
+        HttpStatus expectedHttpStatus = HttpStatus.valueOf(expectedStatus);
+        assertEquals(expectedHttpStatus, filteredTransactionsResponseEntity.getStatusCode(), "Unexpected status code");
+    }
+
+
+    @Then("I should receive the filtered transactions based on condition")
+     public void IReceiveFilteredTransactionsBasedOnCondition(){
+        assertNotNull(filteredTransactionsResponseEntity.getBody(), "Response body should not be null");
+
+    }
+
 }

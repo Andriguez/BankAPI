@@ -1,16 +1,15 @@
 package nl.inholland.BankAPI.Controller;
 
-import nl.inholland.BankAPI.Model.AccountType;
+import nl.inholland.BankAPI.Model.*;
+import nl.inholland.BankAPI.Model.DTO.AccountsDTO;
 import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
 import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
-import nl.inholland.BankAPI.Model.TransactionType;
-import nl.inholland.BankAPI.Model.User;
-import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.TransactionService;
 import nl.inholland.BankAPI.Service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -107,6 +106,10 @@ public class TransactionController {
             throw new AuthorizationServiceException("User is not allowed to make this transaction");
         }
 
+        if (transactionData.amount() <= 0) {
+            throw new IllegalArgumentException("Transaction amount cannot be negative");
+        }
+
         return ResponseEntity.ok().body(transactionService.createTransaction(transactionData, loggedUser));
     }
 
@@ -119,14 +122,15 @@ public class TransactionController {
             @RequestParam(required = false) final Long userId, // for admin to read a userId.
             @RequestParam(required = false) final Integer skip,
             @RequestParam(required = false) final Integer limit) throws RuntimeException{
-
-
+        try {
             if (condition.equals("ID") && userId != null) {
                 return ResponseEntity.ok().body(transactionService.getTransactionByUserId(userId, skip, limit));
             } else {
                 return ResponseEntity.ok().body(transactionService.filterTransactions(condition, skip, limit));
             }
-
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while closing accounts");
+        }
     }
 
 }

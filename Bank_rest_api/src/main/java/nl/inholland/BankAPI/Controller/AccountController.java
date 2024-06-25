@@ -55,6 +55,7 @@ public class AccountController {
     }
 
     @GetMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> getAccountsById(@RequestParam final Long userid) {
         try {
             List<Account> neededAccounts = userService.getUserById(userid).getAccounts();
@@ -69,7 +70,7 @@ public class AccountController {
     @PostMapping(params="userid")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AccountsDTO> OpenAccounts(@RequestParam Long userid, @RequestBody Map<String, Object> requestData) throws EntityNotFoundException, IllegalArgumentException, RuntimeException {
-
+        validateRequestData(requestData);
         User user;
         user = userService.getUserById(userid);
         if (user == null) {
@@ -96,25 +97,37 @@ public class AccountController {
         return ResponseEntity.ok().body(new AccountsDTO(accounts));
     }
     @PutMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> updateAccounts(@RequestParam final Long userid, @RequestBody final Map<String, Object> requestData) {
         try {
+            validateRequestData(requestData);
             List<Account> accounts = accountService.updateAccounts(userService.getUserById(userid), requestData);
             return ResponseEntity.ok().body(new AccountsDTO(accounts));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating accounts");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    private void validateRequestData(Map<String, Object> requestData) throws IllegalArgumentException {
+        double absolute1 = ((Number) requestData.get("absolute1")).doubleValue();
+        double daily1 = ((Number) requestData.get("daily1")).doubleValue();
+        double absolute2 = ((Number) requestData.get("absolute2")).doubleValue();
+        double daily2 = ((Number) requestData.get("daily2")).doubleValue();
+
+        if (absolute1 < 0 || daily1 <= 0 || absolute2 < 0 || daily2 <= 0) {
+            throw new IllegalArgumentException("Daily and absolute limits cannot be negative");
         }
     }
     @DeleteMapping(params = "userid")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> closeAccounts(@RequestParam final Long userid) {
         try {
             List<Account> accounts = accountService.closeUserAccounts(userService.getUserById(userid));
             return ResponseEntity.ok().body(new AccountsDTO(accounts));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while closing accounts");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         }
     }
 }

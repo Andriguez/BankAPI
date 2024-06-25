@@ -1,11 +1,9 @@
 package nl.inholland.BankAPI.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.inholland.BankAPI.Model.*;
 import nl.inholland.BankAPI.Security.JwtProvider;
 import nl.inholland.BankAPI.Service.AccountService;
 import nl.inholland.BankAPI.Service.UserService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -115,9 +112,9 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.accounts.SAVINGS.type").value("SAVINGS"));
     }
     @Test
-    @WithMockUser(authorities = "ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testGetAccountsById_InternalServerError() throws Exception {
-        Long userId = 1L; // Assuming userId that causes an internal server error
+        Long userId = 1L;
         Mockito.when(userService.getUserById(userId)).thenThrow(new RuntimeException("Internal server error"));
 
         mockMvc.perform(get("/accounts")
@@ -128,7 +125,7 @@ public class AccountControllerTest {
     }
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void testGetUserAccountsById() throws Exception {
+    public void testGetUserAccountsByUserId() throws Exception {
         // Create a mock user with an account
         User mockUser = new User();
         Account mockCurrent = new Account("NL12INHO3456789012", 1000.0, 5000.0, 1000.0, AccountType.CURRENT);
@@ -137,16 +134,15 @@ public class AccountControllerTest {
         mockSavings.setUser(mockUser);
         mockUser.setAccounts(List.of(mockCurrent,mockSavings));
 
-        // Mock the userService.getUserById method to return the mock user
         Mockito.when(userService.getUserById(Mockito.anyLong())).thenReturn(mockUser);
 
-        // Perform the GET request and verify the response
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
-                        .param("userid", "2"))
+                        .param("userid", "152"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].iban").value("NL12INHO3456789012"))
                 .andExpect(jsonPath("$[1].iban").value("NL12INHO3456789011"));
     }
+
 }
 
