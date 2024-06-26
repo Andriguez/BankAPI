@@ -57,6 +57,19 @@ public class UserControllerStepDefinitions extends CucumberSpringConfiguration{
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         generalResponseEntity = restTemplate.exchange("/users", HttpMethod.GET, entity, String.class);
     }
+
+    @When("I request to read users of type {string}")
+    public void iRequestToReadUsersOfType(String type) {
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        generalResponseEntity = restTemplate.exchange("/users?type="+type.toUpperCase(), HttpMethod.GET, entity, String.class);
+    }
+
+    @When("I request to read user with Id {int}")
+    public void iRequestToReadUserWithId(long id) {
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        generalResponseEntity = restTemplate.exchange("/users?id="+id, HttpMethod.GET, entity, String.class);
+    }
+
     @Then("I receive users response with status code {int}")
     public void iReceiveUserResponseWithStatusCode(int status){
         assertEquals(HttpStatus.valueOf(status), generalResponseEntity.getStatusCode());
@@ -78,13 +91,6 @@ public class UserControllerStepDefinitions extends CucumberSpringConfiguration{
         assertFalse(userDTOS.isEmpty());
     }
 
-
-    @When("I request to read users of type {string}")
-    public void iRequestToReadUsersOfType(String type) {
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-        generalResponseEntity = restTemplate.exchange("/users?type="+type.toUpperCase(), HttpMethod.GET, entity, String.class);
-    }
-
     @And("list has user of type {string}")
     public void listHasUserOfType(String type){
         assertTrue(users.stream().anyMatch(user -> user.getUserType().equals(List.of(UserType.valueOf(type)))));
@@ -93,12 +99,6 @@ public class UserControllerStepDefinitions extends CucumberSpringConfiguration{
     @And("list has user with name {string}")
     public void listHasUserOfUserType(String name){
         assertTrue(userDTOS.stream().anyMatch(user -> user.firstName().equals(name)));
-    }
-
-    @When("I request to read user with Id {int}")
-    public void iRequestToReadUserWithId(long id) {
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-        generalResponseEntity = restTemplate.exchange("/users?id="+id, HttpMethod.GET, entity, String.class);
     }
 
     private UserDTO userDto;

@@ -6,9 +6,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nl.inholland.BankAPI.Model.DTO.CustomerTransactionsDTO;
-import nl.inholland.BankAPI.Model.DTO.LoginRequestDTO;
-import nl.inholland.BankAPI.Model.DTO.LoginResponseDTO;
+import nl.inholland.BankAPI.Model.DTO.*;
 import nl.inholland.BankAPI.Model.Transaction;
 import nl.inholland.BankAPI.Model.TransactionType;
 import org.slf4j.Logger;
@@ -340,4 +338,52 @@ public class TransactionControllerStepDefinitions extends CucumberSpringConfigur
 
     }
 
+
+    //Andy's
+
+    @Given("I am logged in with email {string} and {string}")
+    public void iLoginAsCustomer(String email, String password){
+        String url = "http://localhost:" + port + "/login";
+        loginResponseEntity = restTemplate.postForEntity(url, new LoginRequestDTO(email,password), LoginResponseDTO.class);
+
+        loginResponse = loginResponseEntity.getBody();
+
+        httpHeaders.setBearerAuth(loginResponse.token());
+    }
+
+    private TransactionRequestDTO transactionRequest;
+    private ResponseEntity<String> generalResponseEntity;
+    @When("I have a transaction of type {string} with amount {double} from sender {string} to receiver {string}")
+    public void iHaveTransactionRequest(String type, double amount, String sender, String receiver){
+        transactionRequest = new TransactionRequestDTO(sender, receiver, amount, type);
+    }
+
+    @Then("I send the transaction request")
+    public void iSendTransactionRequest(){
+        String url = "http://localhost:" + port + "/transactions";
+        generalResponseEntity = restTemplate.postForEntity(url, new HttpEntity<>(transactionRequest, httpHeaders), String.class);
+    }
+
+    @And("I receive a transaction response with status code {int}")
+    public void iReceiveTransactionResponseWithCode(int status){
+        assertEquals(HttpStatus.valueOf(status),generalResponseEntity.getStatusCode());
+    }
+
+    private TransactionResponseDTO transactionResponse;
+    @Then("I set the transaction response")
+    public void iSetTransactionResponse() throws JsonProcessingException {
+        transactionResponse = objectMapper.readValue(generalResponseEntity.getBody() , TransactionResponseDTO.class);
+    }
+
+    @And("The transaction response has sender {string}, receiver {string}, amount {double}")
+    public void transactionResponseHasIban(String sender, String receiver, double amount){
+        assertEquals(sender, transactionResponse.sender());
+        assertEquals(receiver, transactionResponse.receiver());
+        assertEquals(amount, transactionResponse.amount());
+    }
+
+    @And("transaction response has error message {string}")
+    public void transactionResponseHasMessage(String message){
+        assertEquals(message, generalResponseEntity.getBody());
+    }
 }

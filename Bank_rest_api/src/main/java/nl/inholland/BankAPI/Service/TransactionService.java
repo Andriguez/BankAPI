@@ -62,7 +62,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws RuntimeException {
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionData, User initiator) throws IllegalStateException, IllegalArgumentException {
 
         Map<String, Account> accounts = getTransactionAccounts(transactionData.sender(), transactionData.receiver());
         Account sender = accounts.get("sender");
@@ -74,14 +74,14 @@ public class TransactionService {
         boolean checkLimits = sender != null ? checkLimits(sender, transactionData.amount()) : true;
 
         if (!checkLimits) {
-            throw new RuntimeException("Transaction limits are being violated");
+            throw new IllegalArgumentException("Transaction limits are being violated");
         }
 
         boolean updatedSenderBalance = sender == null || setAccountBalance(type, "sender", sender, transactionData.amount());
         boolean updatedReceiverBalance = receiver == null || setAccountBalance(type, "receiver", receiver, transactionData.amount());
 
         if (!(updatedSenderBalance & updatedReceiverBalance)) {
-            throw new RuntimeException("The account balance couldn't be updated");
+            throw new IllegalStateException("The account balance couldn't be updated");
         }
 
         Transaction transaction = new Transaction(sender, receiver, transactionData.amount(), LocalDateTime.now(), initiator, type);

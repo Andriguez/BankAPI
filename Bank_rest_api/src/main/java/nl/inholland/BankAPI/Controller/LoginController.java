@@ -23,10 +23,4 @@ public class LoginController {
     public LoginResponseDTO login(@RequestBody LoginRequestDTO request) throws AuthorizationServiceException {
         return userService.login(request);
     }
-
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-    }
 }

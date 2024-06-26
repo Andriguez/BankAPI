@@ -40,7 +40,7 @@ Feature: User
   Scenario: failure No permission to get User By Id
     Given I login with email "customer@email.com" and password "password"
     When I request to read user with Id 152
-    Then I receive users response with status code 401
+    Then I receive users response with status code 403
     And The user Response has message "user has no access to this data!"
 
   Scenario: failure get user by wrong type

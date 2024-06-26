@@ -98,7 +98,7 @@ public class TransactionController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('CUSTOMER')")
-    public ResponseEntity<TransactionResponseDTO> CreateTransaction(@RequestBody TransactionRequestDTO transactionData) throws AuthorizationServiceException, IllegalArgumentException, RuntimeException {
+    public ResponseEntity<TransactionResponseDTO> CreateTransaction(@RequestBody TransactionRequestDTO transactionData) throws AuthorizationServiceException, IllegalStateException, IllegalArgumentException {
 
         User loggedUser = userService.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 

@@ -1,7 +1,7 @@
 Feature: Register
 
   Scenario: Successful registration
-    Given I have registration request with details name "John", lastname "Doe", email "john.doe1@email.com", phone 1234567890, bsn 987654321, password "password"
+    Given I have registration request with details name "John", lastname "Doe", email "new2user@email.com", phone 1234567890, bsn 987054320, password "password"
     When I send registration request
     Then I receive registration response with status code 200
     Then I receive valid registration response

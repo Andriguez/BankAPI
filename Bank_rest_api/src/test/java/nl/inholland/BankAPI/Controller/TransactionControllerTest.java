@@ -395,7 +395,7 @@ public class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"sender\":\"unauthorizedSender\",\"receiver\":\"unauthorizedReceiver\",\"amount\":100.0,\"type\":\"TRANSFER\"}"))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden())
                 .andExpect(content().string("User is not allowed to make this transaction"));
     }
 

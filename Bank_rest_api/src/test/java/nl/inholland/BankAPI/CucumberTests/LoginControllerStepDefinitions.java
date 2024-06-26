@@ -56,7 +56,7 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
 
     // Sara's Code
     @When("I send login request")
-    public void iSendLoginRequest() throws Exception{
+    public void iSendLoginRequest() throws RuntimeException{
         // Send login request
         String url = "http://localhost:" + port + "/login";
         logger.info("Request URL: 2 " + url);
