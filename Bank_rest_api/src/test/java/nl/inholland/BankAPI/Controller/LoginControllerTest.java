@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -79,7 +80,7 @@ public class LoginControllerTest {
         public void testLoginFailure() throws Exception {
            LoginRequestDTO loginRequest = new LoginRequestDTO("john.doe@example.com", "wrongpassword");
 
-          when(userService.login(any(LoginRequestDTO.class))).thenThrow(new AuthenticationException("The provided email and/or username are incorrect"));
+          when(userService.login(any(LoginRequestDTO.class))).thenThrow(new AuthorizationServiceException("The provided email and/or username are incorrect"));
 
             mockMvc.perform(MockMvcRequestBuilders.post("/login")
                             .contentType(MediaType.APPLICATION_JSON)

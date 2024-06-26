@@ -60,7 +60,7 @@ public class UserController {
             return true;
         }
 
-        if (requestedId != null && user.getId() == requestedId) {
+        if (requestedId != null && (user.getId() == requestedId || requestedId == 0)  ) {
             return true;
         }
 

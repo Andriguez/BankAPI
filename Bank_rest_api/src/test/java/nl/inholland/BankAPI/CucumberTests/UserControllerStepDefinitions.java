@@ -119,5 +119,9 @@ public class UserControllerStepDefinitions extends CucumberSpringConfiguration{
         assertEquals(message, generalResponseEntity.getBody());
     }
 
+    @And("User has email {string}")
+    public void userHasEmail(String email){
+        assertEquals(userDto.email(), email);
+    }
 
 }

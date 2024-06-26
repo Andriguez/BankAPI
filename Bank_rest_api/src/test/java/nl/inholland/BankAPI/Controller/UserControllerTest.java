@@ -132,7 +132,7 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/users").param("id", "2"))
                 .andDo(print())
-                .andExpect(status().isForbidden())
+                .andExpect(status().isUnauthorized())
                 .andExpect(content().string("user has no access to this data!"));
     }
 

@@ -23,6 +23,13 @@ Feature: User
     And I receive a single UserDTO
     And User has Id 152
 
+  Scenario: Successful customer gets their own information
+    Given I login with email "customer2@email.com" and password "password"
+    When I request to read user with Id 0
+    Then I receive users response with status code 200
+    And I receive a single UserDTO
+    And User has email "customer2@email.com"
+
   Scenario: failure User By Id Not found
     Given I login with email "admin@email.com" and password "password"
     When I request to read user with Id 600
