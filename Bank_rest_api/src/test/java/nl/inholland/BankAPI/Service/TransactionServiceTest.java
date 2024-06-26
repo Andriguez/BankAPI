@@ -1,8 +1,6 @@
 package nl.inholland.BankAPI.Service;
 
-import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.BankAPI.Model.*;
-import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 import nl.inholland.BankAPI.Repository.TransactionRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

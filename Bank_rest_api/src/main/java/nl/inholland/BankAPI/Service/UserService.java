@@ -7,10 +7,11 @@ import nl.inholland.BankAPI.Model.User;
 import nl.inholland.BankAPI.Model.UserType;
 import nl.inholland.BankAPI.Repository.UserRepository;
 import nl.inholland.BankAPI.Security.JwtProvider;
+import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +33,6 @@ public class UserService {
     public User createUser(User user) {
         if (existingEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email is already taken");
-        } else if (existingBSN(user.getBsnNumber())) {
-            throw new IllegalArgumentException("BSN number is already on our database");
         }
 
 
@@ -67,6 +66,9 @@ public class UserService {
            throw new IllegalArgumentException("Email is already registered with another user");
         }
 
+        if (existingBSN(user.bsnNumber())) {
+            throw new IllegalArgumentException("BSN number is already on our database");
+        }
 
         User userToAdd = new User();
         userToAdd.setFirstName(user.firstName());
@@ -106,15 +108,16 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found."));
     }
 
-    public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthenticationException {
-        User user = getUserByEmail(loginRequest.email());
+    public LoginResponseDTO login(LoginRequestDTO loginRequest) throws AuthorizationServiceException {
 
-        if (user == null) {
-            throw new AuthenticationException("No user found with this email");
+        if (!userRepository.existsByEmail(loginRequest.email())) {
+            throw new AuthorizationServiceException("No user found with this email");
         }
 
+        User user = getUserByEmail(loginRequest.email());
+
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            throw new AuthenticationException("password is incorrect");
+            throw new AuthorizationServiceException("password is incorrect");
         }
 
         String usertype = user.getUserType().toString();

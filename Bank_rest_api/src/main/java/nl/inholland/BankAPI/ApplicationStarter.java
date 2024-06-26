@@ -28,12 +28,7 @@ public class ApplicationStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         // createAccounts();
 
-        userService.getAllUsers().forEach(user -> {
-            System.out.println(user.getId() + user.getEmail() + " - accounts:  ");
-            user.getAccounts().forEach(account -> {
-                System.out.println("iban: " + account.getIban() + " - " + account.getType());
-            });
-        });
+
     }
 
     private void createUsers(Account current, Account savings){
@@ -41,7 +36,7 @@ public class ApplicationStarter implements ApplicationRunner {
         User guest = new User("Jane", "Doe","guest@email.com", "password", 123567890, 143576, List.of(UserType.GUEST));
         User customer2 = new User("Johny", "Doey","customer2@email.com", "password", 123567890, 163598, List.of(UserType.CUSTOMER));
 
-        userService.createUser(customer2);
+        //userService.createUser(customer2);
         //userService.createUser(admin);
         //userService.createUser(guest);
 

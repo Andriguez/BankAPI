@@ -2,6 +2,7 @@ package nl.inholland.BankAPI.CucumberTests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -38,7 +39,7 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
     @Autowired
     private ObjectMapper objectMapper;
 
-    protected ResponseEntity<LoginResponseDTO> loginResponseEntity;
+    protected ResponseEntity<String> loginResponseEntity;
     protected HttpHeaders httpHeaders = new HttpHeaders();
 
     public LoginControllerStepDefinitions() {
@@ -60,14 +61,16 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
         String url = "http://localhost:" + port + "/login";
         logger.info("Request URL: 2 " + url);
 
-        loginResponseEntity = restTemplate.postForEntity(url, loginDTO, LoginResponseDTO.class);
+        loginResponseEntity = restTemplate.postForEntity(url, loginDTO, String.class);
+    }
 
+    @Then("I set login response and token")
+    public void iSetLoginResponse() throws JsonProcessingException {
         //Store login response
-        loginResponse = loginResponseEntity.getBody();
+        loginResponse = objectMapper.readValue(loginResponseEntity.getBody(), LoginResponseDTO.class);
 
         //Set JWT token in headers for future requests
-        httpHeaders.setBearerAuth(loginResponse.getToken());
-
+        httpHeaders.setBearerAuth(loginResponse.token());
     }
 
     // Sara's Code
@@ -82,5 +85,10 @@ public class LoginControllerStepDefinitions extends CucumberSpringConfiguration{
         assertNotNull(loginResponse);
         assertNotNull(loginResponse.token());
         assertNotNull(loginResponse.firstName());
+    }
+
+    @And("The login Response has message {string}")
+    public void loginResponseHasMessage(String message){
+        assertEquals(message, loginResponseEntity.getBody());
     }
 }
