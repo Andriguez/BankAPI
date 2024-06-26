@@ -21,9 +21,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationServiceException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<String> handleAuthorizationServiceException(AuthorizationServiceException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
