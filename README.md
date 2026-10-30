@@ -2,7 +2,7 @@
 
 A simulated online bank built as a team project at Inholland in 2024: a Java/Spring Boot REST API with a Vue 3 frontend. Customers register, get a current and a savings account once an employee approves them, transfer money and use a virtual ATM. Employees approve registrations, set account limits and review all transactions.
 
-The original school submission is tagged [`v1.0-school`](https://github.com/Andriguez/BankAPI/tree/v1.0-school). The `main` branch has since received security fixes from a later code review (see [Security](#security)).
+The `main` branch has since received security fixes from a later code review (see [Security](#security)).
 
 ## Stack
 
