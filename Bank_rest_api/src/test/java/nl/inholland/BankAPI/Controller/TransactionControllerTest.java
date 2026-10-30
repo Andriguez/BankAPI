@@ -294,7 +294,7 @@ public class TransactionControllerTest {
         when(accountService.getAccountByIban("receiverAccount")).thenReturn(null);
         when(transactionService.createTransaction(transactionRequest, mockUser))
                 .thenReturn(transactionResponse);
-        when(accountService.hasAccess(mockUser, List.of(senderAccount.getIban(), receiverAccount.getIban()))).thenReturn(true);
+        when(accountService.isOwner(mockUser, senderAccount.getIban())).thenReturn(true);
 
 
         // Perform the POST request
@@ -348,7 +348,7 @@ public class TransactionControllerTest {
         when(transactionService.createTransaction(any(TransactionRequestDTO.class), eq(mockUser))).thenReturn(transactionResponse);
 
         // Mock hasAccess method in TransactionService
-        when(accountService.hasAccess(mockUser, List.of(senderAccount.getIban(), receiverAccount.getIban()))).thenReturn(true);
+        when(accountService.isOwner(mockUser, senderAccount.getIban())).thenReturn(true);
 
         // Perform the POST request
         mockMvc.perform(MockMvcRequestBuilders.post("/transactions")

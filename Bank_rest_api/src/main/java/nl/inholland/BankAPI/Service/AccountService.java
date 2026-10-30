@@ -144,6 +144,16 @@ public class AccountService {
         return createdAccounts;
     }
 
+    
+    public boolean isOwner(User user, String iban) {
+        if (user.getUserType().contains(UserType.ADMIN)) {
+            return true;
+        }
+
+        Account account = getAccountByIban(iban);
+        return account != null && account.getUser() != null && account.getUser().getId() == user.getId();
+    }
+
     public Boolean hasAccess(User initiator, List<String> accounts) throws EntityNotFoundException {
         // Admins always have access
         if (initiator.getUserType().contains(UserType.ADMIN)) {

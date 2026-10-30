@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets ###
+keystore/
+*.p12
+!src/test/resources/test-keystore.p12
+.env

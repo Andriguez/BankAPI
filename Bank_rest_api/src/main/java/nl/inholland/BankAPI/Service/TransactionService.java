@@ -68,7 +68,10 @@ public class TransactionService {
         Account sender = accounts.get("sender");
         Account receiver = accounts.get("receiver");
 
-        TransactionType type = TransactionType.valueOf(transactionData.type());
+        // F3 Fix: Transaction type is now derived on the server instead of from the user
+        TransactionType type = isATM(transactionData.sender()) ? TransactionType.DEPOSIT
+            : isATM(transactionData.receiver()) ? TransactionType.WITHDRAWAL
+            : TransactionType.TRANSFER;
 
         //checks if sender is the ATM, otherwise checks for account limits
         boolean checkLimits = sender != null ? checkLimits(sender, transactionData.amount()) : true;
@@ -94,9 +97,10 @@ public class TransactionService {
 
         double balance = account.getBalance();
 
-        if ("receiver".equals(transactionRole) || TransactionType.DEPOSIT.equals(transactionType)) {
+        // F3 Fix: a deposit between two accounts created money out of thin air
+        if ("receiver".equals(transactionRole)) {
             balance += amount;
-        } else if ("sender".equals(transactionRole) || TransactionType.WITHDRAWAL.equals(transactionType)) {
+        } else if ("sender".equals(transactionRole)) {
             balance -= amount;
         }
 
