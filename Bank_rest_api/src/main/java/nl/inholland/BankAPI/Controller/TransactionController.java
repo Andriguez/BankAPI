@@ -102,9 +102,12 @@ public class TransactionController {
 
         User loggedUser = userService.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        List<String> accounts = Stream.of(transactionData.sender(), transactionData.receiver()).filter(iban -> !iban.equals("NLXXINHOXXXXXXXXXX")).toList();
+        //F1 Fix: the user must own the account that money leaves from.
+        // For an ATM deposit, the user must own the receiving account.
+        String atmIban = "NLXXINHOXXXXXXXXXX";
+        String ownIban = atmIban.equals(transactionData.sender()) ? transactionData.receiver() : transactionData.sender();
 
-        if (!accountService.hasAccess(loggedUser, accounts)) {
+        if (!accountService.isOwner(loggedUser, ownIban)) {
             throw new AuthorizationServiceException("User is not allowed to make this transaction");
         }
 
