@@ -154,3 +154,11 @@ Scenario: Filter transactions based on minAmount=10.5 and maxAmount=111.5
     Then I send the transaction request
     And I receive a transaction response with status code 400
     And transaction response has error message "Transaction amount cannot be negative"
+
+  # Security fix F1: owning only the receiving account must not allow a transfer
+  Scenario: Create Transaction as Customer fails when sender account belongs to someone else
+    Given I am logged in with email "customer2@email.com" and "password"
+    When I have a transaction of type "TRANSFER" with amount 5 from sender "NL76INHO0087598006" to receiver "NL12INHO0123456789"
+    Then I send the transaction request
+    And I receive a transaction response with status code 403
+    And transaction response has error message "User is not allowed to make this transaction"

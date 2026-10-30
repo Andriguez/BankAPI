@@ -18,6 +18,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+
+import nl.inholland.BankAPI.Model.DTO.TransactionRequestDTO;
+import nl.inholland.BankAPI.Model.DTO.TransactionResponseDTO;
 
 public class TransactionServiceTest {
     @Mock
@@ -33,6 +37,23 @@ public class TransactionServiceTest {
     private TransactionService transactionService;
 
     private Account account;
+
+    private Account accountWithBalance(String iban, double balance) {
+        Account a = new Account();
+        a.setIban(iban);
+        a.setBalance(balance);
+        a.setDailyLimit(1000.0);
+        a.setAbsoluteLimit(0.0);
+        a.setSentTransactions(new ArrayList<>());
+        a.setReceivedTransactions(new ArrayList<>());
+        return a;
+    }
+
+    private User customer() {
+        User user = new User();
+        user.setUserType(List.of(UserType.CUSTOMER));
+        return user;
+    }
 
     // Sara's Code
     @BeforeEach
@@ -322,4 +343,42 @@ public class TransactionServiceTest {
         Assert.assertEquals(1, List.of(mockTransaction1).size());
     }
 
-}
+    @Test
+    void depositBetweenTwoAccountsDebitsSenderInsteadOfCreditingBoth() {
+        Account from = accountWithBalance("NL01INHO0000000001", 100.0);
+        Account to = accountWithBalance("NL01INHO0000000002", 100.0);
+        when(accountService.getAccountByIban(from.getIban())).thenReturn(from);
+        when(accountService.getAccountByIban(to.getIban())).thenReturn(to);
+
+        TransactionResponseDTO response = transactionService.createTransaction(
+            new TransactionRequestDTO(from.getIban(), to.getIban(), 10, "DEPOSIT"),
+            customer());
+        
+        verify(accountService).updateBalance(from, 90.0);
+        verify(accountService).updateBalance(to, 110.0);
+        assertEquals(TransactionType.TRANSFER, response.type());
+    }
+
+    @Test
+    void atmDepositOnlyCreditsTheReceivingAccount() {
+        Account to = accountWithBalance("NL01INHO0000000002", 100.0);
+        when(accountService.getAccountByIban(to.getIban())).thenReturn(to);
+
+        TransactionResponseDTO response = transactionService.createTransaction(
+                new TransactionRequestDTO("NLXXINHOXXXXXXXXXX", to.getIban(), 10, "TRANSFER"), customer());
+
+        verify(accountService).updateBalance(to, 110.0);
+        assertEquals(TransactionType.DEPOSIT, response.type());
+    }
+
+    @Test
+    void atmWithdrawalOnlyDebitsTheSendingAccount() {
+        Account from = accountWithBalance("NL01INHO0000000001", 100.0);
+        when(accountService.getAccountByIban(from.getIban())).thenReturn(from);
+        TransactionResponseDTO response = transactionService.createTransaction(
+                new TransactionRequestDTO(from.getIban(), "NLXXINHOXXXXXXXXXX", 10, "DEPOSIT"), customer());
+
+        verify(accountService).updateBalance(from, 90.0);
+        assertEquals(TransactionType.WITHDRAWAL, response.type());
+    }
+ }
