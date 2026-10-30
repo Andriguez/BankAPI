@@ -3,7 +3,7 @@ package nl.inholland.BankAPI.Security;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,10 +14,11 @@ import java.security.cert.Certificate;
 @Component
 @Getter
 public class JwtKeyProvider {
+    //F2 Fix: path and password come from environment variables
     @Value("${jwt.key-store}")
-    private String keyStore;
+    private Resource keyStore;
 
-    @Value("${jwt.key-store-password}123")
+    @Value("${jwt.key-store-password}")
     private String keyStorePassword;
 
     @Value("${jwt.key-alias}")
@@ -29,11 +30,10 @@ public class JwtKeyProvider {
     @PostConstruct
     protected void init(){
         try {
-            ClassPathResource resource = new ClassPathResource(keyStore);
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(resource.getInputStream(), keyStorePassword.toCharArray());
-            privateKey = keyStore.getKey(keyAlias, keyStorePassword.toCharArray());
-            Certificate certificate = keyStore.getCertificate(keyAlias);
+            KeyStore store = KeyStore.getInstance("PKCS12");
+            store.load(keyStore.getInputStream(), keyStorePassword.toCharArray());
+            privateKey = store.getKey(keyAlias, keyStorePassword.toCharArray());
+            Certificate certificate = store.getCertificate(keyAlias);
             publicKey = certificate.getPublicKey();
         } catch (Exception e){
             throw new RuntimeException(e);
